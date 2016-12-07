@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#13434D">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/login_bg">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -21,7 +21,7 @@
                 android:layout_marginTop="10dp"
                 android:text="Update Profile"
                 android:textColor="#F0F4F5"
-                android:textSize="30sp"/>
+                android:textSize="30sp" />
 
             <EditText
                 android:id="@+id/user_name"
@@ -34,7 +34,7 @@
                 android:inputType="textPersonName"
                 android:padding="15dp"
                 android:singleLine="true"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
             <EditText
                 android:id="@+id/first_name"
@@ -47,7 +47,7 @@
                 android:inputType="textPersonName"
                 android:padding="15dp"
                 android:singleLine="true"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
             <EditText
                 android:id="@+id/last_name"
@@ -60,7 +60,7 @@
                 android:inputType="textPersonName"
                 android:padding="15dp"
                 android:singleLine="true"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
             <EditText
                 android:id="@+id/email"
@@ -73,7 +73,7 @@
                 android:inputType="textPersonName"
                 android:padding="15dp"
                 android:singleLine="true"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
             <EditText
                 android:id="@+id/zip_code"
@@ -86,7 +86,7 @@
                 android:inputType="number"
                 android:padding="15dp"
                 android:singleLine="true"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
 
             <EditText
@@ -100,17 +100,18 @@
                 android:inputType="number"
                 android:padding="15dp"
                 android:singleLine="true"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/update_button"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginBottom="30dp"
+                android:theme="@style/AppTheme.Button"
                 android:layout_marginTop="10dp"
                 android:background="#05262F"
                 android:text="Update"
-                android:textColor="@android:color/white"/>
+                android:textColor="@android:color/white" />
 
         </LinearLayout>
     </ScrollView>
