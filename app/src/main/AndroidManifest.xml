@@ -29,6 +29,7 @@
             android:screenOrientation="portrait">
 
         </activity>
+        <activity android:name=".SelectionActivity"></activity>
     </application>
 
 </manifest>
