@@ -1,27 +1,15 @@
 package com.byteshaft.laundry.account;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-import com.byteshaft.laundry.MainActivity;
 import com.byteshaft.laundry.R;
-import com.byteshaft.laundry.utils.AppGlobals;
-import com.byteshaft.laundry.utils.Helpers;
-import com.byteshaft.laundry.utils.WebServiceHelpers;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -76,29 +64,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return valid;
     }
 
-    private Runnable executeTask(final boolean value) {
-        Runnable runnable = new Runnable() {
-
-
-            @Override
-            public void run() {
-                new LogInTask(value).execute();
-            }
-        };
-        return runnable;
-    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.login:
                 if (validate()) {
-                    if (AppGlobals.sIsInternetAvailable) {
-                        new LogInTask(false).execute();
-                    } else {
-                        Helpers.alertDialog(LoginActivity.this, "No internet", "Please check your internet connection",
-                                executeTask(true));
-                    }
                 }
                 break;
             case R.id.register:
@@ -110,93 +80,93 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    class LogInTask extends AsyncTask<String, String, JSONObject> {
-
-        public LogInTask(boolean checkInternet) {
-            this.checkInternet = checkInternet;
-        }
-
-        private boolean checkInternet = false;
-        private JSONObject jsonObject;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            WebServiceHelpers.showProgressDialog(LoginActivity.this, "Logging In");
-        }
-
-        @Override
-        protected JSONObject doInBackground(String... strings) {
-
-            if (AppGlobals.sIsInternetAvailable) {
-                sendData();
-            } else if (checkInternet) {
-                if (WebServiceHelpers.isNetworkAvailable()) {
-                    sendData();
-                }
-            }
-            return jsonObject;
-        }
-
-        private void sendData() {
-            try {
-                jsonObject = WebServiceHelpers.logInUser(
-                        mEmailString,
-                        mPasswordString
-                        );
-                Log.e("TAG", String.valueOf(jsonObject));
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject jsonObject) {
-            super.onPostExecute(jsonObject);
-            WebServiceHelpers.dismissProgressDialog();
-            if (jsonObject != null) {
-                try {
-                    if (jsonObject.getString("Message").equals("Input is invalid") || jsonObject.get("Message")
-                            .equals("The information you entered is incorrect")) {
-                        AppGlobals.alertDialog(LoginActivity.this, "Login Failed!", "Invalid Email or Password");
-
-                    } else if (jsonObject.getString("Message").equals("Successfully")) {
-                        JSONObject details = jsonObject.getJSONObject("details");
-                        System.out.println(jsonObject + "working");
-                        String username = details.getString(AppGlobals.KEY_USER_NAME);
-                        String userId = details.getString(AppGlobals.KEY_USER_ID);
-                        String firstName = details.getString(AppGlobals.KEY_FIRSTNAME);
-                        String lastName = details.getString(AppGlobals.KEY_LASTNAME);
-                        String email = details.getString(AppGlobals.KEY_EMAIL);
-                        String phoneNumber = details.getString(AppGlobals.KEY_PHONE_NUMBER);
-                        String zipCode = details.getString(AppGlobals.KEY_ZIP_CODE);
-
-                        //saving values
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FIRSTNAME, firstName);
-                        Log.i("First name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FIRSTNAME));
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_LASTNAME, lastName);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_ZIP_CODE, zipCode);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_NAME, username);
-                        Toast.makeText(LoginActivity.this, "Log In Successful", Toast.LENGTH_SHORT).show();
-                        AppGlobals.saveUserLogin(true);
-                        finish();
-                        if (AppGlobals.logout) {
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                            AppGlobals.logout = false;
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else if (jsonObject == null && !AppGlobals.sIsInternetAvailable) {
-                Helpers.alertDialog(LoginActivity.this, "No internet", "Please check your internet connection",
-                        executeTask(true));
-            } else {
-                AppGlobals.alertDialog(LoginActivity.this, "Error", "Please try again!");
-            }
-        }
-    }
+//    class LogInTask extends AsyncTask<String, String, JSONObject> {
+//
+//        public LogInTask(boolean checkInternet) {
+//            this.checkInternet = checkInternet;
+//        }
+//
+//        private boolean checkInternet = false;
+//        private JSONObject jsonObject;
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            WebServiceHelpers.showProgressDialog(LoginActivity.this, "Logging In");
+//        }
+//
+//        @Override
+//        protected JSONObject doInBackground(String... strings) {
+//
+//            if (AppGlobals.sIsInternetAvailable) {
+//                sendData();
+//            } else if (checkInternet) {
+//                if (WebServiceHelpers.isNetworkAvailable()) {
+//                    sendData();
+//                }
+//            }
+//            return jsonObject;
+//        }
+//
+//        private void sendData() {
+//            try {
+//                jsonObject = WebServiceHelpers.logInUser(
+//                        mEmailString,
+//                        mPasswordString
+//                        );
+//                Log.e("TAG", String.valueOf(jsonObject));
+//            } catch (IOException | JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(JSONObject jsonObject) {
+//            super.onPostExecute(jsonObject);
+//            WebServiceHelpers.dismissProgressDialog();
+//            if (jsonObject != null) {
+//                try {
+//                    if (jsonObject.getString("Message").equals("Input is invalid") || jsonObject.get("Message")
+//                            .equals("The information you entered is incorrect")) {
+//                        AppGlobals.alertDialog(LoginActivity.this, "Login Failed!", "Invalid Email or Password");
+//
+//                    } else if (jsonObject.getString("Message").equals("Successfully")) {
+//                        JSONObject details = jsonObject.getJSONObject("details");
+//                        System.out.println(jsonObject + "working");
+//                        String username = details.getString(AppGlobals.KEY_USER_NAME);
+//                        String userId = details.getString(AppGlobals.KEY_USER_ID);
+//                        String firstName = details.getString(AppGlobals.KEY_FIRSTNAME);
+//                        String lastName = details.getString(AppGlobals.KEY_LASTNAME);
+//                        String email = details.getString(AppGlobals.KEY_EMAIL);
+//                        String phoneNumber = details.getString(AppGlobals.KEY_PHONE_NUMBER);
+//                        String zipCode = details.getString(AppGlobals.KEY_ZIP_CODE);
+//
+//                        //saving values
+//                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FIRSTNAME, firstName);
+//                        Log.i("First name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FIRSTNAME));
+//                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_LASTNAME, lastName);
+//                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
+//                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
+//                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_ZIP_CODE, zipCode);
+//                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
+//                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_NAME, username);
+//                        Toast.makeText(LoginActivity.this, "Log In Successful", Toast.LENGTH_SHORT).show();
+//                        AppGlobals.saveUserLogin(true);
+//                        finish();
+//                        if (AppGlobals.logout) {
+//                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+//                            AppGlobals.logout = false;
+//                        }
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            } else if (jsonObject == null && !AppGlobals.sIsInternetAvailable) {
+//                Helpers.alertDialog(LoginActivity.this, "No internet", "Please check your internet connection",
+//                        executeTask(true));
+//            } else {
+//                AppGlobals.alertDialog(LoginActivity.this, "Error", "Please try again!");
+//            }
+//        }
+//    }
 }

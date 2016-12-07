@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.byteshaft.laundry">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+
     <application
         android:name=".utils.AppGlobals"
         android:allowBackup="true"
@@ -19,17 +23,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".account.LoginActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".account.RegisterActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".account.ForgotPasswordActivity"
-            android:screenOrientation="portrait">
+        <activity
+            android:name=".account.LoginActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".account.RegisterActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".account.ForgotPasswordActivity"
+            android:screenOrientation="portrait"/>
 
-        </activity>
-        <activity android:name=".SelectionActivity"></activity>
+        <activity
+            android:name=".account.CodeConfirmationActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".SelectionActivity"/>
     </application>
 
 </manifest>

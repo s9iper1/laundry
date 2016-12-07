@@ -45,120 +45,23 @@ public class UpdateProfile extends Fragment {
         mBaseView = inflater.inflate(R.layout.update_profile, container, false);
         setHasOptionsMenu(true);
         mUsername = (EditText) mBaseView.findViewById(R.id.user_name);
-        mFirstName = (EditText) mBaseView.findViewById(R.id.first_name);
-        mLastName = (EditText) mBaseView.findViewById(R.id.last_name);
         mEmailAddress = (EditText) mBaseView.findViewById(R.id.email);
-        mZipCode = (EditText) mBaseView.findViewById(R.id.zip_code);
         mPhoneNumber = (EditText) mBaseView.findViewById(R.id.phone);
         mUpdateButton = (Button) mBaseView.findViewById(R.id.update_button);
-        mUsername.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_USER_NAME));
-        mLastName.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_LASTNAME));
-        mFirstName.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FIRSTNAME));
+        mUsername.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULLNAME));
         mEmailAddress.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_EMAIL));
-        mZipCode.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_ZIP_CODE));
         mPhoneNumber.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_PHONE_NUMBER));
         mEmailAddress.setEnabled(false);
         mUpdateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mUsernameString = mUsername.getText().toString();
-                mFirstNameString = mFirstName.getText().toString();
-                mLastNameString = mLastName.getText().toString();
-                mZipCodeString = mZipCode.getText().toString();
                 mEmailAddressString = mEmailAddress.getText().toString();
                 mPhoneNumberString = mPhoneNumber.getText().toString();
-                if (AppGlobals.sIsInternetAvailable) {
-                    new UpdateUserProfileTask(false).execute();
-                } else {
-                    Helpers.alertDialog(getActivity(), "No internet", "Please check your internet connection",
-                            executeTask(true));
-                }
+
 
             }
         });
         return mBaseView;
-    }
-
-    private Runnable executeTask(final boolean value) {
-        Runnable runnable = new Runnable() {
-
-
-            @Override
-            public void run() {
-                new UpdateUserProfileTask(value).execute();
-            }
-        };
-        return runnable;
-    }
-
-    class UpdateUserProfileTask extends AsyncTask<String, String, JSONObject> {
-
-        private boolean checkInternet = false;
-        private JSONObject jsonObject;
-
-        public UpdateUserProfileTask(boolean checkInternet) {
-            this.checkInternet = checkInternet;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            WebServiceHelpers.showProgressDialog(getActivity(), "Updating User Profile");
-        }
-
-        @Override
-        protected JSONObject doInBackground(String... strings) {
-
-            if (AppGlobals.sIsInternetAvailable) {
-                sendData();
-            } else if (checkInternet) {
-                if (WebServiceHelpers.isNetworkAvailable()) {
-                    sendData();
-                }
-            }
-            return jsonObject;
-        }
-
-        private void sendData() {
-            try {
-                jsonObject = WebServiceHelpers.updateUserProfile(
-                        mFirstNameString,
-                        mLastNameString,
-                        mEmailAddressString,
-                        mPhoneNumberString,
-                        mUserIdString,
-                        mUsernameString,
-                        mZipCodeString);
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject jsonObject) {
-            super.onPostExecute(jsonObject);
-            WebServiceHelpers.dismissProgressDialog();
-            if (jsonObject != null) {
-                try {
-                    if (jsonObject.getString("Message").equals("Input is invalid;")) {
-                        AppGlobals.alertDialog(getActivity(), "Registration Failed!", "username or email already exits");
-
-                    } else if (jsonObject.getString("Message").equals("Successfully")) {
-                        JSONObject data = jsonObject.getJSONObject("details");
-                        //saving values
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FIRSTNAME, mFirstNameString);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_LASTNAME, mLastNameString);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, mEmailAddressString);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, mPhoneNumberString);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_ZIP_CODE, mZipCodeString);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, mUserIdString);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_NAME, mUsernameString);
-                        Toast.makeText(getActivity(), "Profile Updated Successfully", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 }

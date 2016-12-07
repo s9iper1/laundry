@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#13434D">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#13434D">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_margin="20dp"
-            android:orientation="vertical">
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="Update Profile"
+                android:layout_marginTop="30dp"
                 android:textColor="#F0F4F5"
-                android:textSize="30sp"/>
+                android:text="Sign Up"
+                android:textSize="30dp"/>
 
             <EditText
                 android:id="@+id/user_name"
@@ -30,37 +32,11 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/edit_text_bg"
                 android:drawablePadding="9dp"
-                android:hint="Username"
+                android:hint="Full name"
                 android:inputType="textPersonName"
                 android:padding="15dp"
                 android:singleLine="true"
-                android:textSize="14sp"/>
-
-            <EditText
-                android:id="@+id/first_name"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/edit_text_bg"
-                android:drawablePadding="9dp"
-                android:hint="First name"
-                android:inputType="textPersonName"
-                android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="14sp"/>
-
-            <EditText
-                android:id="@+id/last_name"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/edit_text_bg"
-                android:drawablePadding="9dp"
-                android:hint="Last name"
-                android:inputType="textPersonName"
-                android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
             <EditText
                 android:id="@+id/email"
@@ -70,23 +46,10 @@
                 android:background="@drawable/edit_text_bg"
                 android:drawablePadding="9dp"
                 android:hint="Email Address"
-                android:inputType="textPersonName"
+                android:inputType="textEmailAddress"
                 android:padding="15dp"
                 android:singleLine="true"
-                android:textSize="14sp"/>
-
-            <EditText
-                android:id="@+id/zip_code"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/edit_text_bg"
-                android:drawablePadding="9dp"
-                android:hint="Zip code"
-                android:inputType="number"
-                android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
 
             <EditText
@@ -96,21 +59,34 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/edit_text_bg"
                 android:drawablePadding="9dp"
-                android:hint="Phone"
-                android:inputType="number"
+                android:hint="Phone number"
+                android:inputType="phone"
                 android:padding="15dp"
                 android:singleLine="true"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/edit_text_bg"
+                android:drawablePadding="9dp"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:padding="15dp"
+                android:singleLine="true"
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/update_button"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="15dp"
+                android:background="#946517"
+                android:textColor="@android:color/white"
                 android:layout_marginBottom="30dp"
-                android:layout_marginTop="10dp"
-                android:background="#05262F"
-                android:text="Update"
-                android:textColor="@android:color/white"/>
+                android:text="Update" />
 
         </LinearLayout>
     </ScrollView>
