@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#13434D"
+    android:background="@mipmap/login_bg"
     tools:context="com.byteshaft.laundry.account.LoginActivity">
 
 
@@ -61,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
-                android:background="#05262F"
+                android:theme="@style/AppTheme.Button"
                 android:padding="15dp"
                 android:text="Login"
                 android:textColor="@android:color/white"
@@ -72,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
-                android:background="#946517"
+                android:theme="@style/AppTheme.ButtonTwo"
                 android:padding="15dp"
                 android:text="Register"
                 android:textColor="@android:color/white"

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#13434D">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/login_bg">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:orientation="vertical">
 
 
             <TextView
@@ -21,9 +21,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
-                android:textColor="#F0F4F5"
                 android:text="Sign Up"
-                android:textSize="30dp"/>
+                android:textColor="#F0F4F5"
+                android:textSize="30dp" />
 
             <EditText
                 android:id="@+id/user_name"
@@ -136,32 +136,32 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-            <CheckBox
-                android:id="@+id/checkbox"
-                android:checked="false"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                <CheckBox
+                    android:id="@+id/checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false" />
 
                 <TextView
                     android:id="@+id/checkbox_text"
-                    android:textStyle="italic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:clickable="true"
                     android:textColor="@android:color/white"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:textStyle="italic" />
 
             </LinearLayout>
 
             <Button
                 android:id="@+id/register_button"
                 android:layout_width="match_parent"
-                android:clickable="false"
                 android:layout_height="50dp"
-                android:background="#d3d3d3"
-                android:layout_marginTop="10dp"
-                android:textColor="@android:color/white"
                 android:layout_marginBottom="30dp"
-                android:text="Register" />
+                android:layout_marginTop="10dp"
+                android:theme="@style/AppTheme.Button"
+                android:clickable="false"
+                android:text="Register"
+                android:textColor="@android:color/white" />
 
         </LinearLayout>
     </ScrollView>
