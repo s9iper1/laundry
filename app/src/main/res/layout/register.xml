@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#13434D">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/login_bg">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:orientation="vertical">
 
 
             <TextView
@@ -21,9 +21,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
-                android:textColor="#F0F4F5"
                 android:text="Sign Up"
-                android:textSize="30dp"/>
+                android:textColor="#F0F4F5"
+                android:textSize="30dp" />
 
             <EditText
                 android:id="@+id/user_name"
@@ -97,9 +97,7 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
                 android:background="#946517"
-                android:textColor="@android:color/white"
-                android:layout_marginBottom="30dp"
-                android:text="Register" />
+                android:textColor="@android:color/white"/>
 
         </LinearLayout>
     </ScrollView>

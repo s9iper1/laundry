@@ -1,6 +1,5 @@
 package com.byteshaft.laundry.fragments;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,18 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
-
 
 import com.byteshaft.laundry.R;
 import com.byteshaft.laundry.utils.AppGlobals;
-import com.byteshaft.laundry.utils.Helpers;
-import com.byteshaft.laundry.utils.WebServiceHelpers;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class UpdateProfile extends Fragment {
 
