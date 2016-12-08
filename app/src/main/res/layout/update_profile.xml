@@ -109,7 +109,6 @@
                 android:layout_marginBottom="30dp"
                 android:theme="@style/AppTheme.Button"
                 android:layout_marginTop="10dp"
-                android:background="#05262F"
                 android:text="Update"
                 android:textColor="@android:color/white" />
 
