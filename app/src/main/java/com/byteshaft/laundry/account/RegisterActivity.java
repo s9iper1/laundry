@@ -1,120 +1,76 @@
 package com.byteshaft.laundry.account;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.byteshaft.laundry.R;
 import com.byteshaft.laundry.utils.AppGlobals;
-import com.byteshaft.laundry.utils.Helpers;
 import com.byteshaft.laundry.utils.WebServiceHelpers;
+import com.byteshaft.requests.HttpRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.net.HttpURLConnection;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
+
+public class RegisterActivity extends Activity implements View.OnClickListener,
+        HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener {
 
     private Button mRegisterButton;
     private EditText mUsername;
-    private EditText mFirstName;
-    private EditText mLastName;
     private EditText mEmailAddress;
-    private EditText mZipCode;
     private EditText mPassword;
     private EditText mVerifyPassword;
     private EditText mPhoneNumber;
-    private TextView mTermsAndCondition;
-    private CheckBox mCheckBox;
 
     private String mUsernameString;
-    private String mFirstNameString;
-    private String mLastNameString;
-    private String mEmailAddressString;
-    private String mZipCodeString;
+    public static String mEmailAddressString;
     private String mVerifyPasswordString;
     private String mPhoneNumberString;
     private String mPasswordString;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.register);
-        mTermsAndCondition = (TextView) findViewById(R.id.checkbox_text);
-        mCheckBox = (CheckBox) findViewById(R.id.checkbox);
-        mUsername = (EditText) findViewById(R.id.user_name);
-        mFirstName = (EditText) findViewById(R.id.first_name);
-        mLastName = (EditText) findViewById(R.id.last_name);
-        mEmailAddress = (EditText) findViewById(R.id.email);
-        mZipCode = (EditText) findViewById(R.id.zip_code);
-        mPhoneNumber = (EditText) findViewById(R.id.phone);
-        mVerifyPassword = (EditText) findViewById(R.id.verify_password);
-        mPassword = (EditText) findViewById(R.id.password);
-        mRegisterButton = (Button) findViewById(R.id.register_button);
-        mRegisterButton.setOnClickListener(this);
-        mTermsAndCondition.setOnClickListener(this);
-        mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (compoundButton.isChecked()) {
-                    mRegisterButton.setClickable(true);
-                    mRegisterButton.setBackgroundColor(Color.parseColor("#05262F"));
-                } else {
-                    mRegisterButton.setClickable(false);
-                    mRegisterButton.setBackgroundColor(Color.parseColor("#D3D3D3"));
-                }
-            }
-        });
+    private HttpRequest request;
+    private static RegisterActivity sInstance;
+
+    public static RegisterActivity getInstance() {
+        return sInstance;
     }
 
-    private Runnable executeTask(final boolean value) {
-        Runnable runnable = new Runnable() {
-
-
-            @Override
-            public void run() {
-                new RegistrationTask(value).execute();
-            }
-        };
-        return runnable;
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.register);
+        sInstance = this;
+        mUsername = (EditText) findViewById(R.id.user_name);
+        mEmailAddress = (EditText) findViewById(R.id.email);
+        mPhoneNumber = (EditText) findViewById(R.id.phone);
+        mPassword = (EditText) findViewById(R.id.password);
+        mVerifyPassword = (EditText) findViewById(R.id.verify_password);
+        mRegisterButton = (Button) findViewById(R.id.register_button);
+        mRegisterButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.register_button:
-                mUsernameString = mUsername.getText().toString();
-                mFirstNameString = mFirstName.getText().toString();
-                mLastNameString = mLastName.getText().toString();
-                mPhoneNumberString = mPhoneNumber.getText().toString();
-                mZipCodeString = mZipCode.getText().toString();
                 if (validateEditText()) {
-                    if (AppGlobals.sIsInternetAvailable) {
-                        new RegistrationTask(false).execute();
-                    } else {
-                        Helpers.alertDialog(RegisterActivity.this, "No internet",
-                                "Please check your internet connection",
-                                executeTask(true));
-                    }
+                    registerUser(
+                            mUsernameString,
+                            mPasswordString,
+                            mEmailAddressString,
+                            mPhoneNumberString
+                    );
                 }
                 break;
-            case R.id.checkbox_text:
-                // missing 'http://' will cause crashed
-                Uri uri = Uri.parse("http://www.affordablehairtransplants.com/terms-and-conditions");
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
         }
     }
 
@@ -124,6 +80,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         mPasswordString = mPassword.getText().toString();
         mVerifyPasswordString = mVerifyPassword.getText().toString();
         mEmailAddressString = mEmailAddress.getText().toString();
+        mPhoneNumberString = mPhoneNumber.getText().toString();
+        mUsernameString = mUsername.getText().toString();
 
 
         if (mPasswordString.trim().isEmpty() || mPasswordString.length() < 3) {
@@ -132,9 +90,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         } else {
             mPassword.setError(null);
         }
+        if (mPhoneNumberString.trim().isEmpty() || mPhoneNumberString.length() < 3) {
+            mPhoneNumber.setError("please enter your phone number");
+            valid = false;
+        } else {
+            mPhoneNumber.setError(null);
+        }
 
-        if (mVerifyPasswordString.trim().isEmpty() || mVerifyPasswordString.length() < 3 ||
-                !mVerifyPasswordString.equals(mPasswordString)) {
+        if (mVerifyPasswordString.trim().isEmpty() || mVerifyPasswordString.length() < 3) {
             mVerifyPassword.setError("password does not match");
             valid = false;
         } else {
@@ -147,102 +110,72 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         } else {
             mEmailAddress.setError(null);
         }
-        if (!mCheckBox.isChecked()) {
-            valid = false;
-            Toast.makeText(RegisterActivity.this, "Please agree terms & services", Toast.LENGTH_SHORT).show();
-        }
         return valid;
     }
 
-    class RegistrationTask extends AsyncTask<String, String, String> {
+    private void registerUser(String username, String password, String email, String phoneNumner) {
+        request = new HttpRequest(getApplicationContext());
+        request.setOnReadyStateChangeListener(this);
+        request.setOnErrorListener(this);
+        request.open("POST", " http://178.62.87.25/api/user/register");
+        request.send(getRegisterData(username, password, email, phoneNumner));
+        WebServiceHelpers.showProgressDialog(RegisterActivity.this, "Registering User ");
+    }
 
-        public RegistrationTask(boolean checkInternet) {
-            this.checkInternet = checkInternet;
+
+    private String getRegisterData(String username, String password, String email, String phoneNumner) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("full_name", username);
+            jsonObject.put("email", email);
+            jsonObject.put("phone_number", phoneNumner);
+            jsonObject.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+        return jsonObject.toString();
 
-        private boolean checkInternet = false;
-        private JSONObject jsonObject;
+    }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            WebServiceHelpers.showProgressDialog(RegisterActivity.this, "Registering");
-        }
+    @Override
+    public void onReadyStateChange(HttpRequest request, int readyState) {
+        switch (readyState) {
+            case HttpRequest.STATE_DONE:
+                WebServiceHelpers.dismissProgressDialog();
+                switch (request.getStatus()) {
+                    case HttpURLConnection.HTTP_CREATED:
+                        System.out.println(request.getResponseText() + "working ");
+                        try {
+                            JSONObject jsonObject = new JSONObject(request.getResponseText());
+                            String username = jsonObject.getString(AppGlobals.KEY_FULLNAME);
+                            String userId = jsonObject.getString(AppGlobals.KEY_USER_ID);
+                            String email = jsonObject.getString(AppGlobals.KEY_EMAIL);
+                            String phoneNumber = jsonObject.getString(AppGlobals.KEY_PHONE_NUMBER);
 
-        @Override
-        protected String doInBackground(String... strings) {
-
-            if (AppGlobals.sIsInternetAvailable) {
-                sendData();
-            } else if (checkInternet) {
-                if (WebServiceHelpers.isNetworkAvailable()) {
-                    sendData();
-                }
-            }
-            return null;
-        }
-
-        private void sendData() {
-            try {
-                jsonObject = WebServiceHelpers.registerUser(
-                        mFirstNameString,
-                        mLastNameString,
-                        mEmailAddressString,
-                        mPhoneNumberString,
-                        mVerifyPasswordString,
-                        mPasswordString,
-                        mUsernameString,
-                        mZipCodeString);
-                Log.e("TAG", String.valueOf(jsonObject));
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            WebServiceHelpers.dismissProgressDialog();
-            try {
-                if (jsonObject != null) {
-                    if (jsonObject.getString("Message").equals("Input is invalid;")) {
-                        AppGlobals.alertDialog(RegisterActivity.this, "Registration Failed!", "username or email already exits");
-
-                    } else if (jsonObject.getString("Message").equals("Username or email already exits")) {
-                        AppGlobals.alertDialog(RegisterActivity.this, "Already Exist!", jsonObject.getString("Message"));
-
-                    } else if (jsonObject.getString("Message").equals("Successfully")) {
-                        JSONObject details = jsonObject.getJSONObject("details");
-                        System.out.println(jsonObject + "working");
-                        String username = details.getString(AppGlobals.KEY_USER_NAME);
-                        String userId = details.getString(AppGlobals.KEY_USER_ID);
-                        String firstName = details.getString(AppGlobals.KEY_FIRSTNAME);
-                        String lastName = details.getString(AppGlobals.KEY_LASTNAME);
-                        String email = details.getString(AppGlobals.KEY_EMAIL);
-                        String phoneNumber = details.getString(AppGlobals.KEY_PHONE_NUMBER);
-                        String zipCode = details.getString(AppGlobals.KEY_ZIP_CODE);
-
-                        //saving values
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FIRSTNAME, firstName);
-                        Log.i("First name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FIRSTNAME));
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_LASTNAME, lastName);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_ZIP_CODE, zipCode);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
-                        AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_NAME, username);
-                        AppGlobals.saveUserLogin(true);
-                        LoginActivity.getInstance().finish();
-                        finish();
-                        Toast.makeText(RegisterActivity.this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Helpers.alertDialog(RegisterActivity.this, "No internet", "Please check your internet connection",
-                                executeTask(true));
-                    }
-                }
-                }catch(JSONException e){
-                    e.printStackTrace();
+                            //saving values
+                            AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FULLNAME, username);
+                            Log.i("user name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULLNAME));
+                            AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
+                            AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
+                            AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
+                            LoginActivity.getInstance().finish();
+                            finish();
+                            startActivity(new Intent(getApplicationContext(), CodeConfirmationActivity.class));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                 }
         }
+
+    }
+
+    @Override
+    public void onError(HttpRequest request, short error, Exception exception) {
+        System.out.println(request.getStatus());
+        switch (request.getStatus()) {
+            case HttpURLConnection.HTTP_UNAUTHORIZED:
+                Toast.makeText(getApplicationContext(), "wrong password", Toast.LENGTH_SHORT).show();
+        }
+
     }
 }
