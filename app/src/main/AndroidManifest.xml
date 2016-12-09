@@ -33,6 +33,8 @@
             android:name=".account.ForgotPasswordActivity"
             android:screenOrientation="portrait"/>
 
+        <activity android:name=".account.ResetPassword"/>
+
         <activity
             android:name=".account.CodeConfirmationActivity"
             android:screenOrientation="portrait"/>

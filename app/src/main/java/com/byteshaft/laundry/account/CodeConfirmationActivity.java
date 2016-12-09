@@ -2,7 +2,6 @@ package com.byteshaft.laundry.account;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,7 +22,7 @@ import java.net.HttpURLConnection;
 
 
 public class CodeConfirmationActivity extends Activity implements
-        HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener{
+        HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener {
 
     private Button mSubmitButton;
     private EditText mEmail;
@@ -76,21 +75,14 @@ public class CodeConfirmationActivity extends Activity implements
     }
 
     @Override
-    public void onError(HttpRequest request, short error, Exception exception) {
-        System.out.println(request.getStatus());
-        switch (request.getStatus()) {
-            case HttpURLConnection.HTTP_BAD_REQUEST:
-                Toast.makeText(getApplicationContext(), "Please enter correct account activation key", Toast.LENGTH_LONG).show();
-        }
-
-    }
-
-    @Override
     public void onReadyStateChange(HttpRequest request, int readyState) {
         switch (readyState) {
             case HttpRequest.STATE_DONE:
                 WebServiceHelpers.dismissProgressDialog();
                 switch (request.getStatus()) {
+                    case HttpURLConnection.HTTP_BAD_REQUEST:
+                        Toast.makeText(getApplicationContext(), "Please enter correct account activation key", Toast.LENGTH_LONG).show();
+                        break;
                     case HttpURLConnection.HTTP_OK:
                         System.out.println(request.getResponseText() + "working ");
                         try {
@@ -121,7 +113,6 @@ public class CodeConfirmationActivity extends Activity implements
     }
 
 
-
     private void activateUser(String email, String emailOtp) {
         request = new HttpRequest(getApplicationContext());
         request.setOnReadyStateChangeListener(this);
@@ -142,5 +133,13 @@ public class CodeConfirmationActivity extends Activity implements
         }
         return jsonObject.toString();
 
+    }
+
+    @Override
+    public void onError(HttpRequest request, int readyState, short error, Exception exception) {
+        System.out.println(request.getStatus());
+        switch (request.getStatus()) {
+
+        }
     }
 }
