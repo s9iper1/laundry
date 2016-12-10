@@ -15,15 +15,16 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_below="@+id/item_image"
+        android:layout_marginBottom="4dp"
         android:background="@color/colorPrimaryDark" />
 
     <TextView
         android:id="@+id/item_name"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/line"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:text="Item Name"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -43,11 +44,11 @@
         android:textStyle="bold" />
 
     <View
+        android:layout_marginTop="4dp"
         android:id="@+id/line_two"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_below="@+id/item_price"
         android:background="@color/colorPrimaryDark" />
-
 
 </RelativeLayout>
