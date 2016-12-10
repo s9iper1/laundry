@@ -16,8 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.byteshaft.laundry.account.LoginActivity;
+import com.byteshaft.laundry.account.ResetPassword;
 import com.byteshaft.laundry.fragments.LogoutFragment;
-import com.byteshaft.laundry.fragments.ResetPassword;
 import com.byteshaft.laundry.fragments.UpdateProfile;
 import com.byteshaft.laundry.utils.AppGlobals;
 
@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity
         AppGlobals.sActivity = MainActivity.this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +101,7 @@ public class MainActivity extends AppCompatActivity
                 loadFragment(new UpdateProfile());
                 break;
             case R.id.nav_reset_password:
-                loadFragment(new ResetPassword());
+                startActivity(new Intent(getApplicationContext(), ResetPassword.class));
                 break;
             case R.id.nav_logout:
                 loadFragment(new LogoutFragment());
@@ -131,8 +130,8 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void loadFragment(Fragment fragment) {
-        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+    public static void loadFragment(Fragment fragment) {
+        FragmentTransaction tx = MainActivity.getInstance().getSupportFragmentManager().beginTransaction();
         tx.replace(R.id.container, fragment);
         tx.commit();
     }

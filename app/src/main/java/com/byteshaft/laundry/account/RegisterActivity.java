@@ -90,6 +90,14 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
         } else {
             mPassword.setError(null);
         }
+
+        if (mVerifyPasswordString.trim().isEmpty() || mVerifyPasswordString.length() < 3 ||
+                !mVerifyPasswordString.equals(mPasswordString)) {
+            mVerifyPassword.setError("password does not match");
+            valid = false;
+        } else {
+            mVerifyPassword.setError(null);
+        }
         if (mPhoneNumberString.trim().isEmpty() || mPhoneNumberString.length() < 3) {
             mPhoneNumber.setError("please enter your phone number");
             valid = false;
@@ -97,12 +105,6 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
             mPhoneNumber.setError(null);
         }
 
-        if (mVerifyPasswordString.trim().isEmpty() || mVerifyPasswordString.length() < 3) {
-            mVerifyPassword.setError("password does not match");
-            valid = false;
-        } else {
-            mVerifyPassword.setError(null);
-        }
 
         if (mEmailAddressString.trim().isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(mEmailAddressString).matches()) {
             mEmailAddress.setError("please provide a valid email");
@@ -143,8 +145,15 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
             case HttpRequest.STATE_DONE:
                 WebServiceHelpers.dismissProgressDialog();
                 switch (request.getStatus()) {
+                    case HttpRequest.ERROR_NETWORK_UNREACHABLE:
+                        AppGlobals.alertDialog(RegisterActivity.this, "Login Failed!", "please check your internet connection");
+                        break;
+                    case HttpURLConnection.HTTP_BAD_REQUEST:
+                        AppGlobals.alertDialog(RegisterActivity.this, "Registration Failed!", "EmailAddress is already in use");
+                        break;
                     case HttpURLConnection.HTTP_CREATED:
                         System.out.println(request.getResponseText() + "working ");
+                        Toast.makeText(getApplicationContext(), "Activation code has been sent to you! Please check your Email", Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonObject = new JSONObject(request.getResponseText());
                             String username = jsonObject.getString(AppGlobals.KEY_FULLNAME);
@@ -170,12 +179,10 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
     }
 
     @Override
-    public void onError(HttpRequest request, short error, Exception exception) {
+    public void onError(HttpRequest request, int readyState, short error, Exception exception) {
         System.out.println(request.getStatus());
         switch (request.getStatus()) {
             case HttpURLConnection.HTTP_UNAUTHORIZED:
-                Toast.makeText(getApplicationContext(), "wrong password", Toast.LENGTH_SHORT).show();
         }
-
     }
 }

@@ -34,12 +34,13 @@
             android:screenOrientation="portrait"/>
         // hiding actionbar and using custom
         <activity android:name=".SelectionActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        </activity>
+        <activity android:name=".account.ResetPassword"/>
+
         <activity
             android:name=".account.CodeConfirmationActivity"
-            android:screenOrientation="portrait"/>z
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
