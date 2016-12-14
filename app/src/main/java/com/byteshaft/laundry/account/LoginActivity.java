@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         request = new HttpRequest(getApplicationContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
-        request.open("POST", "http://178.62.87.25/api/user/login");
+        request.open("POST", String.format("%suser/login", AppGlobals.BASE_URL));
         request.send(getUserLoginData(email, password));
         WebServiceHelpers.showProgressDialog(LoginActivity.this, "Logging In");
     }
