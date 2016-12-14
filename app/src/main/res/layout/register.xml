@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/login_bg">
+    android:background="@color/primary_light">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -23,33 +23,33 @@
                 android:layout_marginTop="30dp"
                 android:text="Sign Up"
                 android:textColor="#F0F4F5"
-                android:textSize="30dp" />
+                android:textSize="30sp" />
 
             <EditText
                 android:id="@+id/user_name"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/edit_text_bg"
+                android:textColor="@color/button_text_color"
+                android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
                 android:hint="Full name"
                 android:inputType="textPersonName"
                 android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="14sp" />
+                android:maxLines="1" />
 
             <EditText
                 android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/edit_text_bg"
+                android:textColor="@color/button_text_color"
+                android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
                 android:hint="Email Address"
                 android:inputType="textEmailAddress"
                 android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="14sp" />
+                android:maxLines="1" />
 
 
             <EditText
@@ -57,46 +57,47 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/edit_text_bg"
+                android:textColor="@color/button_text_color"
+                android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
                 android:hint="Phone number"
                 android:inputType="phone"
                 android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="14sp" />
+                android:maxLines="1" />
 
             <EditText
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/edit_text_bg"
+                android:textColor="@color/button_text_color"
+                android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
                 android:hint="Password"
                 android:inputType="textPassword"
                 android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="14sp" />
+                android:maxLines="1"/>
 
             <EditText
                 android:id="@+id/verify_password"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/edit_text_bg"
+                android:textColor="@color/button_text_color"
+                android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
                 android:hint="Verify Password"
                 android:inputType="textPassword"
                 android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="14sp" />
+                android:maxLines="1" />
 
             <Button
                 android:id="@+id/register_button"
+                android:background="@drawable/apptheme_btn_default_holo_light"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
-                android:background="#946517"
+                android:text="Register"
                 android:textColor="@android:color/white"/>
 
         </LinearLayout>

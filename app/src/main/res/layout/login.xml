@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/login_bg"
+    android:background="@color/primary_light"
     tools:context="com.byteshaft.laundry.account.LoginActivity">
 
 
@@ -26,57 +25,57 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="50dp"
                 android:text="Sign In"
-                android:textColor="#F0F4F5"
-                android:textSize="30dp"/>
+                android:textColor="@color/button_text_color"
+                android:textSize="30sp" />
 
             <EditText
                 android:id="@+id/email_address"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:background="@drawable/edit_text_bg"
+                android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="8dp"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
+                android:maxLines="1"
                 android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="14sp"/>
+                android:textColor="@color/button_text_color" />
 
 
             <EditText
                 android:id="@+id/password"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/edit_text_bg"
+                android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="8dp"
-                android:hint="Password"
+                android:hint="password"
                 android:inputType="textPassword"
+                android:maxLines="1"
                 android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="14sp"/>
+                android:textColor="@color/button_text_color" />
 
             <Button
                 android:id="@+id/login"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
-                android:theme="@style/AppTheme.Button"
+                android:background="@drawable/apptheme_btn_default_holo_light"
                 android:padding="15dp"
                 android:text="Login"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"/>
+                android:textColor="@color/button_text_color"
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/register"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
-                android:theme="@style/AppTheme.ButtonTwo"
+                android:background="@drawable/apptheme_btn_default_holo_light"
                 android:padding="15dp"
                 android:text="Register"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"/>
+                android:textColor="@color/button_text_color"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_forgot_password"
@@ -86,9 +85,9 @@
                 android:layout_marginTop="30dp"
                 android:paddingBottom="50dp"
                 android:text="Forgot Password?"
-                android:textColor="#F4FFFF"
-                android:textSize="14dp"
-                android:textStyle="italic"/>
+                android:textColor="@color/button_text_color"
+                android:textSize="14sp"
+                android:textStyle="italic" />
         </LinearLayout>
     </ScrollView>
 

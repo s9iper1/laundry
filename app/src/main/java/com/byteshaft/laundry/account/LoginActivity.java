@@ -5,11 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.byteshaft.laundry.MainActivity;
 import com.byteshaft.laundry.R;
@@ -33,9 +33,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private String mPasswordString;
     private String mEmailString;
     private static LoginActivity sInstance;
-
     private HttpRequest request;
-
 
     public static LoginActivity getInstance() {
         return sInstance;
@@ -44,6 +42,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.login);
         sInstance = this;
         mEmail = (EditText) findViewById(R.id.email_address);
