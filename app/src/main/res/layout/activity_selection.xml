@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.byteshaft.laundry.SelectionActivity">
+    tools:context="com.byteshaft.laundry.laundry.LaundryCategoriesActivity">
 
     <include
         android:id="@+id/app_bar"

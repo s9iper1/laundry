@@ -1,37 +1,51 @@
-package com.byteshaft.laundry;
+package com.byteshaft.laundry.laundry;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.annotation.Nullable;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
+
+import com.byteshaft.laundry.R;
+import com.byteshaft.laundry.utils.AppGlobals;
+import com.byteshaft.laundry.utils.WebServiceHelpers;
+import com.byteshaft.requests.HttpRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
 
 import it.neokree.materialtabs.MaterialTab;
 import it.neokree.materialtabs.MaterialTabHost;
 import it.neokree.materialtabs.MaterialTabListener;
 
-public class SelectionActivity extends AppCompatActivity implements MaterialTabListener {
-    
+public class LaundryCategoriesActivity extends AppCompatActivity implements MaterialTabListener,
+        HttpRequest.OnErrorListener, HttpRequest.OnReadyStateChangeListener {
+
     private Toolbar mToolbar;
     private MaterialTabHost mTabHost;
     private ViewPager mViewPager;
     private ViewPagerAdapter mAdapter;
+    private HttpRequest request;
+    private ArrayList<Category> categories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getCategories();
         setContentView(R.layout.activity_selection);
+        categories = new ArrayList<>();
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -46,13 +60,12 @@ public class SelectionActivity extends AppCompatActivity implements MaterialTabL
 
             }
         });
+    }
 
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            MaterialTab materialTab = mTabHost.newTab();
-            materialTab.setText("Tab");
-            materialTab.setTabListener(this);
-            mTabHost.addTab(materialTab);
-        }
+    private void addTab(String title) {
+        mTabHost.addTab(mTabHost.newTab().setText(title).setTabListener(LaundryCategoriesActivity.this));
+        mTabHost.notifyDataSetChanged();
+        mAdapter.setCount(mAdapter.getCount() + 1);
     }
 
     @Override
@@ -85,7 +98,7 @@ public class SelectionActivity extends AppCompatActivity implements MaterialTabL
 
             alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    mTabHost.addTab(mTabHost.newTab().setText(input.getText().toString()).setTabListener(SelectionActivity.this));
+                    mTabHost.addTab(mTabHost.newTab().setText(input.getText().toString()).setTabListener(LaundryCategoriesActivity.this));
                     mTabHost.notifyDataSetChanged();
                     mAdapter.setCount(mAdapter.getCount() + 1);
 
@@ -118,17 +131,9 @@ public class SelectionActivity extends AppCompatActivity implements MaterialTabL
 
     }
 
-    public static class DummyFragment extends Fragment {
-        @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                                 @Nullable Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.item_drawer, container, false);
-        }
-    }
-
     private class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
-        int count = 1;
+        int count = 0;
         FragmentManager fragmentManager;
 
         ViewPagerAdapter(FragmentManager fm) {
@@ -137,8 +142,8 @@ public class SelectionActivity extends AppCompatActivity implements MaterialTabL
         }
 
         public Fragment getItem(int num) {
-            DummyFragment dummyFragment = new DummyFragment();
-            return dummyFragment;
+            RecycleAbleFragment recycleableFragment = new RecycleAbleFragment();
+            return recycleableFragment;
 
         }
 
@@ -156,5 +161,46 @@ public class SelectionActivity extends AppCompatActivity implements MaterialTabL
         public CharSequence getPageTitle(int position) {
             return getResources().getStringArray(R.array.tabs)[position];
         }
+    }
+
+    private void getCategories() {
+        request = new HttpRequest(getApplicationContext());
+        request.setOnReadyStateChangeListener(this);
+        request.setOnErrorListener(this);
+        request.open("GET", String.format("%slaundry/categories", AppGlobals.BASE_URL));
+        request.send();
+        WebServiceHelpers.showProgressDialog(this, "Logging In");
+    }
+
+    @Override
+    public void onReadyStateChange(HttpRequest request, int readyState) {
+        switch (readyState) {
+            case HttpRequest.STATE_DONE:
+                WebServiceHelpers.dismissProgressDialog();
+                switch (request.getStatus()) {
+                    case HttpURLConnection.HTTP_OK:
+                        Log.i("TAG", request.getResponseText());
+                        try {
+                            JSONArray jsonArray = new JSONArray(request.getResponseText());
+                            for (int i = 0 ; i < jsonArray.length(); i++) {
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                Category category = new Category();
+                                category.setCategoryId(jsonObject.getInt("id"));
+                                category.setCategoryName(jsonObject.getString("name"));
+                                categories.add(category);
+                                addTab(category.getCategoryName());
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                }
+        }
+    }
+
+
+    @Override
+    public void onError(HttpRequest request, int readyState, short error, Exception exception) {
+
     }
 }

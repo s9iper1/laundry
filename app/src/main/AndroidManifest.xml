@@ -39,7 +39,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".SelectionActivity"
+        <activity android:name=".laundry.LaundryCategoriesActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
             android:name=".account.CodeConfirmationActivity"
