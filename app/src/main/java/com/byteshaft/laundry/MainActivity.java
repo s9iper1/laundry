@@ -19,6 +19,7 @@ import com.byteshaft.laundry.account.LoginActivity;
 import com.byteshaft.laundry.account.ResetPassword;
 import com.byteshaft.laundry.fragments.LogoutFragment;
 import com.byteshaft.laundry.fragments.UpdateProfile;
+import com.byteshaft.laundry.laundry.LaundryCategoriesActivity;
 import com.byteshaft.laundry.utils.AppGlobals;
 
 public class MainActivity extends AppCompatActivity
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 System.out.println("Hello there");
-                startActivity(new Intent(MainActivity.this, SelectionActivity.class));
+                startActivity(new Intent(MainActivity.this, LaundryCategoriesActivity.class));
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
             }
