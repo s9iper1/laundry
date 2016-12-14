@@ -99,7 +99,7 @@ public class ResetPassword extends AppCompatActivity implements
         request = new HttpRequest(getApplicationContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
-        request.open("POST", "http://178.62.87.25/api/user/change-password");
+        request.open("POST", String.format("%suser/change-password", AppGlobals.BASE_URL));
         request.send(getUserChangePassword(email, emailotp, newpassword));
         WebServiceHelpers.showProgressDialog(ResetPassword.this, "Resetting your password");
     }

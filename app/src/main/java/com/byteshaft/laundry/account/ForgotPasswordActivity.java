@@ -69,7 +69,7 @@ public class ForgotPasswordActivity extends AppCompatActivity implements
         request = new HttpRequest(getApplicationContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
-        request.open("POST", "http://178.62.87.25/api/user/forgot-password");
+        request.open("POST", String.format("%suser/forgot-password", AppGlobals.BASE_URL));
         request.send(getUserPassword(email));
         WebServiceHelpers.showProgressDialog(ForgotPasswordActivity.this, "Sending Recovery Mail");
     }
