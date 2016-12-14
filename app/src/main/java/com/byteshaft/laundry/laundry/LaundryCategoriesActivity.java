@@ -1,7 +1,5 @@
 package com.byteshaft.laundry.laundry;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 
 import com.byteshaft.laundry.R;
 import com.byteshaft.laundry.utils.AppGlobals;
@@ -86,32 +83,10 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
         if (id == R.id.action_settings) {
             return true;
         }
-        if (R.id.add_tabs == id) {
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-            alert.setTitle("Add Tab");
-            alert.setMessage("Your Tab Name");
-
-// Set an EditText view to get user input
-            final EditText input = new EditText(this);
-            alert.setView(input);
-
-            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    mTabHost.addTab(mTabHost.newTab().setText(input.getText().toString()).setTabListener(LaundryCategoriesActivity.this));
-                    mTabHost.notifyDataSetChanged();
-                    mAdapter.setCount(mAdapter.getCount() + 1);
-
-                }
-            });
-
-            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    // Canceled.
-                }
-            });
-
-            alert.show();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
