@@ -6,4 +6,4 @@
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    app:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar" />
+    app:theme="@style/Base.ThemeOverlay.AppCompat.Light" />

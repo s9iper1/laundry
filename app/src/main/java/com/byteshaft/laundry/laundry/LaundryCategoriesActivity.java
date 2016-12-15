@@ -13,7 +13,6 @@ import android.view.MenuItem;
 
 import com.byteshaft.laundry.R;
 import com.byteshaft.laundry.utils.AppGlobals;
-import com.byteshaft.laundry.utils.WebServiceHelpers;
 import com.byteshaft.requests.HttpRequest;
 
 import org.json.JSONArray;
@@ -31,30 +30,40 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
         HttpRequest.OnErrorListener, HttpRequest.OnReadyStateChangeListener {
 
     private Toolbar mToolbar;
-    private MaterialTabHost mTabHost;
-    private ViewPager mViewPager;
-    private ViewPagerAdapter mAdapter;
+    public MaterialTabHost mTabHost;
+    public ViewPager mViewPager;
+    public ViewPagerAdapter mAdapter;
     private HttpRequest request;
-    private ArrayList<Category> categories;
+    public ArrayList<Category> categories;
+    private static LaundryCategoriesActivity sInstance;
+    public static int sCounter = 0;
+    public static ArrayList<LaundryItem> laundryItems;
+    public static ArrayList<ArrayList<LaundryItem>> wholeData;
+
+    public static LaundryCategoriesActivity getInstance() {
+        return sInstance;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getCategories();
         setContentView(R.layout.activity_selection);
+        sInstance = this;
         categories = new ArrayList<>();
+        wholeData = new ArrayList<>();
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         mTabHost = (MaterialTabHost) findViewById(R.id.materialTabHost);
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
+        mViewPager.setOffscreenPageLimit(1);
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 mTabHost.setSelectedNavigationItem(position);
-
             }
         });
     }
@@ -89,6 +98,12 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sCounter = 0;
     }
 
     @Override
@@ -144,14 +159,12 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
         request.setOnErrorListener(this);
         request.open("GET", String.format("%slaundry/categories", AppGlobals.BASE_URL));
         request.send();
-        WebServiceHelpers.showProgressDialog(this, "Logging In");
     }
 
     @Override
     public void onReadyStateChange(HttpRequest request, int readyState) {
         switch (readyState) {
             case HttpRequest.STATE_DONE:
-                WebServiceHelpers.dismissProgressDialog();
                 switch (request.getStatus()) {
                     case HttpURLConnection.HTTP_OK:
                         Log.i("TAG", request.getResponseText());
