@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import it.neokree.materialtabs.MaterialTab;
 import it.neokree.materialtabs.MaterialTabHost;
@@ -39,6 +40,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
     public static int sCounter = 0;
     public static ArrayList<LaundryItem> laundryItems;
     public static ArrayList<ArrayList<LaundryItem>> wholeData;
+    public static HashMap<String, Integer> sPositionIndex;
 
     public static LaundryCategoriesActivity getInstance() {
         return sInstance;
@@ -52,12 +54,12 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
         sInstance = this;
         categories = new ArrayList<>();
         wholeData = new ArrayList<>();
+        sPositionIndex = new HashMap<>();
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         mTabHost = (MaterialTabHost) findViewById(R.id.materialTabHost);
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
-        mViewPager.setOffscreenPageLimit(1);
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
