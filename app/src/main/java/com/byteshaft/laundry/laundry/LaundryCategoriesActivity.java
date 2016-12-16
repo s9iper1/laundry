@@ -1,7 +1,5 @@
 package com.byteshaft.laundry.laundry;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,11 +10,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 
 import com.byteshaft.laundry.R;
 import com.byteshaft.laundry.utils.AppGlobals;
-import com.byteshaft.laundry.utils.WebServiceHelpers;
 import com.byteshaft.requests.HttpRequest;
 
 import org.json.JSONArray;
@@ -25,6 +21,7 @@ import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import it.neokree.materialtabs.MaterialTab;
 import it.neokree.materialtabs.MaterialTabHost;
@@ -34,18 +31,30 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
         HttpRequest.OnErrorListener, HttpRequest.OnReadyStateChangeListener {
 
     private Toolbar mToolbar;
-    private MaterialTabHost mTabHost;
-    private ViewPager mViewPager;
-    private ViewPagerAdapter mAdapter;
+    public MaterialTabHost mTabHost;
+    public ViewPager mViewPager;
+    public ViewPagerAdapter mAdapter;
     private HttpRequest request;
-    private ArrayList<Category> categories;
+    public ArrayList<Category> categories;
+    private static LaundryCategoriesActivity sInstance;
+    public static int sCounter = 0;
+    public static ArrayList<LaundryItem> laundryItems;
+    public static ArrayList<ArrayList<LaundryItem>> wholeData;
+    public static HashMap<String, Integer> sPositionIndex;
+
+    public static LaundryCategoriesActivity getInstance() {
+        return sInstance;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getCategories();
         setContentView(R.layout.activity_selection);
+        sInstance = this;
         categories = new ArrayList<>();
+        wholeData = new ArrayList<>();
+        sPositionIndex = new HashMap<>();
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -57,7 +66,6 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
             @Override
             public void onPageSelected(int position) {
                 mTabHost.setSelectedNavigationItem(position);
-
             }
         });
     }
@@ -86,34 +94,18 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
         if (id == R.id.action_settings) {
             return true;
         }
-        if (R.id.add_tabs == id) {
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-            alert.setTitle("Add Tab");
-            alert.setMessage("Your Tab Name");
-
-// Set an EditText view to get user input
-            final EditText input = new EditText(this);
-            alert.setView(input);
-
-            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    mTabHost.addTab(mTabHost.newTab().setText(input.getText().toString()).setTabListener(LaundryCategoriesActivity.this));
-                    mTabHost.notifyDataSetChanged();
-                    mAdapter.setCount(mAdapter.getCount() + 1);
-
-                }
-            });
-
-            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    // Canceled.
-                }
-            });
-
-            alert.show();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sCounter = 0;
     }
 
     @Override
@@ -169,14 +161,12 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
         request.setOnErrorListener(this);
         request.open("GET", String.format("%slaundry/categories", AppGlobals.BASE_URL));
         request.send();
-        WebServiceHelpers.showProgressDialog(this, "Logging In");
     }
 
     @Override
     public void onReadyStateChange(HttpRequest request, int readyState) {
         switch (readyState) {
             case HttpRequest.STATE_DONE:
-                WebServiceHelpers.dismissProgressDialog();
                 switch (request.getStatus()) {
                     case HttpURLConnection.HTTP_OK:
                         Log.i("TAG", request.getResponseText());
