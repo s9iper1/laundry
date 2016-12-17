@@ -44,22 +44,30 @@ public class RecycleAbleFragment extends Fragment implements
 
     public RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private static RecycleAbleFragment sInstance;
+
+    public static RecycleAbleFragment getInstance() {
+        return sInstance;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getCategoryData();
+        Log.i("TAG", "onCreateView");
         return inflater.inflate(R.layout.recyclerable_layout, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        sInstance = this;
+        Log.i("TAG", "onViewCreated");
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity()
                 .getApplicationContext(), 2);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.specific_recycler);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.category_swipe_refresh);
+        getCategoryData();
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark,
                 R.color.colorAccent, R.color.primary_light);
         mRecyclerView.setLayoutManager(gridLayoutManager);
@@ -68,43 +76,41 @@ public class RecycleAbleFragment extends Fragment implements
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
+                new android.os.Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 2000);
             }
         });
     }
 
+    //    @Override
+//    public void onPause() {
+//        super.onPause();
+//        if (getFragmentManager().findFragmentByTag
+//                (LaundryCategoriesActivity.getInstance().categories.get(
+//                        LaundryCategoriesActivity.getInstance().mViewPager.getCurrentItem()).getCategoryName()) != null)
+//            getFragmentManager().findFragmentByTag(LaundryCategoriesActivity.getInstance().categories.get(
+//                    LaundryCategoriesActivity.getInstance().mViewPager.getCurrentItem()).getCategoryName()).setRetainInstance(true);
+//    }
+//
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if (getFragmentManager().findFragmentByTag(LaundryCategoriesActivity.getInstance().categories.get(
+//                LaundryCategoriesActivity.getInstance().mViewPager.getCurrentItem()).getCategoryName()) != null)
+//            getFragmentManager().findFragmentByTag(LaundryCategoriesActivity.getInstance().categories.get(
+//                    LaundryCategoriesActivity.getInstance().mViewPager.getCurrentItem()).getCategoryName()).getRetainInstance();
+//    }
+
     private void getCategoryData() {
         Log.i("TAG", "counter " + sCounter);
         if (sCounter < LaundryCategoriesActivity.getInstance().categories.size()) {
-//            final HttpRequest httpRequest = new HttpRequest(getActivity().getApplicationContext());
+            Log.i("TAG", "condition if");
             HttpRequest http = new HttpRequest(getActivity().getApplicationContext());
             http.setOnReadyStateChangeListener(this);
-//                        new HttpRequest.OnReadyStateChangeListener() {
-//                    @Override
-//                    public void onReadyStateChange(HttpRequest request, int readyState) {
-//                        Log.i("TAG", "Response :" + sCounter + " "+ request.getResponseText());
-//                        laundryItems = new ArrayList<>();
-//                        mAdapter = new CustomAdapter(laundryItems);
-//                        mRecyclerView.setAdapter(mAdapter);
-//                        try {
-//                            JSONArray jsonArray = new JSONArray(request.getResponseText());
-//                            for (int i = 0 ; i < jsonArray.length(); i++) {
-//                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                                LaundryItem laundryItem = new LaundryItem();
-////                                laundryItem.setId(jsonObject.getInt("id"));
-//                                laundryItem.setName(jsonObject.getString("name"));
-//                                laundryItem.setPrice(jsonObject.getString("price"));
-//                                laundryItem.setImageUri(jsonObject.getString("image"));
-//                                laundryItems.add(laundryItem);
-//                                mAdapter.notifyDataSetChanged();
-//                            }
-//                            wholeData.add(laundryItems);
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                    }
-//                });
             http.setOnErrorListener(this);
             final String url = String.format("%slaundry/categories/%d", AppGlobals.BASE_URL,
                     LaundryCategoriesActivity.getInstance().categories.get(sCounter).getCategoryId());
@@ -114,11 +120,30 @@ public class RecycleAbleFragment extends Fragment implements
             http.open("GET", url);
             http.send();
             sCounter = sCounter + 1;
-        } else {
-//            CustomAdapter mAdapter = new CustomAdapter(wholeData.get(
-//                    LaundryCategoriesActivity.getInstance().mViewPager.getCurrentItem()));
-//            mRecyclerView.setAdapter(mAdapter);
         }
+//        else {
+//            Log.i("TAG", "condition else");
+//            if (wholeData.size() >= LaundryCategoriesActivity
+//                    .getInstance().mViewPager.getCurrentItem()) {
+//                Log.i("TAG", "condition else -> if");
+//                CustomAdapter mAdapter = new CustomAdapter(wholeData.get(
+//                        LaundryCategoriesActivity.getInstance().mViewPager.getCurrentItem()));
+//                mRecyclerView.setAdapter(mAdapter);
+//            }
+//        }
+    }
+
+    public void onPageChanged() {
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("TAG", "tab change " + LaundryCategoriesActivity.getInstance().mViewPager.getCurrentItem());
+                CustomAdapter mAdapter = new CustomAdapter(wholeData.get(
+                        LaundryCategoriesActivity.getInstance().mViewPager.getCurrentItem()));
+                mRecyclerView.setAdapter(mAdapter);
+                mAdapter.notifyDataSetChanged();
+            }
+        }, 2000);
     }
 
     @Override
@@ -132,17 +157,20 @@ public class RecycleAbleFragment extends Fragment implements
                         laundryItems = new ArrayList<>();
                         try {
                             JSONArray jsonArray = new JSONArray(request.getResponseText());
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                LaundryItem laundryItem = new LaundryItem();
+                            if (jsonArray.length() > 0) {
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                    LaundryItem laundryItem = new LaundryItem();
 //                                laundryItem.setId(jsonObject.getInt("id"));
-                                laundryItem.setName(jsonObject.getString("name"));
-                                laundryItem.setPrice(jsonObject.getString("price"));
-                                laundryItem.setImageUri(jsonObject.getString("image"));
-                                laundryItems.add(laundryItem);
-                                laundryItems.add(laundryItem);
+                                    laundryItem.setName(jsonObject.getString("name"));
+                                    laundryItem.setPrice(jsonObject.getString("price"));
+                                    laundryItem.setImageUri(jsonObject.getString("image"));
+                                    laundryItems.add(laundryItem);
+                                }
+                                wholeData.add(index, laundryItems);
+                            } else {
+                                wholeData.add(index, laundryItems);
                             }
-                            wholeData.add(index, laundryItems);
                             if (index == LaundryCategoriesActivity
                                     .getInstance().mViewPager.getCurrentItem()) {
                                 Log.i("TAG", "adapter " + wholeData.get(
@@ -205,7 +233,7 @@ public class RecycleAbleFragment extends Fragment implements
             viewHolder.titleTextView.setText(laundryItem.getName());
             viewHolder.price.setText(String.valueOf(laundryItem.getPrice()));
             Picasso.with(getActivity())
-                    .load("http://178.62.87.25/media/images_2.jpg")
+                    .load(laundryItem.getImageUri())
                     .resize(300, 300)
                     .centerCrop()
                     .into(viewHolder.imageView, new Callback() {

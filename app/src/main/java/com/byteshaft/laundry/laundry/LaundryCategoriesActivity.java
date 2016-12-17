@@ -1,6 +1,7 @@
 package com.byteshaft.laundry.laundry;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -23,17 +24,14 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import it.neokree.materialtabs.MaterialTab;
-import it.neokree.materialtabs.MaterialTabHost;
-import it.neokree.materialtabs.MaterialTabListener;
 
-public class LaundryCategoriesActivity extends AppCompatActivity implements MaterialTabListener,
+public class LaundryCategoriesActivity extends AppCompatActivity implements
         HttpRequest.OnErrorListener, HttpRequest.OnReadyStateChangeListener {
 
     private Toolbar mToolbar;
-    public MaterialTabHost mTabHost;
+    public TabLayout tabLayout;
     public ViewPager mViewPager;
-    public ViewPagerAdapter mAdapter;
+    public Adapter mAdapter;
     private HttpRequest request;
     public ArrayList<Category> categories;
     private static LaundryCategoriesActivity sInstance;
@@ -55,25 +53,12 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
         categories = new ArrayList<>();
         wholeData = new ArrayList<>();
         sPositionIndex = new HashMap<>();
-        mToolbar = (Toolbar) findViewById(R.id.app_bar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        mTabHost = (MaterialTabHost) findViewById(R.id.materialTabHost);
-        mViewPager = (ViewPager) findViewById(R.id.viewPager);
-        mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        mViewPager.setAdapter(mAdapter);
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                mTabHost.setSelectedNavigationItem(position);
-            }
-        });
-    }
-
-    private void addTab(String title) {
-        mTabHost.addTab(mTabHost.newTab().setText(title).setTabListener(LaundryCategoriesActivity.this));
-        mTabHost.notifyDataSetChanged();
-        mAdapter.setCount(mAdapter.getCount() + 1);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        tabLayout.setupWithViewPager(mViewPager);
     }
 
     @Override
@@ -108,50 +93,36 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
         sCounter = 0;
     }
 
-    @Override
-    public void onTabSelected(MaterialTab tab) {
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
+    private class Adapter extends FragmentStatePagerAdapter {
 
-    @Override
-    public void onTabReselected(MaterialTab tab) {
-
-    }
-
-    @Override
-    public void onTabUnselected(MaterialTab tab) {
-
-    }
-
-    private class ViewPagerAdapter extends FragmentStatePagerAdapter {
-
-        int count = 0;
         FragmentManager fragmentManager;
+        Fragment fragment = null;
 
-        ViewPagerAdapter(FragmentManager fm) {
+        Adapter(FragmentManager fm ) {
             super(fm);
             fragmentManager = fm;
         }
 
         public Fragment getItem(int num) {
-            RecycleAbleFragment recycleableFragment = new RecycleAbleFragment();
-            return recycleableFragment;
-
+            getPageTitle(num);
+            for (int i = 0; i < categories.size() ; i++) {
+                if (i == num) {
+                    fragment = new RecycleAbleFragment();
+                    break;
+                }
+            }
+            return fragment;
         }
 
         @Override
         public int getCount() {
-            return count;
-        }
-
-        void setCount(int newCount) {
-            count = newCount;
-            notifyDataSetChanged();
+            return categories.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return getResources().getStringArray(R.array.tabs)[position];
+            Log.i("PAGE TITLE", "title " + categories.get(position).getCategoryName());
+            return categories.get(position).getCategoryName();
         }
     }
 
@@ -178,8 +149,25 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements Mate
                                 category.setCategoryId(jsonObject.getInt("id"));
                                 category.setCategoryName(jsonObject.getString("name"));
                                 categories.add(category);
-                                addTab(category.getCategoryName());
                             }
+                            mAdapter = new Adapter(getSupportFragmentManager());
+                            mViewPager.setAdapter(mAdapter);
+                            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                                @Override
+                                public void onTabSelected(TabLayout.Tab tab) {
+                                    mViewPager.setCurrentItem(tab.getPosition());
+                                }
+
+                                @Override
+                                public void onTabUnselected(TabLayout.Tab tab) {
+
+                                }
+
+                                @Override
+                                public void onTabReselected(TabLayout.Tab tab) {
+
+                                }
+                            });
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
