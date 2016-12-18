@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -37,7 +37,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
     private static LaundryCategoriesActivity sInstance;
     public static int sCounter = 0;
     public static ArrayList<LaundryItem> laundryItems;
-    public static ArrayList<ArrayList<LaundryItem>> wholeData;
+    public static HashMap<String, ArrayList<LaundryItem>> wholeData;
     public static HashMap<String, Integer> sPositionIndex;
 
     public static LaundryCategoriesActivity getInstance() {
@@ -51,7 +51,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_selection);
         sInstance = this;
         categories = new ArrayList<>();
-        wholeData = new ArrayList<>();
+        wholeData = new HashMap<>();
         sPositionIndex = new HashMap<>();
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -93,25 +93,21 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
         sCounter = 0;
     }
 
-    private class Adapter extends FragmentStatePagerAdapter {
+    private class Adapter extends FragmentPagerAdapter {
 
         FragmentManager fragmentManager;
-        Fragment fragment = null;
+        private ArrayList<Fragment> fragments;
 
-        Adapter(FragmentManager fm ) {
+        Adapter(FragmentManager fm) {
             super(fm);
             fragmentManager = fm;
+            fragments = new ArrayList<>();
         }
 
-        public Fragment getItem(int num) {
-            getPageTitle(num);
-            for (int i = 0; i < categories.size() ; i++) {
-                if (i == num) {
-                    fragment = new RecycleAbleFragment();
-                    break;
-                }
-            }
-            return fragment;
+        @Override
+        public Fragment getItem(int position) {
+            getPageTitle(position);
+            return new FirstFragment(categories.get(position).getCategoryName());
         }
 
         @Override
@@ -143,36 +139,83 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
                         Log.i("TAG", request.getResponseText());
                         try {
                             JSONArray jsonArray = new JSONArray(request.getResponseText());
-                            for (int i = 0 ; i < jsonArray.length(); i++) {
+                            for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                                 Category category = new Category();
                                 category.setCategoryId(jsonObject.getInt("id"));
                                 category.setCategoryName(jsonObject.getString("name"));
                                 categories.add(category);
                             }
-                            mAdapter = new Adapter(getSupportFragmentManager());
-                            mViewPager.setAdapter(mAdapter);
-                            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                                @Override
-                                public void onTabSelected(TabLayout.Tab tab) {
-                                    mViewPager.setCurrentItem(tab.getPosition());
-                                }
-
-                                @Override
-                                public void onTabUnselected(TabLayout.Tab tab) {
-
-                                }
-
-                                @Override
-                                public void onTabReselected(TabLayout.Tab tab) {
-
-                                }
-                            });
+                            getCategoryData();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
                 }
+        }
+    }
+
+    private void getCategoryData() {
+        if (sCounter < LaundryCategoriesActivity.getInstance().categories.size()) {
+            HttpRequest http = new HttpRequest(getApplicationContext());
+            http.setOnReadyStateChangeListener(new HttpRequest.OnReadyStateChangeListener() {
+                @Override
+                public void onReadyStateChange(HttpRequest request, int readyState) {
+                    switch (readyState) {
+                        case HttpRequest.STATE_DONE:
+                            switch (request.getStatus()) {
+                                case HttpURLConnection.HTTP_OK:
+                                    int index = sPositionIndex.get(request.getResponseURL());
+                                    Log.i("TAG", request.getResponseText());
+                                    laundryItems = new ArrayList<>();
+                                    try {
+                                        JSONArray jsonArray = new JSONArray(request.getResponseText());
+                                        for (int i = 0; i < jsonArray.length(); i++) {
+                                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                            LaundryItem laundryItem = new LaundryItem();
+                                            laundryItem.setName(jsonObject.getString("name"));
+                                            laundryItem.setPrice(jsonObject.getString("price"));
+                                            laundryItem.setImageUri(jsonObject.getString("image"));
+                                            laundryItems.add(laundryItem);
+                                        }
+                                        wholeData.put(categories.get(sCounter)
+                                                .getCategoryName(), laundryItems);
+                                        sCounter = sCounter+1;
+                                        if (sCounter == categories.size()) {
+                                            mAdapter = new Adapter(getSupportFragmentManager());
+                                            mViewPager.setAdapter(mAdapter);
+                                            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                                                @Override
+                                                public void onTabSelected(TabLayout.Tab tab) {
+                                                    mViewPager.setCurrentItem(tab.getPosition());
+                                                }
+
+                                                @Override
+                                                public void onTabUnselected(TabLayout.Tab tab) {
+
+                                                }
+
+                                                @Override
+                                                public void onTabReselected(TabLayout.Tab tab) {
+
+                                                }
+                                            });
+                                        }
+                                        getCategoryData();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                            }
+                    }
+                }
+            });
+            http.setOnErrorListener(this);
+            final String url = String.format("%slaundry/categories/%d", AppGlobals.BASE_URL,
+                    LaundryCategoriesActivity.getInstance().categories.get(sCounter).getCategoryId());
+            sPositionIndex.put(url, sCounter);
+            http.open("GET", url);
+            http.send();
         }
     }
 
