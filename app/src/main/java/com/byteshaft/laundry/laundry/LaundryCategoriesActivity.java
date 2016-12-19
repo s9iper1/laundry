@@ -41,6 +41,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
     public static ArrayList<LaundryItem> laundryItems;
     public static HashMap<String, ArrayList<LaundryItem>> wholeData;
     public static HashMap<String, Integer> sPositionIndex;
+    public static HashMap<Integer, Integer> order;
 
     public static LaundryCategoriesActivity getInstance() {
         return sInstance;
@@ -55,6 +56,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
         categories = new ArrayList<>();
         wholeData = new HashMap<>();
         sPositionIndex = new HashMap<>();
+        order = new HashMap<>();
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -110,7 +112,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
         @Override
         public Fragment getItem(int position) {
             getPageTitle(position);
-            return new FirstFragment(categories.get(position).getCategoryName());
+            return new RecycleAbleFragment(categories.get(position).getCategoryName());
         }
 
         @Override
@@ -176,6 +178,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
                                         for (int i = 0; i < jsonArray.length(); i++) {
                                             JSONObject jsonObject = jsonArray.getJSONObject(i);
                                             LaundryItem laundryItem = new LaundryItem();
+                                            laundryItem.setId(jsonObject.getInt("id"));
                                             laundryItem.setName(jsonObject.getString("name"));
                                             laundryItem.setPrice(jsonObject.getString("price"));
                                             laundryItem.setImageUri(jsonObject.getString("image"));

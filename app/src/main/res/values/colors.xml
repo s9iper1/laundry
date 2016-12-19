@@ -9,6 +9,7 @@
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
     <color name="icons">#FFFFFF</color>
+    <color name="card_selected_color">#ffd5c7</color>
 
     <color name="button_color">#FF5722</color>
     <color name="button_text_color">#ffffff</color>

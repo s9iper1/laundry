@@ -24,7 +24,6 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         weightTextView = (TextView) findViewById(R.id.weight);
         addButton.setOnClickListener(this);
         minusButton.setOnClickListener(this);
-
     }
 
     @Override
