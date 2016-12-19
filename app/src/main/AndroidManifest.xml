@@ -23,7 +23,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".account.LoginActivity"
@@ -54,7 +53,12 @@
 
         <activity
             android:name=".PickLaundryActivity"
-            android:label="@string/title_activity_pick_laundry"></activity>
+            android:label="@string/title_activity_pick_laundry">
+
+        </activity>
+        <activity
+            android:name=".CheckOutActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
