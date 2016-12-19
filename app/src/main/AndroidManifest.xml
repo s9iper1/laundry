@@ -25,19 +25,22 @@
         </activity>
         <activity
             android:name=".account.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".account.RegisterActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".account.ForgotPasswordActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
-        // hiding actionbar and using custom
-        <activity android:name=".SelectionActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity android:name=".account.ResetPassword"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
 
-        <activity android:name=".account.ResetPassword"/>
-
+        <activity android:name=".laundry.LaundryCategoriesActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".account.CodeConfirmationActivity"
             android:screenOrientation="portrait"/>

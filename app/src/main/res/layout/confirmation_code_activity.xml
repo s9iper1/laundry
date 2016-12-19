@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:id="@+id/layout_code_confirmation"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/primary_light">
 
 
     <ScrollView
@@ -22,6 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:padding="10dp"
+                android:textColor="@color/button_text_color"
                 android:textStyle="bold"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="100dp"
@@ -32,9 +34,7 @@
                 android:id="@+id/et_confirmation_code_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_bg"
-                android:textCursorDrawable="@null"
-                android:textSize="18dp"
+                android:background="@drawable/apptheme_edit_text_holo_light"
                 android:hint="Email"
                 android:enabled="false"
                 android:maxLength="32"
@@ -47,9 +47,7 @@
                 android:id="@+id/et_confirmation_code"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_bg"
-                android:textCursorDrawable="@null"
-                android:textSize="18dp"
+                android:background="@drawable/apptheme_edit_text_holo_light"
                 android:hint="Confirmation Code"
                 android:maxLength="5"
                 android:inputType="number"
@@ -61,6 +59,7 @@
                 android:id="@+id/btn_confirmation_code_submit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/apptheme_btn_default_holo_light"
                 android:layout_marginBottom="10dp"
                 android:text="Submit"
                 android:padding="10dp" />

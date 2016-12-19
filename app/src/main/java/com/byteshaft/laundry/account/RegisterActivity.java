@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -47,6 +49,9 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.register);
         sInstance = this;
         mUsername = (EditText) findViewById(R.id.user_name);
@@ -119,7 +124,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
         request = new HttpRequest(getApplicationContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
-        request.open("POST", " http://178.62.87.25/api/user/register");
+        request.open("POST", String.format("%suser/register", AppGlobals.BASE_URL));
         request.send(getRegisterData(username, password, email, phoneNumner));
         WebServiceHelpers.showProgressDialog(RegisterActivity.this, "Registering User ");
     }
@@ -130,7 +135,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
         try {
             jsonObject.put("full_name", username);
             jsonObject.put("email", email);
-            jsonObject.put("phone_number", phoneNumner);
+            jsonObject.put("mobile_number", phoneNumner);
             jsonObject.put("password", password);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -144,12 +149,13 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
         switch (readyState) {
             case HttpRequest.STATE_DONE:
                 WebServiceHelpers.dismissProgressDialog();
+                Log.i("TAG", "Response " + request.getResponseText());
                 switch (request.getStatus()) {
                     case HttpRequest.ERROR_NETWORK_UNREACHABLE:
                         AppGlobals.alertDialog(RegisterActivity.this, "Login Failed!", "please check your internet connection");
                         break;
                     case HttpURLConnection.HTTP_BAD_REQUEST:
-                        AppGlobals.alertDialog(RegisterActivity.this, "Registration Failed!", "EmailAddress is already in use");
+                        AppGlobals.alertDialog(RegisterActivity.this, "Registration Failed!", "Email already in use");
                         break;
                     case HttpURLConnection.HTTP_CREATED:
                         System.out.println(request.getResponseText() + "working ");

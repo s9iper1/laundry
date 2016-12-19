@@ -16,7 +16,7 @@ public class AppGlobals extends Application {
     public static final String KEY_FULLNAME = "full_name";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_USER_ID = "id";
-    public static final String KEY_PHONE_NUMBER = "phone_number";
+    public static final String KEY_PHONE_NUMBER = "mobile_number";
     public static final String KEY_TOKEN = "token";
     public static final String USER_ACTIVATION_KEY = "activation_key";
     public static final String KEY_USER_LOGIN = "user_login";
@@ -26,6 +26,7 @@ public class AppGlobals extends Application {
     private static SharedPreferences sPreferences;
     public static MainActivity sActivity;
     public static boolean logout = false;
+    public static final String BASE_URL = "http://178.62.87.25/api/";
 
 
 

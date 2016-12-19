@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -35,6 +37,9 @@ public class CodeConfirmationActivity extends Activity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.confirmation_code_activity);
         mEmail = (EditText) findViewById(R.id.et_confirmation_code_email);
         mCode = (EditText) findViewById(R.id.et_confirmation_code);
@@ -117,7 +122,7 @@ public class CodeConfirmationActivity extends Activity implements
         request = new HttpRequest(getApplicationContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
-        request.open("POST", " http://178.62.87.25/api/user/activate");
+        request.open("POST",  String.format("%suser/activate", AppGlobals.BASE_URL));
         request.send(getUserActivationData(email, emailOtp));
         WebServiceHelpers.showProgressDialog(CodeConfirmationActivity.this, "Activating User");
     }
