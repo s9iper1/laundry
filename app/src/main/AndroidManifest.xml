@@ -38,12 +38,15 @@
         <activity android:name=".account.ResetPassword"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
-
-        <activity android:name=".laundry.LaundryCategoriesActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".account.CodeConfirmationActivity"
             android:screenOrientation="portrait"/>
+
+        <activity android:name=".laundry.LaundryCategoriesActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".CheckOutActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
