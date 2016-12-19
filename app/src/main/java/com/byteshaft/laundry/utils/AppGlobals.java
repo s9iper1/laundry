@@ -25,6 +25,7 @@ public class AppGlobals extends Application {
     public static final String KEY_USER_DETAILS = "user_details";
     private static SharedPreferences sPreferences;
     public static MainActivity sActivity;
+    public static boolean logout = false;
 
 
 

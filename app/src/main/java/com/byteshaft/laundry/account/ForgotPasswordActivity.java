@@ -91,7 +91,6 @@ public class ForgotPasswordActivity extends AppCompatActivity implements
 
     @Override
     public void onReadyStateChange(HttpRequest request, int readyState) {
-
         switch (readyState) {
             case HttpRequest.STATE_DONE:
                 WebServiceHelpers.dismissProgressDialog();

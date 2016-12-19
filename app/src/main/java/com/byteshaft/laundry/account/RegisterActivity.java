@@ -179,7 +179,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
     }
 
     @Override
-    public void onError(HttpRequest request, int readyState, short error, Exception exception) {
+    public void onError(HttpRequest request, int readyS, short error, Exception exception) {
         System.out.println(request.getStatus());
         switch (request.getStatus()) {
             case HttpURLConnection.HTTP_UNAUTHORIZED:

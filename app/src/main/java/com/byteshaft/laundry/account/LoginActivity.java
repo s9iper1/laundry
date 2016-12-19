@@ -162,7 +162,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void onError(HttpRequest request, int readyState, short error, Exception exception) {
+    public void onError(HttpRequest request, int readyState,short error, Exception exception) {
         System.out.println(request.getStatus());
         System.out.println(request.getResponseText() + "response Text");
         switch (request.getStatus()) {

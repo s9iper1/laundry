@@ -1,6 +1,8 @@
 package com.byteshaft.laundry;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -9,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -104,10 +107,30 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(getApplicationContext(), ResetPassword.class));
                 break;
             case R.id.nav_logout:
-                loadFragment(new LogoutFragment());
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle("Confirmation");
+                alertDialogBuilder.setMessage("Do you really want to logout?").setCancelable(false).setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                SharedPreferences sharedpreferences = AppGlobals.getPreferenceManager();
+                                SharedPreferences.Editor editor = sharedpreferences.edit();
+                                editor.clear();
+                                editor.commit();
+                                AppGlobals.logout = true;
+                                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                            }
+                        });
+                alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
                 break;
             default:
-                loadFragment(new LogoutFragment());
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
         }
 //        int id = item.getItemId();

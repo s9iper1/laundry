@@ -114,7 +114,7 @@ public class ResetPassword extends AppCompatActivity implements
     }
 
     @Override
-    public void onError(HttpRequest request, int readyState, short error, Exception exception) {
+    public void onError(HttpRequest request, int readyStat, short error, Exception exception) {
 
     }
 
