@@ -43,10 +43,11 @@
             android:screenOrientation="portrait"/>
 
         <activity android:name=".laundry.LaundryCategoriesActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".CheckOutActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
