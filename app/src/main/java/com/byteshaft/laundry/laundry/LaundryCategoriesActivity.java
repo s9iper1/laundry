@@ -1,5 +1,6 @@
 package com.byteshaft.laundry.laundry;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.byteshaft.laundry.CheckOutActivity;
 import com.byteshaft.laundry.R;
 import com.byteshaft.laundry.utils.AppGlobals;
 import com.byteshaft.requests.HttpRequest;
@@ -76,7 +78,8 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.checkout) {
+            startActivity(new Intent(getApplicationContext(), CheckOutActivity.class));
             return true;
         }
         switch (item.getItemId()) {
