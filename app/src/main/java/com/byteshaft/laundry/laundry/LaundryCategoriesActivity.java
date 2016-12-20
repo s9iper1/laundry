@@ -93,6 +93,12 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         sCounter = 0;
