@@ -1,5 +1,6 @@
 package com.byteshaft.laundry.laundry;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import com.byteshaft.laundry.CheckOutActivity;
 import com.byteshaft.laundry.R;
 import com.byteshaft.laundry.utils.AppGlobals;
+import com.byteshaft.laundry.utils.Helpers;
 import com.byteshaft.requests.HttpRequest;
 
 import org.json.JSONArray;
@@ -41,6 +43,8 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
     public static ArrayList<LaundryItem> laundryItems;
     public static HashMap<String, ArrayList<LaundryItem>> wholeData;
     public static HashMap<String, Integer> sPositionIndex;
+    public static HashMap<Integer, Integer> order;
+    private ProgressDialog progressDialog;
 
     public static LaundryCategoriesActivity getInstance() {
         return sInstance;
@@ -55,6 +59,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
         categories = new ArrayList<>();
         wholeData = new HashMap<>();
         sPositionIndex = new HashMap<>();
+        order = new HashMap<>();
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -91,6 +96,12 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         sCounter = 0;
@@ -110,7 +121,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
         @Override
         public Fragment getItem(int position) {
             getPageTitle(position);
-            return new FirstFragment(categories.get(position).getCategoryName());
+            return new RecycleAbleFragment(categories.get(position).getCategoryName());
         }
 
         @Override
@@ -126,6 +137,8 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
     }
 
     private void getCategories() {
+        progressDialog = Helpers.getProgressDialog(this);
+        progressDialog.show();
         request = new HttpRequest(getApplicationContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
@@ -166,9 +179,11 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
                 public void onReadyStateChange(HttpRequest request, int readyState) {
                     switch (readyState) {
                         case HttpRequest.STATE_DONE:
+                            if (progressDialog != null) {
+                                progressDialog.dismiss();
+                            }
                             switch (request.getStatus()) {
                                 case HttpURLConnection.HTTP_OK:
-                                    int index = sPositionIndex.get(request.getResponseURL());
                                     Log.i("TAG", request.getResponseText());
                                     laundryItems = new ArrayList<>();
                                     try {
@@ -176,6 +191,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
                                         for (int i = 0; i < jsonArray.length(); i++) {
                                             JSONObject jsonObject = jsonArray.getJSONObject(i);
                                             LaundryItem laundryItem = new LaundryItem();
+                                            laundryItem.setId(jsonObject.getInt("id"));
                                             laundryItem.setName(jsonObject.getString("name"));
                                             laundryItem.setPrice(jsonObject.getString("price"));
                                             laundryItem.setImageUri(jsonObject.getString("image"));
@@ -225,6 +241,9 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
 
     @Override
     public void onError(HttpRequest request, int readyState, short error, Exception exception) {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
 
     }
 }
