@@ -10,7 +10,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -56,7 +55,6 @@ public class RecycleAbleFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i("TAG", "onCreateView");
         mBaseView = inflater.inflate(R.layout.recyclerable_layout, container, false);
         return mBaseView;
     }
@@ -65,7 +63,6 @@ public class RecycleAbleFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         sInstance = this;
-        Log.i("TAG", "onViewCreated");
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         gridLayoutManager = new GridLayoutManager(getActivity()
                 .getApplicationContext(), 2);
@@ -122,7 +119,6 @@ public class RecycleAbleFragment extends Fragment {
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
             holder.setIsRecyclable(false);
             final LaundryItem laundryItem = items.get(position);
-            Log.i("TAG", "name " + laundryItem.getName());
             viewHolder.titleTextView.setText(laundryItem.getName());
             viewHolder.price.setText(String.valueOf(laundryItem.getPrice()));
             Picasso.with(AppGlobals.getContext())
@@ -149,13 +145,11 @@ public class RecycleAbleFragment extends Fragment {
                 @Override
                 public void run() {
                     if (order.containsKey(laundryItem.getId())) {
-                        Log.i("TAG", "card view selected");
                         RelativeLayout cardView = (RelativeLayout) mRecyclerView.findViewHolderForAdapterPosition(position).
                                 itemView.findViewById(R.id.layout);
                         cardView.setBackgroundColor(getResources()
                                 .getColor(R.color.card_selected_color));
                     } else {
-                        Log.i("TAG", "card view  not selected");
                         RelativeLayout cardView = (RelativeLayout) mRecyclerView.findViewHolderForAdapterPosition(position).
                                 itemView.findViewById(R.id.layout);
                         cardView.setBackgroundColor(getResources()
@@ -163,7 +157,6 @@ public class RecycleAbleFragment extends Fragment {
                     }
                 }
             }, 500);
-            Log.i("TAG", String.valueOf(order));
         }
 
         @Override
