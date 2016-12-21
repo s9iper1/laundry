@@ -31,11 +31,10 @@ public class DropLaundryActivity extends FragmentActivity implements OnMapReadyC
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleMap mMap;
-    LocationRequest mLocationRequest;
-    GoogleApiClient mGoogleApiClient;
-
-    LatLng latLng;
-    Marker currLocationMarker;
+    private LocationRequest mLocationRequest;
+    private GoogleApiClient mGoogleApiClient;
+    private LatLng latLng;
+    private Marker currLocationMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
