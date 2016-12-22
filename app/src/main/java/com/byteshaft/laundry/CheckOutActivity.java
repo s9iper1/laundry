@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 public class CheckOutActivity extends AppCompatActivity implements View.OnClickListener {
 
-//    private Button addButton;
+    //    private Button addButton;
 //    private Button minusButton;
 //    private TextView weightTextView;
     private int weight = 2;
@@ -27,6 +27,12 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
     private Button dropLocation;
     private static final int PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private static final int DROP_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 1;
+    public static double sPickLocationLatitude = 0.0;
+    public static double sPickLocationLongitude = 0.0;
+    public static double sDropLocationLatitude = 0.0;
+    public static double sDropLocationLongitude = 0.0;
+    public static boolean pickOption = false;
+    private Button sendButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         dropLocation = (Button) findViewById(R.id.drop_location);
         pickLocation.setOnClickListener(this);
         dropLocation.setOnClickListener(this);
+        sendButton = (Button) findViewById(R.id.send);
+        sendButton.setOnClickListener(this);
 //        addButton = (Button) findViewById(R.id.add);
 //        minusButton = (Button) findViewById(R.id.minus);
 //        weightTextView = (TextView) findViewById(R.id.weight);
@@ -70,42 +78,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                             new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                             PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION);
                 } else {
-                    if(!locationEnabled()) {
-                        // notify user
-                        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                        dialog.setMessage("Location is not enabled");
-                        dialog.setPositiveButton("Turn on", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                // TODO Auto-generated method stub
-                                Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(myIntent);
-                                //get gps
-                            }
-                        });
-                        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                // TODO Auto-generated method stub
-
-                            }
-                        });
-                        dialog.show();
-                    } else {
-                        startActivity(new Intent(getApplicationContext(), PickLaundryActivity.class));
-                    }
-                }
-                break;
-            case R.id.drop_location:
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                            DROP_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION);
-                } else {
-                    if(!locationEnabled()) {
+                    if (!locationEnabled()) {
                         // notify user
                         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                         dialog.setMessage("Location is not enabled");
@@ -128,9 +101,49 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                         });
                         dialog.show();
                     } else {
-                        startActivity(new Intent(getApplicationContext(), DropLaundryActivity.class));
+                        pickOption = true;
+                        startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
                     }
                 }
+                break;
+            case R.id.drop_location:
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                            DROP_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION);
+                } else {
+                    if (!locationEnabled()) {
+                        // notify user
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                        dialog.setMessage("Location is not enabled");
+                        dialog.setPositiveButton("Turn on", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                // TODO Auto-generated method stub
+                                Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(myIntent);
+                                //get gps
+                            }
+                        });
+                        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                // TODO Auto-generated method stub
+
+                            }
+                        });
+                        dialog.show();
+                    } else {
+                        pickOption = false;
+                        startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
+                    }
+                }
+                break;
+            case R.id.send:
+
                 break;
         }
     }
@@ -140,38 +153,12 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION:
-                    case DROP_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION: {
+            case DROP_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (requestCode == PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION) {
-                        if(!locationEnabled()) {
-                            // notify user
-                            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                            dialog.setMessage("Location is not enabled");
-                            dialog.setPositiveButton("Turn on", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                    // TODO Auto-generated method stub
-                                    Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                    startActivity(myIntent);
-                                    //get gps
-                                }
-                            });
-                            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                    // TODO Auto-generated method stub
-
-                                }
-                            });
-                            dialog.show();
-                        } else {
-                            startActivity(new Intent(getApplicationContext(), PickLaundryActivity.class));
-                        }
-                    } else {
-                        if(!locationEnabled()) {
+                        if (!locationEnabled()) {
                             // notify user
                             AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                             dialog.setMessage("Location is not enabled");
@@ -194,7 +181,35 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                             });
                             dialog.show();
                         } else {
-                            startActivity(new Intent(getApplicationContext(), DropLaundryActivity.class));
+                            pickOption = true;
+                            startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
+                        }
+                    } else {
+                        if (!locationEnabled()) {
+                            // notify user
+                            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                            dialog.setMessage("Location is not enabled");
+                            dialog.setPositiveButton("Turn on", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                    // TODO Auto-generated method stub
+                                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                    startActivity(myIntent);
+                                    //get gps
+                                }
+                            });
+                            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                    // TODO Auto-generated method stub
+
+                                }
+                            });
+                            dialog.show();
+                        } else {
+                            pickOption = false;
+                            startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
                         }
                     }
 
@@ -212,20 +227,21 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private boolean locationEnabled() {
-        LocationManager lm = (LocationManager)getApplicationContext()
+        LocationManager lm = (LocationManager) getApplicationContext()
                 .getSystemService(Context.LOCATION_SERVICE);
         boolean gps_enabled = false;
         boolean network_enabled = false;
 
         try {
             gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch(Exception ex) {}
+        } catch (Exception ex) {
+        }
 
         try {
             network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch(Exception ex) {}
+        } catch (Exception ex) {
+        }
 
         return gps_enabled || network_enabled;
-
     }
 }
