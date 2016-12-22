@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:name=".utils.AppGlobals"
@@ -49,17 +50,16 @@
         <activity
             android:name=".PickLaundryActivity"
             android:label="@string/title_activity_pick_laundry">
-
-        </activity>
-        <activity
-            android:name=".DropLaundryActivity"
-            android:label="@string/title_activity_pick_laundry">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+        </activity>
+        <activity
+            android:name=".DropLaundryActivity"
+            android:label="@string/title_activity_pick_laundry">
         </activity>
         <activity
             android:name=".CheckOutActivity"
