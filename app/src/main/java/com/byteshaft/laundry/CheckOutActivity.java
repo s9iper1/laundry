@@ -27,6 +27,11 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
     private Button dropLocation;
     private static final int PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private static final int DROP_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 1;
+    public static double sPickLocationLatitude = 0.0;
+    public static double sPickLocationLongitude = 0.0;
+    public static double sDropLocationLatitude = 0.0;
+    public static double sDropLocationLongitude = 0.0;
+    public static boolean pickOption = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +98,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                         });
                         dialog.show();
                     } else {
-                        startActivity(new Intent(getApplicationContext(), PickLaundryActivity.class));
+                        pickOption = true;
+                        startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
                     }
                 }
                 break;
@@ -128,7 +134,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                         });
                         dialog.show();
                     } else {
-                        startActivity(new Intent(getApplicationContext(), DropLaundryActivity.class));
+                        pickOption = false;
+                        startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
                     }
                 }
                 break;
@@ -168,7 +175,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                             });
                             dialog.show();
                         } else {
-                            startActivity(new Intent(getApplicationContext(), PickLaundryActivity.class));
+                            pickOption = true;
+                            startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
                         }
                     } else {
                         if(!locationEnabled()) {
@@ -194,7 +202,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                             });
                             dialog.show();
                         } else {
-                            startActivity(new Intent(getApplicationContext(), DropLaundryActivity.class));
+                            pickOption = false;
+                            startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
                         }
                     }
 

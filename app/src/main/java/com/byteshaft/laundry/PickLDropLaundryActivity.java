@@ -25,7 +25,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class PickLaundryActivity extends FragmentActivity implements OnMapReadyCallback,
+import static com.byteshaft.laundry.CheckOutActivity.pickOption;
+
+public class PickLDropLaundryActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -52,6 +54,7 @@ public class PickLaundryActivity extends FragmentActivity implements OnMapReadyC
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        pickOption = false;
         finish();
     }
 
@@ -65,7 +68,13 @@ public class PickLaundryActivity extends FragmentActivity implements OnMapReadyC
                         .position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                 );
                 System.out.println(latLng + "Position");
-                String Postion = "" + latLng;
+                if (pickOption) {
+                    CheckOutActivity.sPickLocationLongitude = latLng.longitude;
+                    CheckOutActivity.sPickLocationLatitude = latLng.latitude;
+                } else {
+                    CheckOutActivity.sDropLocationLongitude = latLng.longitude;
+                    CheckOutActivity.sDropLocationLatitude = latLng.latitude;
+                }
             }
         });
 
@@ -74,7 +83,6 @@ public class PickLaundryActivity extends FragmentActivity implements OnMapReadyC
                 && ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
-
         mMap.setMyLocationEnabled(true);
         buildGoogleApiClient();
 
@@ -140,7 +148,13 @@ public class PickLaundryActivity extends FragmentActivity implements OnMapReadyC
         markerOptions.title("Current Position");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
         currLocationMarker = mMap.addMarker(markerOptions);
-
+        if (pickOption) {
+            CheckOutActivity.sPickLocationLongitude = latLng.longitude;
+            CheckOutActivity.sPickLocationLatitude = latLng.latitude;
+        } else {
+            CheckOutActivity.sDropLocationLongitude = latLng.longitude;
+            CheckOutActivity.sDropLocationLatitude = latLng.latitude;
+        }
         //zoom to current position:
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(latLng).zoom(16).build();
