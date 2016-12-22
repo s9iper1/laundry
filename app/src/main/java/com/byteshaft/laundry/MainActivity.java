@@ -3,6 +3,8 @@ package com.byteshaft.laundry;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -17,18 +19,24 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.byteshaft.laundry.account.LoginActivity;
 import com.byteshaft.laundry.account.ResetPassword;
-import com.byteshaft.laundry.fragments.LogoutFragment;
 import com.byteshaft.laundry.fragments.UpdateProfile;
 import com.byteshaft.laundry.laundry.LaundryCategoriesActivity;
 import com.byteshaft.laundry.utils.AppGlobals;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static MainActivity sInstance;
+    private View header;
+
+    private TextView mName;
+    private TextView mEmail;
 
     public static MainActivity getInstance() {
         return sInstance;
@@ -59,6 +67,37 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        header = navigationView.getHeaderView(0);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mName = (TextView) header.findViewById(R.id.nav_user_name);
+        mEmail = (TextView) header.findViewById(R.id.nav_user_email);
+        if (!AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULLNAME).equals("")) {
+            String simpleName = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULLNAME);
+            String firstUpperCaseName = simpleName.substring(0, 1).toUpperCase() + simpleName.substring(1);
+            mName.setText(firstUpperCaseName);
+        } else {
+            mName.setText("username");
+        }
+        if (!AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_EMAIL).equals("")) {
+            mEmail.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_EMAIL));
+        } else {
+            mEmail.setText("abc@xyz.com");
+        }
+
+//        CircleImageView circularImageView = (CircleImageView) header.findViewById(R.id.imageView);
+//        if (AppGlobals.isUserLoggedIn()) {
+//            final Resources res = getResources();
+//            int[] array = getResources().getIntArray(R.array.letter_tile_colors);
+//            final BitmapWithCharacter tileProvider = new BitmapWithCharacter();
+//            final Bitmap letterTile = tileProvider.getLetterTile(AppGlobals.
+//                            getStringFromSharedPreferences(AppGlobals.KEY_FIRST_NAME),
+//                    String.valueOf(array[new Random().nextInt(array.length)]), 100, 100);
+//            circularImageView.setImageBitmap(letterTile);
+//        }
     }
 
     @Override
