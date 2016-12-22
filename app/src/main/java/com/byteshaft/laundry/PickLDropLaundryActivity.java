@@ -12,6 +12,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -28,20 +30,20 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class PickLaundryActivity extends FragmentActivity implements OnMapReadyCallback,
+import static com.byteshaft.laundry.CheckOutActivity.pickOption;
+
+public class PickLDropLaundryActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleMap mMap;
-    LocationRequest mLocationRequest;
-    GoogleApiClient mGoogleApiClient;
-
-    LatLng latLng;
-    Marker currLocationMarker;
+    private LocationRequest mLocationRequest;
+    private GoogleApiClient mGoogleApiClient;
+    private LatLng latLng;
+    private Marker currLocationMarker;
 
     private CoordinatorLayout Clayout;
 
@@ -55,6 +57,9 @@ public class PickLaundryActivity extends FragmentActivity implements OnMapReadyC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_pick_laundry);
         Clayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
@@ -62,6 +67,13 @@ public class PickLaundryActivity extends FragmentActivity implements OnMapReadyC
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        pickOption = false;
+        finish();
     }
 
     @Override
@@ -82,7 +94,7 @@ public class PickLaundryActivity extends FragmentActivity implements OnMapReadyC
                 String Postion = "" + latLng;
                 System.out.println(longitude + "longitude");
                 System.out.println(latitude + "latitude");
-                
+
                 snack = Snackbar.make(findViewById(R.id.coordinatorLayout),
                         getCompleteAddressString(latitude, longitude), Snackbar.LENGTH_INDEFINITE);
                 CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)
@@ -90,12 +102,25 @@ public class PickLaundryActivity extends FragmentActivity implements OnMapReadyC
                 params.setMargins(20, 20, 20, 20);
                 snack.getView().setLayoutParams(params);
                 snack.show();
+
+                if (pickOption) {
+
+                    Log.i("TAG", "null" + String.valueOf(longitude == null));
+                    CheckOutActivity.sPickLocationLongitude = longitude;
+                    CheckOutActivity.sPickLocationLatitude = latitude;
+                } else {
+                    Log.i("TAG", "null" + String.valueOf(longitude == null));
+                    CheckOutActivity.sDropLocationLongitude = longitude;
+                    CheckOutActivity.sDropLocationLatitude = latitude;
+                }
             }
         });
+
         buildGoogleApiClient();
         mGoogleApiClient.connect();
-
     }
+
+
 
     private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
         String strAdd = "";
@@ -185,12 +210,19 @@ public class PickLaundryActivity extends FragmentActivity implements OnMapReadyC
                     getCompleteAddressString(latitude, longitude), Snackbar.LENGTH_INDEFINITE);
             CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)
                     snack.getView().getLayoutParams();
-            params.setMargins(20, 20, 20, 20);
+            params.setMargins(0, 0, 0, 0);
             snack.getView().setLayoutParams(params);
             snack.show();
         }
         counter++;
         //zoom to current position:
+        if (pickOption) {
+            CheckOutActivity.sPickLocationLongitude = latLng.longitude;
+            CheckOutActivity.sPickLocationLatitude = latLng.latitude;
+        } else {
+            CheckOutActivity.sDropLocationLongitude = latLng.longitude;
+            CheckOutActivity.sDropLocationLatitude = latLng.latitude;
+        }
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(latLng).zoom(16).build();
         mMap.animateCamera(CameraUpdateFactory
