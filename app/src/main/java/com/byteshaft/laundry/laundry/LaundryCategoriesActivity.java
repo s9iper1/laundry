@@ -43,7 +43,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
     public static ArrayList<LaundryItem> laundryItems;
     public static HashMap<String, ArrayList<LaundryItem>> wholeData;
     public static HashMap<String, Integer> sPositionIndex;
-    public static HashMap<Integer, Integer> order;
+    public static HashMap<Integer, OrderItem> order;
     private ProgressDialog progressDialog;
 
     public static LaundryCategoriesActivity getInstance() {

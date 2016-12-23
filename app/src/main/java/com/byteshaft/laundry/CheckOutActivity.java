@@ -8,13 +8,30 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.byteshaft.laundry.laundry.OrderItem;
+import com.byteshaft.laundry.utils.AppGlobals;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.Map;
+
+import static com.byteshaft.laundry.laundry.LaundryCategoriesActivity.order;
 
 
 public class CheckOutActivity extends AppCompatActivity implements View.OnClickListener {
@@ -33,6 +50,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
     public static double sDropLocationLongitude = 0.0;
     public static boolean pickOption = false;
     private Button sendButton;
+    private ListView listView;
+    private ArrayList<Integer> keysArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,15 +59,23 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_checkout);
         pickLocation = (Button) findViewById(R.id.pick_up_location);
         dropLocation = (Button) findViewById(R.id.drop_location);
+        listView = (ListView) findViewById(R.id.order_list);
         pickLocation.setOnClickListener(this);
         dropLocation.setOnClickListener(this);
         sendButton = (Button) findViewById(R.id.send);
         sendButton.setOnClickListener(this);
+        keysArrayList = new ArrayList<>();
+        for (Map.Entry<Integer, OrderItem> map : order.entrySet()) {
+            keysArrayList.add(map.getKey());
+        }
 //        addButton = (Button) findViewById(R.id.add);
 //        minusButton = (Button) findViewById(R.id.minus);
 //        weightTextView = (TextView) findViewById(R.id.weight);
 //        addButton.setOnClickListener(this);
 //        minusButton.setOnClickListener(this);
+        Adapter adapter = new Adapter(getApplicationContext(), R.layout.delegate_order_list, keysArrayList);
+        listView.setAdapter(adapter);
+
     }
 
     @Override
@@ -243,5 +270,77 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         }
 
         return gps_enabled || network_enabled;
+    }
+
+    private class Adapter extends ArrayAdapter<Integer> {
+
+        private ArrayList<Integer> orderData;
+        private ViewHolder viewHolder;
+
+        public Adapter(Context context, int resource, ArrayList<Integer> orderData) {
+            super(context, resource);
+            this.orderData = orderData;
+        }
+
+        @NonNull
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(R.layout.delegate_order_list, parent, false);
+                viewHolder = new ViewHolder();
+                viewHolder.name = (TextView) convertView.findViewById(R.id.order_name);
+                viewHolder.quantity = (TextView) convertView.findViewById(R.id.order_quantity);
+                viewHolder.imageView = (ImageView) convertView.findViewById(R.id.order_image);
+                viewHolder.price = (TextView) convertView.findViewById(R.id.order_price);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+            OrderItem orderItem = order.get(orderData.get(position));
+            String titleLowerCase = orderItem.getName();
+            String firstUpper = titleLowerCase.substring(0, 1).toUpperCase() + titleLowerCase.substring(1);
+            viewHolder.name.setText(firstUpper);
+            viewHolder.quantity.setText("Qty: "+orderItem.getQuantity());
+            int price = 0;
+            Log.i("TAG", "qty " + orderItem.getQuantity());
+            if (Integer.valueOf(orderItem.getQuantity()) > 1) {
+                Log.i("TAG", "qty  condition matched");
+                for (int i = 1; i <= Integer.valueOf(orderItem.getQuantity()); i++) {
+                    price = price + Integer.valueOf(orderItem.getPrice());
+                }
+                viewHolder.price.setText("Total:" + price +" SAR");
+            } else {
+                viewHolder.price.setText("Total:" + orderItem.getPrice());
+            }
+            Picasso.with(AppGlobals.getContext())
+                    .load(orderItem.getImageUrl())
+                    .resize(200, 200)
+                    .centerCrop()
+                    .into(viewHolder.imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+
+                        }
+                    });
+            return convertView;
+        }
+
+        @Override
+        public int getCount() {
+            return orderData.size();
+        }
+    }
+
+    private class ViewHolder {
+        public TextView name;
+        public TextView quantity;
+        public TextView price;
+        public ImageView imageView;
     }
 }
