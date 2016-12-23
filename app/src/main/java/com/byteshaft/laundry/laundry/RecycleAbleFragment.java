@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.byteshaft.laundry.R;
 import com.byteshaft.laundry.utils.AppGlobals;
@@ -120,7 +119,7 @@ public class RecycleAbleFragment extends Fragment {
             holder.setIsRecyclable(false);
             final LaundryItem laundryItem = items.get(position);
             viewHolder.titleTextView.setText(laundryItem.getName());
-            viewHolder.price.setText(String.valueOf(laundryItem.getPrice()));
+            viewHolder.price.setText(String.valueOf(laundryItem.getPrice()+" SAR"));
             Picasso.with(AppGlobals.getContext())
                     .load(laundryItem.getImageUri())
                     .resize(300, 300)
@@ -145,14 +144,14 @@ public class RecycleAbleFragment extends Fragment {
                 @Override
                 public void run() {
                     if (order.containsKey(laundryItem.getId())) {
-                        RelativeLayout cardView = (RelativeLayout) mRecyclerView.findViewHolderForAdapterPosition(position).
+                        RelativeLayout relativeLayout = (RelativeLayout) mRecyclerView.findViewHolderForAdapterPosition(position).
                                 itemView.findViewById(R.id.layout);
-                        cardView.setBackgroundColor(getResources()
+                        relativeLayout.setBackgroundColor(getResources()
                                 .getColor(R.color.card_selected_color));
                     } else {
-                        RelativeLayout cardView = (RelativeLayout) mRecyclerView.findViewHolderForAdapterPosition(position).
+                        RelativeLayout relativeLayout = (RelativeLayout) mRecyclerView.findViewHolderForAdapterPosition(position).
                                 itemView.findViewById(R.id.layout);
-                        cardView.setBackgroundColor(getResources()
+                        relativeLayout.setBackgroundColor(getResources()
                                 .getColor(android.R.color.white));
                     }
                 }
@@ -167,15 +166,25 @@ public class RecycleAbleFragment extends Fragment {
         @Override
         public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
             View childView = rv.findChildViewUnder(e.getX(), e.getY());
-            if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e)) {
+            if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e) &&
+                    (!Spinner.class.isInstance(childView))) {
                 mListener.onItem(items.get(rv.getChildPosition(childView)).getId());
-                setBackgroundColor(rv, childView);
+                OrderItem orderItem = new OrderItem();
+                orderItem.setId(items.get(rv.getChildPosition(childView)).getId());
+                orderItem.setName(items.get(rv.getChildPosition(childView)).getName());
+                Spinner spinner = (Spinner) mRecyclerView
+                        .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
+                        itemView.findViewById(R.id.quantity_spinner);
+                orderItem.setQuantity(String.valueOf(spinner.getSelectedItem()));
+                orderItem.setPrice(items.get(rv.getChildPosition(childView)).getPrice());
+                orderItem.setImageUrl(items.get(rv.getChildPosition(childView)).getImageUri());
+                setBackgroundColor(rv, childView, orderItem);
                 return true;
             }
             return false;
         }
 
-        private void setBackgroundColor(RecyclerView rv, View childView) {
+        private void setBackgroundColor(RecyclerView rv, View childView, OrderItem orderItem) {
             RelativeLayout cardView;
             ColorDrawable background;
             if (order.containsKey(items.get(rv.getChildPosition(childView)).getId())) {
@@ -186,7 +195,6 @@ public class RecycleAbleFragment extends Fragment {
                         .getColor(android.R.color.white));
                 order.remove(items.get(rv.getChildPosition(childView)).getId());
                 background = (ColorDrawable) cardView.getBackground();
-                Toast.makeText(getActivity(), "Item removed", Toast.LENGTH_SHORT).show();
             } else {
                 Spinner spinner = (Spinner) mRecyclerView
                         .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
@@ -197,8 +205,7 @@ public class RecycleAbleFragment extends Fragment {
                 cardView.setBackgroundColor(getResources()
                         .getColor(R.color.card_selected_color));
                 order.put(items.get(rv.getChildPosition(childView)).getId(),
-                        Integer.valueOf(String.valueOf(spinner.getSelectedItem())));
-                Toast.makeText(getActivity(), "Item added", Toast.LENGTH_SHORT).show();
+                        orderItem);
                 background = (ColorDrawable) cardView.getBackground();
             }
 //            if (order.containsKey(items.get(rv.getChildPosition(childView)).getId()) &&

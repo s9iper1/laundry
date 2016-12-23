@@ -77,7 +77,7 @@
 
     <Button
         android:id="@+id/drop_location"
-        android:text="Pick drop"
+        android:text="Drop"
         android:drawablePadding="5dp"
         android:layout_margin="10dp"
         android:layout_below="@+id/location"
@@ -88,6 +88,21 @@
         android:drawableLeft="@drawable/map"
         android:layout_alignParentRight="true" />
     </RelativeLayout>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/location_layout"
+        android:layout_height="1dp"
+        android:layout_margin="2dp"
+        android:background="#000"/>
+
+    <ListView
+        android:id="@+id/order_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view"
+        android:layout_above="@+id/send"/>
 
     <Button
         android:text="Send"
