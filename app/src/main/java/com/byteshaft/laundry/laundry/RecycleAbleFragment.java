@@ -118,7 +118,9 @@ public class RecycleAbleFragment extends Fragment {
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
             holder.setIsRecyclable(false);
             final LaundryItem laundryItem = items.get(position);
-            viewHolder.titleTextView.setText(laundryItem.getName());
+            String titleLowerCase = laundryItem.getName();
+            String firstUpper = titleLowerCase.substring(0, 1).toUpperCase() + titleLowerCase.substring(1);
+            viewHolder.titleTextView.setText(firstUpper);
             viewHolder.price.setText(String.valueOf(laundryItem.getPrice()+" SAR"));
             Picasso.with(AppGlobals.getContext())
                     .load(laundryItem.getImageUri())

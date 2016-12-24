@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary_light">
+    android:background="@color/colorPrimary">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -34,6 +34,7 @@
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
                 android:hint="Full name"
+                android:textColorHint="@android:color/white"
                 android:inputType="textPersonName"
                 android:padding="15dp"
                 android:maxLines="1" />
@@ -47,6 +48,7 @@
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
                 android:hint="Email Address"
+                android:textColorHint="@android:color/white"
                 android:inputType="textEmailAddress"
                 android:padding="15dp"
                 android:maxLines="1" />
@@ -61,6 +63,7 @@
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
                 android:hint="Phone number"
+                android:textColorHint="@android:color/white"
                 android:inputType="phone"
                 android:padding="15dp"
                 android:maxLines="1" />
@@ -74,6 +77,7 @@
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
                 android:hint="Password"
+                android:textColorHint="@android:color/white"
                 android:inputType="textPassword"
                 android:padding="15dp"
                 android:maxLines="1"/>
@@ -86,7 +90,8 @@
                 android:textColor="@color/button_text_color"
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
-                android:hint="Verify Password"
+                android:hint="Confirm Password"
+                android:textColorHint="@android:color/white"
                 android:inputType="textPassword"
                 android:padding="15dp"
                 android:maxLines="1" />

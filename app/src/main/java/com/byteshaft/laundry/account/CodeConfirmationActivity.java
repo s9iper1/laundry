@@ -137,7 +137,6 @@ public class CodeConfirmationActivity extends Activity implements
             e.printStackTrace();
         }
         return jsonObject.toString();
-
     }
 
     @Override
