@@ -1,68 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_code_confirmation"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary_light">
+    android:background="@color/colorPrimary"
+    android:orientation="vertical">
 
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:layout_above="@+id/progressBar">
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_margin="20dp"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_confirmation_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="50dp"
+                android:padding="10dp"
+                android:text="Mobile Number Confirmation"
+                android:textColor="@color/button_text_color"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_view_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/tv_confirmation_code"
                 android:padding="10dp"
                 android:textColor="@color/button_text_color"
-                android:textStyle="bold"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="100dp"
-                android:textSize="24sp"
-                android:text="Security Confirmation"/>
+                android:textSize="16sp"
+                android:textStyle="normal" />
 
             <EditText
-                android:id="@+id/et_confirmation_code_email"
+                android:id="@+id/et_confirmation_code_mobile_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/text_view_time"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/apptheme_edit_text_holo_light"
-                android:hint="Email"
+                android:drawablePadding="10dp"
                 android:enabled="false"
-                android:maxLength="32"
                 android:inputType="textEmailAddress"
+                android:maxLength="32"
                 android:padding="10dp"
-                android:drawablePadding="10dp"
-                android:layout_marginBottom="10dp" />
+                android:textColor="@android:color/white" />
 
-            <EditText
-                android:id="@+id/et_confirmation_code"
+            <LinearLayout
+                android:id="@+id/otp_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/apptheme_edit_text_holo_light"
-                android:hint="Confirmation Code"
-                android:maxLength="5"
-                android:inputType="number"
-                android:padding="10dp"
-                android:drawablePadding="10dp"
-                android:layout_marginBottom="10dp" />
-
-            <Button
-                android:id="@+id/btn_confirmation_code_submit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/apptheme_btn_default_holo_light"
+                android:layout_below="@+id/et_confirmation_code_mobile_number"
+                android:layout_gravity="center|center_horizontal"
                 android:layout_marginBottom="10dp"
-                android:text="Submit"
-                android:padding="10dp" />
-        </LinearLayout>
+                android:gravity="center|center_horizontal"
+                android:weightSum="5">
+
+                <EditText
+                    android:id="@+id/et_confirmation_code_one"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/apptheme_edit_text_holo_light"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:padding="2dp"
+                    android:textColor="@android:color/white" />
+
+                <EditText
+                    android:id="@+id/et_confirmation_code_two"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:background="@drawable/apptheme_edit_text_holo_light"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:padding="2dp"
+                    android:textColor="@android:color/white" />
+
+                <EditText
+                    android:id="@+id/et_confirmation_code_three"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/apptheme_edit_text_holo_light"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:padding="2dp"
+                    android:textColor="@android:color/white" />
+
+                <EditText
+                    android:id="@+id/et_confirmation_code_four"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:background="@drawable/apptheme_edit_text_holo_light"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:padding="2dp"
+                    android:textColor="@android:color/white" />
+
+                <EditText
+                    android:id="@+id/et_confirmation_code_five"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:background="@drawable/apptheme_edit_text_holo_light"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:padding="2dp"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+        </RelativeLayout>
     </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:theme="@style/AppTheme.WhiteAccent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminate="true"
+        />
+
+    <Button
+        android:id="@+id/btn_confirmation_code_resend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:textColor="@android:color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/apptheme_btn_default_holo_light"
+        android:padding="10dp"
+        android:text="Resend Confirmation code" />
 </RelativeLayout>
