@@ -120,12 +120,12 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
         return valid;
     }
 
-    private void registerUser(String username, String password, String email, String phoneNumner) {
+    private void registerUser(String username, String password, String email, String phoneNumber) {
         request = new HttpRequest(getApplicationContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
         request.open("POST", String.format("%suser/register", AppGlobals.BASE_URL));
-        request.send(getRegisterData(username, password, email, phoneNumner));
+        request.send(getRegisterData(username, password, email, phoneNumber));
         WebServiceHelpers.showProgressDialog(RegisterActivity.this, "Registering User ");
     }
 
@@ -162,14 +162,14 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
                         Toast.makeText(getApplicationContext(), "Activation code has been sent to you! Please check your Email", Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonObject = new JSONObject(request.getResponseText());
-                            String username = jsonObject.getString(AppGlobals.KEY_FULLNAME);
+                            String username = jsonObject.getString(AppGlobals.KEY_FULL_NAME);
                             String userId = jsonObject.getString(AppGlobals.KEY_USER_ID);
                             String email = jsonObject.getString(AppGlobals.KEY_EMAIL);
                             String phoneNumber = jsonObject.getString(AppGlobals.KEY_PHONE_NUMBER);
 
                             //saving values
-                            AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FULLNAME, username);
-                            Log.i("user name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULLNAME));
+                            AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FULL_NAME, username);
+                            Log.i("user name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME));
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
