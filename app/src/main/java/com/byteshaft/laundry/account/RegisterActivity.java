@@ -1,9 +1,15 @@
 package com.byteshaft.laundry.account;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -34,10 +40,11 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
     private EditText mPhoneNumber;
 
     private String mUsernameString;
-    public static String mEmailAddressString;
+    private String mEmailAddressString;
     private String mVerifyPasswordString;
     private String mPhoneNumberString;
     private String mPasswordString;
+    private static final int MY_PERMISSIONS_REQUEST_READ_SMS = 0;
 
     private HttpRequest request;
     private static RegisterActivity sInstance;
@@ -67,28 +74,68 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.register_button:
-                if (validateEditText()) {
-                    registerUser(
-                            mUsernameString,
-                            mPasswordString,
-                            mEmailAddressString,
-                            mPhoneNumberString
-                    );
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_SMS)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(RegisterActivity.this);
+                    alertDialog.setTitle("Permission request");
+                    alertDialog.setMessage("To verify your phone number "+ getString(R.string.app_name)
+                            + " app can easily check your verification code if you allow Sms permission.");
+                    alertDialog.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                            ActivityCompat.requestPermissions(RegisterActivity.this,
+                                    new String[]{Manifest.permission.READ_SMS, Manifest.permission.RECEIVE_SMS},
+                                    MY_PERMISSIONS_REQUEST_READ_SMS);
+                        }
+                    });
+                    alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    alertDialog.show();
+                } else {
+                    if (validateEditText()) {
+                        registerUser(
+                                mUsernameString,
+                                mPasswordString,
+                                mEmailAddressString,
+                                mPhoneNumberString
+                        );
+                    }
                 }
                 break;
         }
     }
 
-    private boolean validateEditText() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_SMS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
+                    Toast.makeText(this, "permission granted!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "permission denied!", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
+    }
 
+    private boolean validateEditText() {
         boolean valid = true;
         mPasswordString = mPassword.getText().toString();
         mVerifyPasswordString = mVerifyPassword.getText().toString();
         mEmailAddressString = mEmailAddress.getText().toString();
         mPhoneNumberString = mPhoneNumber.getText().toString();
         mUsernameString = mUsername.getText().toString();
-
-
         if (mPasswordString.trim().isEmpty() || mPasswordString.length() < 3) {
             mPassword.setError("enter at least 3 characters");
             valid = false;
@@ -166,7 +213,6 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
                             String userId = jsonObject.getString(AppGlobals.KEY_USER_ID);
                             String email = jsonObject.getString(AppGlobals.KEY_EMAIL);
                             String phoneNumber = jsonObject.getString(AppGlobals.KEY_PHONE_NUMBER);
-
                             //saving values
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FULL_NAME, username);
                             Log.i("user name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME));
@@ -175,7 +221,10 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
                             LoginActivity.getInstance().finish();
                             finish();
-                            startActivity(new Intent(getApplicationContext(), CodeConfirmationActivity.class));
+                            Intent intent = new Intent(getApplicationContext(), CodeConfirmationActivity.class);
+                            intent.putExtra("mobile_number", mPhoneNumberString);
+                            intent.putExtra("email", mEmailAddressString);
+                            startActivity(intent);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

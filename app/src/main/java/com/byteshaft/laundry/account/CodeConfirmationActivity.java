@@ -1,14 +1,22 @@
 package com.byteshaft.laundry.account;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.byteshaft.laundry.MainActivity;
@@ -21,18 +29,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
+import java.util.concurrent.TimeUnit;
 
 
 public class CodeConfirmationActivity extends Activity implements
         HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener {
 
-    private Button mSubmitButton;
-    private EditText mEmail;
-    private EditText mCode;
-    private String mConfirmationEmail;
+    private Button mResendButton;
+    private EditText mobileNumber;
+    private String email;
+    private EditText editTextOne;
+    private EditText editTextTwo;
+    private EditText editTextThree;
+    private EditText editTextFour;
+    private EditText editTextFive;
+    private String mConfirmationNumber;
     private String mConformationCode;
-
     private HttpRequest request;
+    private SmsListener smsListener;
+    private TextView timeTextView;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,24 +57,55 @@ public class CodeConfirmationActivity extends Activity implements
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.confirmation_code_activity);
-        mEmail = (EditText) findViewById(R.id.et_confirmation_code_email);
-        mCode = (EditText) findViewById(R.id.et_confirmation_code);
-        mSubmitButton = (Button) findViewById(R.id.btn_confirmation_code_submit);
-        mSubmitButton.setOnClickListener(new View.OnClickListener() {
+        mobileNumber = (EditText) findViewById(R.id.et_confirmation_code_mobile_number);
+        editTextOne = (EditText) findViewById(R.id.et_confirmation_code_one);
+        editTextTwo = (EditText) findViewById(R.id.et_confirmation_code_two);
+        editTextThree = (EditText) findViewById(R.id.et_confirmation_code_three);
+        editTextFour = (EditText) findViewById(R.id.et_confirmation_code_four);
+        editTextFive = (EditText) findViewById(R.id.et_confirmation_code_five);
+        mResendButton = (Button) findViewById(R.id.btn_confirmation_code_resend);
+        timeTextView = (TextView) findViewById(R.id.text_view_time);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mResendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mConfirmationEmail = mEmail.getText().toString();
-                mConformationCode = mCode.getText().toString();
-                System.out.println(mConfirmationEmail);
-                System.out.println(mConformationCode);
-                if (validateConfirmationCode()) {
-                    activateUser(mConfirmationEmail, mConformationCode);
+                if (mResendButton.isEnabled()) {
+
+                } else {
+                    Toast.makeText(CodeConfirmationActivity.this, "please be patient",
+                            Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
+        String number = getIntent().getStringExtra("mobile_number");
+        mobileNumber.setText(number);
+        email = getIntent().getStringExtra("email");
+        smsListener = new SmsListener();
+        IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
+        this.registerReceiver(smsListener, filter);
+        new CountDownTimer(60000, 1000) { // adjust the milli seconds here
 
-        mEmail.setText(RegisterActivity.mEmailAddressString);
-        mConfirmationEmail = RegisterActivity.mEmailAddressString;
+            public void onTick(long millisUntilFinished) {
+                timeTextView.setText(""+String.format("%d0 : %d",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
+            }
+
+            @Override
+            public void onFinish() {
+                timeTextView.setText("Time ended");
+                mResendButton.setEnabled(true);
+            }
+        }.start();
+        progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(smsListener);
     }
 
     @Override
@@ -66,17 +113,6 @@ public class CodeConfirmationActivity extends Activity implements
         finish();
         MainActivity.getInstance().finish();
         super.onBackPressed();
-    }
-
-    public boolean validateConfirmationCode() {
-        boolean valid = true;
-        if (mConformationCode.isEmpty() || mConformationCode.length() < 4) {
-            mCode.setError("Minimum 4 Characters");
-            valid = false;
-        } else {
-            mCode.setError(null);
-        }
-        return valid;
     }
 
     @Override
@@ -89,7 +125,9 @@ public class CodeConfirmationActivity extends Activity implements
                         Toast.makeText(getApplicationContext(), "Please enter correct account activation key", Toast.LENGTH_LONG).show();
                         break;
                     case HttpURLConnection.HTTP_OK:
-                        System.out.println(request.getResponseText() + "working ");
+                        if (progressBar.getVisibility() == View.VISIBLE) {
+                            progressBar.setVisibility(View.GONE);
+                        }
                         try {
                             JSONObject jsonObject = new JSONObject(request.getResponseText());
                             String username = jsonObject.getString(AppGlobals.KEY_FULL_NAME);
@@ -100,12 +138,10 @@ public class CodeConfirmationActivity extends Activity implements
 
                             //saving values
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FULL_NAME, username);
-                            Log.i("user name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME));
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_TOKEN, token);
-                            Log.i("token", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
                             RegisterActivity.getInstance().finish();
                             finish();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -122,7 +158,7 @@ public class CodeConfirmationActivity extends Activity implements
         request = new HttpRequest(getApplicationContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
-        request.open("POST",  String.format("%suser/activate", AppGlobals.BASE_URL));
+        request.open("POST", String.format("%suser/activate", AppGlobals.BASE_URL));
         request.send(getUserActivationData(email, emailOtp));
         WebServiceHelpers.showProgressDialog(CodeConfirmationActivity.this, "Activating User");
     }
@@ -132,7 +168,7 @@ public class CodeConfirmationActivity extends Activity implements
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("email", email);
-            jsonObject.put("email_otp", emailOtp);
+            jsonObject.put("sms_otp", emailOtp);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -144,6 +180,49 @@ public class CodeConfirmationActivity extends Activity implements
         System.out.println(request.getStatus());
         switch (request.getStatus()) {
 
+        }
+    }
+
+    public class SmsListener extends BroadcastReceiver {
+
+        private SharedPreferences preferences;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+
+            if (intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
+                Bundle bundle = intent.getExtras();           //---get the SMS message passed in---
+                SmsMessage[] msgs = null;
+                String msg_from;
+                if (bundle != null) {
+                    //---retrieve the SMS message received---
+                    try {
+                        Object[] pdus = (Object[]) bundle.get("pdus");
+                        msgs = new SmsMessage[pdus.length];
+                        for (int i = 0; i < msgs.length; i++) {
+                            msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+                            msg_from = msgs[i].getOriginatingAddress();
+                            String msgBody = msgs[i].getMessageBody();
+                            Log.i("TAG", msgBody + " From " + msg_from);
+                            if (msgBody.length() == 5) {
+                                progressBar.setVisibility(View.VISIBLE);
+                                editTextOne.setText(String.valueOf(msgBody.charAt(0)));
+                                editTextTwo.setText(String.valueOf(msgBody.charAt(1)));
+                                editTextThree.setText(String.valueOf(msgBody.charAt(2)));
+                                editTextFour.setText(String.valueOf(msgBody.charAt(3)));
+                                editTextFive.setText(String.valueOf(msgBody.charAt(4)));
+                                activateUser(email, msgBody);
+                                getWindow().setSoftInputMode(
+                                        WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+                                );
+                            }
+                        }
+                    } catch (Exception e) {
+//                            Log.d("Exception caught",e.getMessage());
+                    }
+                }
+            }
         }
     }
 }
