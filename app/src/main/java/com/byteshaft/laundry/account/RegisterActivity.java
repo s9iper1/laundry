@@ -120,12 +120,12 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
         return valid;
     }
 
-    private void registerUser(String username, String password, String email, String phoneNumner) {
+    private void registerUser(String username, String password, String email, String phoneNumber) {
         request = new HttpRequest(getApplicationContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
         request.open("POST", String.format("%suser/register", AppGlobals.BASE_URL));
-        request.send(getRegisterData(username, password, email, phoneNumner));
+        request.send(getRegisterData(username, password, email, phoneNumber));
         WebServiceHelpers.showProgressDialog(RegisterActivity.this, "Registering User ");
     }
 
