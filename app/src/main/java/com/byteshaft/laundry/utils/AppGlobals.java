@@ -13,7 +13,7 @@ import com.byteshaft.laundry.MainActivity;
 public class AppGlobals extends Application {
 
     private static Context sContext;
-    public static final String KEY_FULLNAME = "full_name";
+    public static final String KEY_FULL_NAME = "full_name";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_USER_ID = "id";
     public static final String KEY_PHONE_NUMBER = "mobile_number";

@@ -162,14 +162,14 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
                         Toast.makeText(getApplicationContext(), "Activation code has been sent to you! Please check your Email", Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonObject = new JSONObject(request.getResponseText());
-                            String username = jsonObject.getString(AppGlobals.KEY_FULLNAME);
+                            String username = jsonObject.getString(AppGlobals.KEY_FULL_NAME);
                             String userId = jsonObject.getString(AppGlobals.KEY_USER_ID);
                             String email = jsonObject.getString(AppGlobals.KEY_EMAIL);
                             String phoneNumber = jsonObject.getString(AppGlobals.KEY_PHONE_NUMBER);
 
                             //saving values
-                            AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FULLNAME, username);
-                            Log.i("user name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULLNAME));
+                            AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FULL_NAME, username);
+                            Log.i("user name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME));
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);

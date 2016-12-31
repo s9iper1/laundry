@@ -56,7 +56,7 @@ public class UpdateProfile extends Fragment implements HttpRequest.OnErrorListen
         mUpdateButton = (Button) mBaseView.findViewById(R.id.update_button);
 
         //getting user saved data from sharedPreference
-        mUsername.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULLNAME));
+        mUsername.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME));
         mEmailAddress.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_EMAIL));
         mPhoneNumber.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_PHONE_NUMBER));
         mEmailAddress.setEnabled(false);
@@ -117,14 +117,14 @@ public class UpdateProfile extends Fragment implements HttpRequest.OnErrorListen
                         Toast.makeText(getActivity(), "Profile Updated Successfully", Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonObject = new JSONObject(request.getResponseText());
-                            String username = jsonObject.getString(AppGlobals.KEY_FULLNAME);
+                            String username = jsonObject.getString(AppGlobals.KEY_FULL_NAME);
                             String userId = jsonObject.getString(AppGlobals.KEY_USER_ID);
                             String email = jsonObject.getString(AppGlobals.KEY_EMAIL);
                             String phoneNumber = jsonObject.getString(AppGlobals.KEY_PHONE_NUMBER);
 
                             //saving values
-                            AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FULLNAME, username);
-                            Log.i("user name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULLNAME));
+                            AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FULL_NAME, username);
+                            Log.i("user name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME));
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);

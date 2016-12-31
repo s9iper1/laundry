@@ -3,8 +3,6 @@ package com.byteshaft.laundry;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -26,8 +24,6 @@ import com.byteshaft.laundry.account.ResetPassword;
 import com.byteshaft.laundry.fragments.UpdateProfile;
 import com.byteshaft.laundry.laundry.LaundryCategoriesActivity;
 import com.byteshaft.laundry.utils.AppGlobals;
-
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -75,8 +71,8 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         mName = (TextView) header.findViewById(R.id.nav_user_name);
         mEmail = (TextView) header.findViewById(R.id.nav_user_email);
-        if (!AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULLNAME).equals("")) {
-            String simpleName = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULLNAME);
+        if (!AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME).equals("")) {
+            String simpleName = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME);
             String firstUpperCaseName = simpleName.substring(0, 1).toUpperCase() + simpleName.substring(1);
             mName.setText(firstUpperCaseName);
         } else {
