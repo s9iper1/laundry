@@ -1,7 +1,6 @@
 package com.byteshaft.laundry.account;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.byteshaft.laundry.R;
+import com.byteshaft.laundry.autocountryflag.BaseActivity;
 import com.byteshaft.laundry.utils.AppGlobals;
 import com.byteshaft.laundry.utils.WebServiceHelpers;
 import com.byteshaft.requests.HttpRequest;
@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import java.net.HttpURLConnection;
 
 
-public class RegisterActivity extends Activity implements View.OnClickListener,
+public class RegisterActivity extends BaseActivity implements View.OnClickListener,
         HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener {
 
     private Button mRegisterButton;
@@ -37,7 +37,6 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
     private EditText mEmailAddress;
     private EditText mPassword;
     private EditText mVerifyPassword;
-    private EditText mPhoneNumber;
 
     private String mUsernameString;
     private String mEmailAddressString;
@@ -48,6 +47,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
 
     private HttpRequest request;
     private static RegisterActivity sInstance;
+    private static final int MY_PERMISSIONS_REQUEST_PHONE_STATE = 1;
 
     public static RegisterActivity getInstance() {
         return sInstance;
@@ -63,11 +63,25 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
         sInstance = this;
         mUsername = (EditText) findViewById(R.id.user_name);
         mEmailAddress = (EditText) findViewById(R.id.email);
-        mPhoneNumber = (EditText) findViewById(R.id.phone);
         mPassword = (EditText) findViewById(R.id.password);
         mVerifyPassword = (EditText) findViewById(R.id.verify_password);
         mRegisterButton = (Button) findViewById(R.id.register_button);
         mRegisterButton.setOnClickListener(this);
+        initUI();
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_PHONE_STATE},
+                    MY_PERMISSIONS_REQUEST_PHONE_STATE);
+
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initCodes();
     }
 
     @Override
@@ -115,17 +129,26 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_SMS: {
+            case MY_PERMISSIONS_REQUEST_READ_SMS:
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "permission granted!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "permission denied!", Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case MY_PERMISSIONS_REQUEST_PHONE_STATE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initUI();
+                    initCodes();
+                } else {
+                    Toast.makeText(this, "Select your country manually", Toast.LENGTH_SHORT).show();
+                }
                 return;
-            }
         }
     }
 
@@ -134,7 +157,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
         mPasswordString = mPassword.getText().toString();
         mVerifyPasswordString = mVerifyPassword.getText().toString();
         mEmailAddressString = mEmailAddress.getText().toString();
-        mPhoneNumberString = mPhoneNumber.getText().toString();
+        mPhoneNumberString = mPhoneEdit.getText().toString();
         mUsernameString = mUsername.getText().toString();
         if (mPasswordString.trim().isEmpty() || mPasswordString.length() < 3) {
             mPassword.setError("enter at least 3 characters");
@@ -151,10 +174,10 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
             mVerifyPassword.setError(null);
         }
         if (mPhoneNumberString.trim().isEmpty() || mPhoneNumberString.length() < 3) {
-            mPhoneNumber.setError("please enter your phone number");
+            mPhoneEdit.setError("please enter your phone number");
             valid = false;
         } else {
-            mPhoneNumber.setError(null);
+            mPhoneEdit.setError(null);
         }
 
 
