@@ -79,7 +79,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
                         != PackageManager.PERMISSION_GRANTED) {
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(RegisterActivity.this);
                     alertDialog.setTitle("Permission request");
-                    alertDialog.setMessage("To verify your phone number "+ getString(R.string.app_name)
+                    alertDialog.setMessage("To verify your phone number " + getString(R.string.app_name)
                             + " app can easily check your verification code if you allow Sms permission.");
                     alertDialog.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                         @Override
@@ -119,7 +119,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "permission granted!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "permission denied!", Toast.LENGTH_SHORT).show();
@@ -219,6 +219,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener,
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
+                            AppGlobals.saveUserLogin(true);
                             LoginActivity.getInstance().finish();
                             finish();
                             Intent intent = new Intent(getApplicationContext(), CodeConfirmationActivity.class);
