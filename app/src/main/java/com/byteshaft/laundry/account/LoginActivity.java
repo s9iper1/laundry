@@ -131,6 +131,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     case HttpURLConnection.HTTP_NOT_FOUND:
                         AppGlobals.alertDialog(LoginActivity.this, "Login Failed!", "provide a valid EmailAddress");
                         break;
+                    case HttpURLConnection.HTTP_FORBIDDEN:
+                        AppGlobals.alertDialog(LoginActivity.this, "Login Failed!", "Account not activated");
+                        break;
                     case HttpURLConnection.HTTP_UNAUTHORIZED:
                         AppGlobals.alertDialog(LoginActivity.this, "Login Failed!", "Please enter correct password");
                         break;
