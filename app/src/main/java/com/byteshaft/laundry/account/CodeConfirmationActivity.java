@@ -70,12 +70,12 @@ public class CodeConfirmationActivity extends Activity implements
             @Override
             public void onClick(View v) {
                 if (mResendButton.isEnabled()) {
-
+                    runTimer();
+                    resendOtp(email);
                 } else {
                     Toast.makeText(CodeConfirmationActivity.this, "please be patient",
                             Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
         String number = getIntent().getStringExtra("mobile_number");
@@ -84,6 +84,12 @@ public class CodeConfirmationActivity extends Activity implements
         smsListener = new SmsListener();
         IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
         this.registerReceiver(smsListener, filter);
+        runTimer();
+        progressBar.setVisibility(View.GONE);
+    }
+
+    private void runTimer() {
+        mResendButton.setEnabled(false);
         new CountDownTimer(60000, 1000) { // adjust the milli seconds here
 
             public void onTick(long millisUntilFinished) {
@@ -99,7 +105,49 @@ public class CodeConfirmationActivity extends Activity implements
                 mResendButton.setEnabled(true);
             }
         }.start();
-        progressBar.setVisibility(View.GONE);
+    }
+
+    private void resendOtp(String email) {
+        request = new HttpRequest(getApplicationContext());
+        request.setOnReadyStateChangeListener(new HttpRequest.OnReadyStateChangeListener() {
+            @Override
+            public void onReadyStateChange(HttpRequest request, int readyState) {
+                switch (readyState) {
+                    case HttpRequest.STATE_DONE:
+                        WebServiceHelpers.dismissProgressDialog();
+                        switch (request.getStatus()) {
+                            case HttpURLConnection.HTTP_BAD_REQUEST:
+                                break;
+                            case HttpURLConnection.HTTP_OK:
+                                if (progressBar.getVisibility() == View.VISIBLE) {
+                                    progressBar.setVisibility(View.GONE);
+                                }
+                                Toast.makeText(getApplicationContext(), "Sms sent", Toast.LENGTH_SHORT).show();
+
+                        }
+                }
+
+            }
+        });
+        request.setOnErrorListener(new HttpRequest.OnErrorListener() {
+            @Override
+            public void onError(HttpRequest request, int readyState, short error, Exception exception) {
+
+            }
+        });
+        request.open("POST", String.format("%suser/request-activation-key", AppGlobals.BASE_URL));
+        request.send(getOtpData(email));
+        WebServiceHelpers.showProgressDialog(CodeConfirmationActivity.this, "Resending Sms");
+    }
+
+    private String getOtpData(String email) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("email", email);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject.toString();
     }
 
     @Override
@@ -205,7 +253,7 @@ public class CodeConfirmationActivity extends Activity implements
                             msg_from = msgs[i].getOriginatingAddress();
                             String msgBody = msgs[i].getMessageBody();
                             Log.i("TAG", msgBody + " From " + msg_from);
-                            if (msgBody.length() == 5) {
+                            if (msgBody.length() == 4) {
                                 progressBar.setVisibility(View.VISIBLE);
                                 editTextOne.setText(String.valueOf(msgBody.charAt(0)));
                                 editTextTwo.setText(String.valueOf(msgBody.charAt(1)));
