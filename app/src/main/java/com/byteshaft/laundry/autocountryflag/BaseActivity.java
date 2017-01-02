@@ -22,6 +22,7 @@ import android.os.AsyncTask;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -234,7 +235,9 @@ public abstract class BaseActivity extends Activity {
                 return data;
             }
             String countryRegion = PhoneUtils.getCountryRegionFromPhone(mContext);
+            Log.i("TAG", "country region" + countryRegion);
             int code = mPhoneNumberUtil.getCountryCodeForRegion(countryRegion);
+            Log.i("TAG", "country code" + code);
             ArrayList<Country> list = mCountriesMap.get(code);
             if (list != null) {
                 for (Country c : list) {
