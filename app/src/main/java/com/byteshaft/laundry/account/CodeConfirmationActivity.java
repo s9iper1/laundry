@@ -153,7 +153,9 @@ public class CodeConfirmationActivity extends Activity implements
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(smsListener);
+        if (smsListener != null) {
+            unregisterReceiver(smsListener);
+        }
     }
 
     @Override
@@ -253,7 +255,7 @@ public class CodeConfirmationActivity extends Activity implements
                             msg_from = msgs[i].getOriginatingAddress();
                             String msgBody = msgs[i].getMessageBody();
                             Log.i("TAG", msgBody + " From " + msg_from);
-                            if (msgBody.length() == 4) {
+                            if (msgBody.length() == 5) {
                                 progressBar.setVisibility(View.VISIBLE);
                                 editTextOne.setText(String.valueOf(msgBody.charAt(0)));
                                 editTextTwo.setText(String.valueOf(msgBody.charAt(1)));
