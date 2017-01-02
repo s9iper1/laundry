@@ -93,7 +93,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                         != PackageManager.PERMISSION_GRANTED) {
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(RegisterActivity.this);
                     alertDialog.setTitle("Permission request");
-                    alertDialog.setMessage("To verify your phone number "+ getString(R.string.app_name)
+                    alertDialog.setMessage("To verify your phone number " + getString(R.string.app_name)
                             + " app can easily check your verification code if you allow Sms permission.");
                     alertDialog.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                         @Override
@@ -242,6 +242,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
+                            AppGlobals.saveUserLogin(true);
                             LoginActivity.getInstance().finish();
                             finish();
                             Intent intent = new Intent(getApplicationContext(), CodeConfirmationActivity.class);

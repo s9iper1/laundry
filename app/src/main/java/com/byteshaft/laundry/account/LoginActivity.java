@@ -23,7 +23,7 @@ import org.json.JSONObject;
 import java.net.HttpURLConnection;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener,
-        HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener{
+        HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener {
 
     private EditText mEmail;
     private EditText mPassword;
@@ -152,6 +152,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_TOKEN, token);
                             Log.i("token", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
+                            AppGlobals.saveUserLogin(true);
                             finish();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         } catch (JSONException e) {
@@ -163,7 +164,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void onError(HttpRequest request, int readyState,short error, Exception exception) {
+    public void onError(HttpRequest request, int readyState, short error, Exception exception) {
         System.out.println(request.getStatus());
         System.out.println(request.getResponseText() + "response Text");
         switch (request.getStatus()) {
