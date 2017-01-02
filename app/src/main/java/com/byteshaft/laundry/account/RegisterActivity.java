@@ -67,21 +67,21 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         mVerifyPassword = (EditText) findViewById(R.id.verify_password);
         mRegisterButton = (Button) findViewById(R.id.register_button);
         mRegisterButton.setOnClickListener(this);
-        initUI();
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_PHONE_STATE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_PHONE_STATE},
                     MY_PERMISSIONS_REQUEST_PHONE_STATE);
-
+        } else {
+            initUI();
+            initCodes();
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        initCodes();
     }
 
     @Override
@@ -143,8 +143,6 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    initUI();
-                    initCodes();
                     new android.os.Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {

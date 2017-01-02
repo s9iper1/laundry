@@ -43,8 +43,6 @@ public class CodeConfirmationActivity extends Activity implements
     private EditText editTextThree;
     private EditText editTextFour;
     private EditText editTextFive;
-    private String mConfirmationNumber;
-    private String mConformationCode;
     private HttpRequest request;
     private SmsListener smsListener;
     private TextView timeTextView;
@@ -86,6 +84,8 @@ public class CodeConfirmationActivity extends Activity implements
         this.registerReceiver(smsListener, filter);
         runTimer();
         progressBar.setVisibility(View.GONE);
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     private void runTimer() {
