@@ -154,7 +154,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Log.i("token", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
                             AppGlobals.saveUserLogin(true);
                             finish();
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
