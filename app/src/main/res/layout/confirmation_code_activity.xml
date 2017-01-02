@@ -28,7 +28,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="50dp"
                 android:padding="10dp"
-                android:text="Mobile Number Confirmation"
+                android:text="Account Activation"
                 android:textColor="@color/button_text_color"
                 android:textSize="24sp"
                 android:textStyle="bold" />

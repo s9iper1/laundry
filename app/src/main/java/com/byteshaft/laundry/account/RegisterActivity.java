@@ -117,7 +117,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                                 mUsernameString,
                                 mPasswordString,
                                 mEmailAddressString,
-                                mPhoneNumberString
+                                mPhoneNumberString.replaceAll("\\+", "")
                         );
                     }
                 }
@@ -145,6 +145,13 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initUI();
                     initCodes();
+                    new android.os.Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            initUI();
+                            initCodes();
+                        }
+                    }, 1000);
                 } else {
                     Toast.makeText(this, "Select your country manually", Toast.LENGTH_SHORT).show();
                 }
@@ -157,7 +164,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         mPasswordString = mPassword.getText().toString();
         mVerifyPasswordString = mVerifyPassword.getText().toString();
         mEmailAddressString = mEmailAddress.getText().toString();
-        mPhoneNumberString = mPhoneEdit.getText().toString();
+        mPhoneNumberString = mPhoneEdit.getText().toString().replaceAll(" ", "").replaceAll("'+'", "");
         mUsernameString = mUsername.getText().toString();
         if (mPasswordString.trim().isEmpty() || mPasswordString.length() < 3) {
             mPassword.setError("enter at least 3 characters");
