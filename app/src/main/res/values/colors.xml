@@ -10,6 +10,7 @@
     <color name="secondary_text">#757575</color>
     <color name="icons">#FFFFFF</color>
     <color name="card_selected_color">#ffd5c7</color>
+    <color name="light_gray">#d3d3d3</color>
 
     <color name="button_color">#FF5722</color>
     <color name="button_text_color">#ffffff</color>

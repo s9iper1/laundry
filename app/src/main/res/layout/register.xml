@@ -37,7 +37,7 @@
                 android:maxLines="1"
                 android:padding="15dp"
                 android:textColor="@color/button_text_color"
-                android:textColorHint="@android:color/darker_gray" />
+                android:textColorHint="@color/light_gray" />
 
             <EditText
                 android:id="@+id/email"
@@ -51,7 +51,7 @@
                 android:maxLines="1"
                 android:padding="15dp"
                 android:textColor="@color/button_text_color"
-                android:textColorHint="@android:color/darker_gray" />
+                android:textColorHint="@color/light_gray"/>
 
             <LinearLayout
                 android:id="@+id/l1"
@@ -65,7 +65,7 @@
                 <Spinner
                     android:id="@+id/flag_spinner"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="45dp"
                     android:layout_weight=".5"
                     android:background="@drawable/edit_box_drop_selector"
                     android:dropDownWidth="200dp" />
@@ -80,7 +80,7 @@
                     android:inputType="phone"
                     android:maxLines="1"
                     android:textColor="@color/button_text_color"
-                    android:textColorHint="@android:color/darker_gray" />
+                    android:textColorHint="@color/light_gray" />
             </LinearLayout>
 
 
@@ -96,7 +96,7 @@
                 android:maxLines="1"
                 android:padding="15dp"
                 android:textColor="@color/button_text_color"
-                android:textColorHint="@android:color/darker_gray" />
+                android:textColorHint="@color/light_gray"/>
 
             <EditText
                 android:id="@+id/verify_password"
@@ -110,13 +110,14 @@
                 android:maxLines="1"
                 android:padding="15dp"
                 android:textColor="@color/button_text_color"
-                android:textColorHint="@android:color/darker_gray" />
+                android:textColorHint="@color/light_gray" />
 
             <Button
                 android:id="@+id/register_button"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginTop="15dp"
+                android:padding="5dp"
+                android:layout_marginTop="25dp"
                 android:background="@drawable/apptheme_btn_default_holo_light"
                 android:text="Register"
                 android:textColor="@android:color/white" />
