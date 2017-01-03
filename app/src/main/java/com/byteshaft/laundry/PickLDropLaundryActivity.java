@@ -84,7 +84,7 @@ public class PickLDropLaundryActivity extends FragmentActivity implements OnMapR
             public void onMapLongClick(LatLng latLng) {
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions()
-                        .position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                        .position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
 
                 );
 
@@ -170,7 +170,7 @@ public class PickLDropLaundryActivity extends FragmentActivity implements OnMapR
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
             markerOptions.title("Current Position");
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
             currLocationMarker = mMap.addMarker(markerOptions);
         }
         mLocationRequest = new LocationRequest();
@@ -200,7 +200,7 @@ public class PickLDropLaundryActivity extends FragmentActivity implements OnMapR
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
         currLocationMarker = mMap.addMarker(markerOptions);
 
         if (counter < 1) {
