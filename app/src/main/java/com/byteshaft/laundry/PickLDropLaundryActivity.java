@@ -4,16 +4,16 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -35,7 +35,7 @@ import java.util.Locale;
 
 import static com.byteshaft.laundry.CheckOutActivity.pickOption;
 
-public class PickLDropLaundryActivity extends FragmentActivity implements OnMapReadyCallback,
+public class PickLDropLaundryActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -44,15 +44,18 @@ public class PickLDropLaundryActivity extends FragmentActivity implements OnMapR
     private GoogleApiClient mGoogleApiClient;
     private LatLng latLng;
     private Marker currLocationMarker;
-
-    private CoordinatorLayout Clayout;
-
-    private Snackbar snack;
-    List<Address> addresses;
-    String address;
-    Double longitude;
-    Double latitude;
+    private Double longitude;
+    private Double latitude;
     private int counter = 0;
+    private String city = "";
+    private String address = "";
+    private String zipCode = "";
+    private String houseNumber = "";
+    private EditText addressTitle;
+    private EditText cityEditText;
+    private EditText streetEditText;
+    private EditText zipCodeEditText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +64,15 @@ public class PickLDropLaundryActivity extends FragmentActivity implements OnMapR
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_pick_laundry);
-        Clayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        addressTitle = (EditText) findViewById(R.id.address_title);
+        cityEditText = (EditText) findViewById(R.id.city_address);
+        streetEditText = (EditText) findViewById(R.id.street);
+        zipCodeEditText = (EditText) findViewById(R.id.zip_code);
+
     }
 
     @Override
@@ -96,14 +102,6 @@ public class PickLDropLaundryActivity extends FragmentActivity implements OnMapR
                 System.out.println(longitude + "longitude");
                 System.out.println(latitude + "latitude");
 
-                snack = Snackbar.make(findViewById(R.id.coordinatorLayout),
-                        getCompleteAddressString(latitude, longitude), Snackbar.LENGTH_INDEFINITE);
-                CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)
-                        snack.getView().getLayoutParams();
-                params.setMargins(20, 20, 20, 20);
-                snack.getView().setLayoutParams(params);
-                snack.show();
-
                 if (pickOption) {
 
                     Log.i("TAG", "null" + String.valueOf(longitude == null));
@@ -114,6 +112,7 @@ public class PickLDropLaundryActivity extends FragmentActivity implements OnMapR
                     CheckOutActivity.sDropLocationLongitude = longitude;
                     CheckOutActivity.sDropLocationLatitude = latitude;
                 }
+                getCompleteAddressString(latitude, longitude);
             }
         });
 
@@ -123,20 +122,25 @@ public class PickLDropLaundryActivity extends FragmentActivity implements OnMapR
 
 
 
-    private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
+    private String getCompleteAddressString(double lattitude, double longitude) {
         String strAdd = "";
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
-            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            List<Address> addresses = geocoder.getFromLocation(lattitude, longitude, 1);
             if (addresses != null) {
-                Address returnedAddress = addresses.get(0);
-                StringBuilder strReturnedAddress = new StringBuilder("");
-
-                for (int i = 0; i < returnedAddress.getMaxAddressLineIndex(); i++) {
-                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
+                address = addresses.get(0).getAddressLine(0);
+                if (!address.trim().isEmpty() && address != null) {
+                    cityEditText.setText(address);
                 }
-                strAdd = strReturnedAddress.toString();
-                Log.w("My Current loction address", "" + strReturnedAddress.toString());
+                city = addresses.get(0).getLocality();
+                if (!city.trim().isEmpty() && city != null) {
+                    cityEditText.setText(address+" "+ city);
+                }
+                zipCode = addresses.get(0).getPostalCode();
+                if (!zipCode.trim().isEmpty() && zipCode != null) {
+                    zipCodeEditText.setText(zipCode);
+                }
+                Log.i("TAG", "address "+address + city + zipCode);
             } else {
                 Log.w("My Current loction address", "No Address returned!");
             }
@@ -207,13 +211,7 @@ public class PickLDropLaundryActivity extends FragmentActivity implements OnMapR
         if (counter < 1) {
             longitude = latLng.longitude;
             latitude = latLng.latitude;
-            snack = Snackbar.make(findViewById(R.id.coordinatorLayout),
-                    getCompleteAddressString(latitude, longitude), Snackbar.LENGTH_INDEFINITE);
-            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)
-                    snack.getView().getLayoutParams();
-            params.setMargins(0, 0, 0, 0);
-            snack.getView().setLayoutParams(params);
-            snack.show();
+            getCompleteAddressString(latitude, longitude);
         }
         counter++;
         //zoom to current position:
