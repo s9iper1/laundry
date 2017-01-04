@@ -72,8 +72,7 @@
             android:name=".PickLDropLaundryActivity"
             android:label="@string/title_activity_pick_laundry"></activity>
         <activity
-            android:name=".CheckOutActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".CheckOutActivity" />
     </application>
 
 </manifest>

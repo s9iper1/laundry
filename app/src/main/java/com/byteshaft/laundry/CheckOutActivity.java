@@ -56,7 +56,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
-        selectLocation = (Button) findViewById(R.id.pick_up_location);
+        selectLocation = (Button) findViewById(R.id.select_location);
         listView = (ListView) findViewById(R.id.order_list);
         selectLocation.setOnClickListener(this);
         sendButton = (Button) findViewById(R.id.send);
@@ -67,7 +67,6 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         }
         Adapter adapter = new Adapter(getApplicationContext(), R.layout.delegate_order_list, keysArrayList);
         listView.setAdapter(adapter);
-
     }
 
     @Override
