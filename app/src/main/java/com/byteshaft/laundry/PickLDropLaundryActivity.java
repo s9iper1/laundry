@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -18,6 +20,8 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -62,13 +66,17 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
     private Animation slideDown;
     private Animation slideUp;
     private RelativeLayout relativeLayout;
+    private TextView switchTextView;
     private Switch deliverySwitch;
+    private boolean switchOn = false;
+    private EditText deliveryCityEditText;
+    private EditText deliveryStreetEditText;
+    private EditText deliveryZipCodeEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_laundry);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -80,6 +88,10 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         zipCodeEditText = (EditText) findViewById(R.id.zip_code);
         relativeLayout = (RelativeLayout) findViewById(R.id.layout_delivery);
         deliverySwitch = (Switch) findViewById(R.id.same_delivery_address);
+        deliveryCityEditText = (EditText) findViewById(R.id.delivery_city_address);
+        deliveryStreetEditText = (EditText) findViewById(R.id.delivery_street);
+        deliveryZipCodeEditText = (EditText) findViewById(R.id.delivery_zip_code);
+        switchTextView = (TextView) findViewById(R.id.switch_text);
         deliverySwitch.setOnCheckedChangeListener(this);
         slideDown = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.slide_down);
@@ -94,17 +106,60 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         finish();
     }
 
+    private boolean validateFields() {
+        if (addressTitle.getText().toString().trim().isEmpty() ||
+                cityEditText.getText().toString().trim().isEmpty() ||
+                streetEditText.getText().toString().trim().isEmpty() ||
+                zipCodeEditText.getText().toString().trim().isEmpty() && deliverySwitch.isEnabled()) {
+            Toast.makeText(this, "All fields are Required", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (addressTitle.getText().toString().trim().isEmpty() ||
+                cityEditText.getText().toString().trim().isEmpty() ||
+                streetEditText.getText().toString().trim().isEmpty() ||
+                zipCodeEditText.getText().toString().trim().isEmpty() ||
+                deliveryCityEditText.getText().toString().trim().isEmpty() ||
+                deliveryStreetEditText.getText().toString().trim().isEmpty() ||
+                deliveryZipCodeEditText.getText().toString().trim().isEmpty()
+                        && !deliverySwitch.isEnabled()) {
+            Toast.makeText(this, "All fields are Required", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.add_address_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.save_address) {
+            if (validateFields()) {
+
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if (b) {
+        if (!b) {
+            switchTextView.setText(getResources().getString(R.string.delivery_address_change));
+            switchOn = true;
             relativeLayout.setVisibility(View.VISIBLE);
             relativeLayout.setAnimation(slideDown);
         } else {
+            switchTextView.setText(getResources().getString(R.string.delivery_address_same_as_pick_address));
+            switchOn = false;
             relativeLayout.setVisibility(View.GONE);
             relativeLayout.setAnimation(slideUp);
-
         }
-
     }
 
     @Override
@@ -115,7 +170,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
             public void onMapLongClick(LatLng latLng) {
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions()
-                        .position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
+                        .position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
 
                 );
 
@@ -200,7 +255,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
             markerOptions.title("Current Position");
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
             currLocationMarker = mMap.addMarker(markerOptions);
         }
         mLocationRequest = new LocationRequest();
@@ -230,7 +285,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         currLocationMarker = mMap.addMarker(markerOptions);
 
         if (counter < 1) {
