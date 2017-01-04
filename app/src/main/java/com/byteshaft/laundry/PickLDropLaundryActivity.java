@@ -1,6 +1,7 @@
 package com.byteshaft.laundry;
 
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -8,12 +9,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -37,7 +41,7 @@ import static com.byteshaft.laundry.CheckOutActivity.pickOption;
 
 public class PickLDropLaundryActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, CompoundButton.OnCheckedChangeListener {
 
     private GoogleMap mMap;
     private LocationRequest mLocationRequest;
@@ -55,24 +59,32 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
     private EditText cityEditText;
     private EditText streetEditText;
     private EditText zipCodeEditText;
-
+    private Animation slideDown;
+    private Animation slideUp;
+    private RelativeLayout relativeLayout;
+    private Switch deliverySwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_pick_laundry);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources()
+                .getColor(R.color.colorPrimaryDark)));
         addressTitle = (EditText) findViewById(R.id.address_title);
         cityEditText = (EditText) findViewById(R.id.city_address);
         streetEditText = (EditText) findViewById(R.id.street);
         zipCodeEditText = (EditText) findViewById(R.id.zip_code);
-
+        relativeLayout = (RelativeLayout) findViewById(R.id.layout_delivery);
+        deliverySwitch = (Switch) findViewById(R.id.same_delivery_address);
+        deliverySwitch.setOnCheckedChangeListener(this);
+        slideDown = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.slide_down);
+        slideUp = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.slide_up);
     }
 
     @Override
@@ -80,6 +92,19 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         super.onBackPressed();
         pickOption = false;
         finish();
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        if (b) {
+            relativeLayout.setVisibility(View.VISIBLE);
+            relativeLayout.setAnimation(slideDown);
+        } else {
+            relativeLayout.setVisibility(View.GONE);
+            relativeLayout.setAnimation(slideUp);
+
+        }
+
     }
 
     @Override

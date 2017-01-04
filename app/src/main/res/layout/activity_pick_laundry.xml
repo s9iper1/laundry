@@ -19,90 +19,216 @@
             tools:context="com.byteshaft.laundry.PickLaundryActivity" />
 
         <ScrollView
-            android:layout_below="@+id/map"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/map"
             android:scrollbars="none">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/address_title"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/apptheme_edit_text_holo_light"
-            android:drawablePadding="9dp"
-            android:hint="Address title"
-            android:inputType="textPostalAddress"
-            android:maxLines="1"
-            android:padding="10dp"
-            android:textColor="@color/primary_text"
-            android:textColorHint="@android:color/darker_gray" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/house_number"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/address_title"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/apptheme_edit_text_holo_light"
-            android:drawablePadding="9dp"
-            android:hint="House Number"
-            android:inputType="numberSigned"
-            android:maxLines="1"
-            android:padding="10dp"
-            android:textColor="@color/primary_text"
-            android:textColorHint="@android:color/darker_gray" />
+                <RelativeLayout
+                    android:id="@+id/layout_pickup_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/city_address"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/house_number"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/apptheme_edit_text_holo_light"
-            android:drawablePadding="9dp"
-            android:hint="City Address"
-            android:inputType="textPostalAddress"
-            android:maxLines="1"
-            android:padding="10dp"
-            android:textColor="@color/primary_text"
-            android:textColorHint="@android:color/darker_gray" />
+                    <EditText
+                        android:id="@+id/address_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/apptheme_edit_text_holo_light"
+                        android:drawablePadding="9dp"
+                        android:hint="Address title"
+                        android:inputType="textPostalAddress"
+                        android:maxLines="1"
+                        android:padding="10dp"
+                        android:textColor="@color/primary_text"
+                        android:textColorHint="@android:color/darker_gray" />
 
+                    <EditText
+                        android:id="@+id/house_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_below="@+id/address_title"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/apptheme_edit_text_holo_light"
+                        android:drawablePadding="9dp"
+                        android:hint="House Number"
+                        android:inputType="numberSigned"
+                        android:maxLines="1"
+                        android:padding="10dp"
+                        android:textColor="@color/primary_text"
+                        android:textColorHint="@android:color/darker_gray" />
 
-        <EditText
-            android:id="@+id/street"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/city_address"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/apptheme_edit_text_holo_light"
-            android:drawablePadding="9dp"
-            android:hint="Street Number"
-            android:inputType="textPostalAddress"
-            android:maxLines="1"
-            android:padding="10dp"
-            android:textColor="@color/primary_text"
-            android:textColorHint="@android:color/darker_gray" />
+                    <EditText
+                        android:id="@+id/city_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_below="@+id/house_number"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/apptheme_edit_text_holo_light"
+                        android:drawablePadding="9dp"
+                        android:hint="City Address"
+                        android:inputType="textPostalAddress"
+                        android:maxLines="1"
+                        android:padding="10dp"
+                        android:textColor="@color/primary_text"
+                        android:textColorHint="@android:color/darker_gray" />
 
 
-        <EditText
-            android:id="@+id/zip_code"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/street"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/apptheme_edit_text_holo_light"
-            android:drawablePadding="9dp"
-            android:hint="Zip Code"
-            android:inputType="number"
-            android:maxLines="1"
-            android:padding="10dp"
-            android:textColor="@color/primary_text"
-            android:textColorHint="@android:color/darker_gray" />
-        </RelativeLayout>
-    </ScrollView>
+                    <EditText
+                        android:id="@+id/street"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_below="@+id/city_address"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/apptheme_edit_text_holo_light"
+                        android:drawablePadding="9dp"
+                        android:hint="Street Number"
+                        android:inputType="textPostalAddress"
+                        android:maxLines="1"
+                        android:padding="10dp"
+                        android:textColor="@color/primary_text"
+                        android:textColorHint="@android:color/darker_gray" />
+
+
+                    <EditText
+                        android:id="@+id/zip_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_below="@+id/street"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/apptheme_edit_text_holo_light"
+                        android:drawablePadding="9dp"
+                        android:hint="Zip Code"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:padding="10dp"
+                        android:textColor="@color/primary_text"
+                        android:textColorHint="@android:color/darker_gray" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_marginTop="20dp"
+                    android:id="@+id/line"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_below="@+id/layout_pickup_address"
+                    android:background="@android:color/black" />
+
+                <LinearLayout
+                    android:id="@+id/layout_same_delivery_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/line"
+                    android:padding="5dp"
+                    android:layout_margin="5dp"
+                    android:weightSum="4">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:padding="5dp"
+                        android:text="Delivery Address : Same as Pick Address"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:textStyle="italic" />
+
+                    <Switch
+                        android:id="@+id/same_delivery_address"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/layout_delivery"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:animateLayoutChanges="true"
+                    android:layout_below="@+id/layout_same_delivery_address">
+
+                    <EditText
+                        android:id="@+id/delivery_address_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/apptheme_edit_text_holo_light"
+                        android:drawablePadding="9dp"
+                        android:hint="Address title"
+                        android:inputType="textPostalAddress"
+                        android:maxLines="1"
+                        android:padding="10dp"
+                        android:textColor="@color/primary_text"
+                        android:textColorHint="@android:color/darker_gray" />
+
+                    <EditText
+                        android:id="@+id/delivery_house_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_below="@+id/delivery_address_title"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/apptheme_edit_text_holo_light"
+                        android:drawablePadding="9dp"
+                        android:hint="House Number"
+                        android:inputType="numberSigned"
+                        android:maxLines="1"
+                        android:padding="10dp"
+                        android:textColor="@color/primary_text"
+                        android:textColorHint="@android:color/darker_gray" />
+
+                    <EditText
+                        android:id="@+id/delivery_city_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_below="@+id/delivery_house_number"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/apptheme_edit_text_holo_light"
+                        android:drawablePadding="9dp"
+                        android:hint="City Address"
+                        android:inputType="textPostalAddress"
+                        android:maxLines="1"
+                        android:padding="10dp"
+                        android:textColor="@color/primary_text"
+                        android:textColorHint="@android:color/darker_gray" />
+
+
+                    <EditText
+                        android:id="@+id/delivery_street"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_below="@+id/delivery_city_address"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/apptheme_edit_text_holo_light"
+                        android:drawablePadding="9dp"
+                        android:hint="Street Number"
+                        android:inputType="textPostalAddress"
+                        android:maxLines="1"
+                        android:padding="10dp"
+                        android:textColor="@color/primary_text"
+                        android:textColorHint="@android:color/darker_gray" />
+
+
+                    <EditText
+                        android:id="@+id/delivery_zip_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_below="@+id/delivery_street"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/apptheme_edit_text_holo_light"
+                        android:drawablePadding="9dp"
+                        android:hint="Zip Code"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:padding="10dp"
+                        android:textColor="@color/primary_text"
+                        android:textColorHint="@android:color/darker_gray" />
+                </RelativeLayout>
+            </RelativeLayout>
+        </ScrollView>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
