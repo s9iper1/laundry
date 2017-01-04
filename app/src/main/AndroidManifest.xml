@@ -29,22 +29,16 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".account.LoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
-
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".account.RegisterActivity"
             android:screenOrientation="portrait"
@@ -70,9 +64,10 @@
 
         <activity
             android:name=".PickLDropLaundryActivity"
-            android:label="@string/title_activity_pick_laundry"></activity>
+            android:label="@string/title_activity_pick_laundry" />
         <activity
             android:name=".CheckOutActivity" />
+        <activity android:name=".AddressesActivity"></activity>
     </application>
 
 </manifest>

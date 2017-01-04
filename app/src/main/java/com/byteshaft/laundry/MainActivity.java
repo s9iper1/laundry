@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 System.out.println("Hello there");
                 startActivity(new Intent(MainActivity.this, LaundryCategoriesActivity.class));
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
             }
         });
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -134,7 +132,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
             case R.id.login:
-                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                startActivity(new Intent(getApplicationContext(), AddressesActivity.class));
                 break;
             case R.id.nav_update_profile:
                 loadFragment(new UpdateProfile());
