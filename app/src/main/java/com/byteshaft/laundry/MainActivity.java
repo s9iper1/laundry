@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity
 
     private TextView mName;
     private TextView mEmail;
+    NavigationView navigationView;
+
 
     public static MainActivity getInstance() {
         return sInstance;
@@ -61,14 +63,29 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         header = navigationView.getHeaderView(0);
+
     }
+
 
     @Override
     protected void onResume() {
         super.onResume();
+        MenuItem login,logout;
+        Menu menu = navigationView.getMenu();
+        if (!AppGlobals.isUserLoggedIn()) {
+            login = menu.findItem(R.id.login);
+            logout = menu.findItem(R.id.nav_logout);
+            login.setVisible(true);
+            logout.setVisible(false);
+        } else {
+            login = menu.findItem(R.id.login);
+            logout = menu.findItem(R.id.nav_logout);
+            login.setVisible(false);
+            logout.setVisible(true);
+        }
         mName = (TextView) header.findViewById(R.id.nav_user_name);
         mEmail = (TextView) header.findViewById(R.id.nav_user_email);
         if (!AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME).equals("")) {
