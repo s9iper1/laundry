@@ -177,7 +177,8 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                 longitude = latLng.longitude;
                 latitude = latLng.latitude;
                 System.out.println(latLng + "Position");
-                String Postion = "" + latLng;
+                String Position = "" + latLng;
+                System.out.println( Position + "current Position");
                 System.out.println(longitude + "longitude");
                 System.out.println(latitude + "latitude");
 

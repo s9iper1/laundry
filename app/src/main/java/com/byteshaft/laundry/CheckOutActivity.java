@@ -28,6 +28,10 @@ import com.byteshaft.laundry.utils.AppGlobals;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -109,7 +113,20 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                 }
                 break;
             case R.id.send:
+                System.out.println("working");
+                JSONArray jsonArray = new JSONArray();
+                for (int i = 0; i < keysArrayList.size(); i++) {
+                    OrderItem orderItem = order.get(i);
+                    try {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("id", orderItem.getId());
+                        jsonObject.put("quantity", orderItem.getQuantity());
+                        jsonArray.put(jsonObject);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
+                }
                 break;
         }
     }
