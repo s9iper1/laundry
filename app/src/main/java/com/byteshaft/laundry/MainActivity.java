@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
             case R.id.login:
-                startActivity(new Intent(getApplicationContext(), AddressesActivity.class));
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 break;
             case R.id.nav_update_profile:
                 loadFragment(new UpdateProfile());
