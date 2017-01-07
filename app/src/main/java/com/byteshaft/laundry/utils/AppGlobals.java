@@ -20,19 +20,19 @@ public class AppGlobals extends Application {
     public static final String KEY_TOKEN = "token";
     public static final String USER_ACTIVATION_KEY = "activation_key";
     public static final String KEY_USER_LOGIN = "user_login";
+    public static final String KEY_USER_ACTIVE = "user_active";
     public static int responseCode = 0;
     public static int readresponseCode = 0;
     public static final String KEY_USER_DETAILS = "user_details";
-    private static SharedPreferences sPreferences;
     public static MainActivity sActivity;
     public static boolean logout = false;
     public static final String BASE_URL = "http://178.62.87.25/api/";
+    public static boolean dialogCancel = false;
 
     @Override
     public void onCreate() {
         super.onCreate();
         sContext = getApplicationContext();
-        sPreferences = PreferenceManager.getDefaultSharedPreferences(sContext);
     }
 
     public static Context getContext() {
@@ -48,7 +48,7 @@ public class AppGlobals extends Application {
     }
 
     public static SharedPreferences getPreferenceManager() {
-        return PreferenceManager.getDefaultSharedPreferences(AppGlobals.getContext());
+        return getContext().getSharedPreferences("shared_prefs", MODE_PRIVATE);
     }
 
     public static void saveDataToSharedPreferences(String key, String value) {
@@ -59,6 +59,16 @@ public class AppGlobals extends Application {
     public static String getStringFromSharedPreferences(String key) {
         SharedPreferences sharedPreferences = getPreferenceManager();
         return sharedPreferences.getString(key, "");
+    }
+
+    public static void saveUserActive(boolean value) {
+        SharedPreferences sharedPreferences = getPreferenceManager();
+        sharedPreferences.edit().putBoolean(AppGlobals.KEY_USER_ACTIVE, value).apply();
+    }
+
+    public static boolean isUserActive() {
+        SharedPreferences sharedPreferences = getPreferenceManager();
+        return sharedPreferences.getBoolean(AppGlobals.KEY_USER_ACTIVE, false);
     }
 
     public static void saveUserLogin(boolean value) {
@@ -82,10 +92,4 @@ public class AppGlobals extends Application {
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
-
-    public static SharedPreferences getPreferences() {
-        return sPreferences;
-    }
-
-
 }

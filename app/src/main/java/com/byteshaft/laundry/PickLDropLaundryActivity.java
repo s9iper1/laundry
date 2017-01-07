@@ -128,7 +128,6 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                 System.out.println(latitude + "latitude");
 
                 if (pickOption) {
-
                     Log.i("TAG", "null" + String.valueOf(longitude == null));
                     CheckOutActivity.sPickLocationLongitude = longitude;
                     CheckOutActivity.sPickLocationLatitude = latitude;

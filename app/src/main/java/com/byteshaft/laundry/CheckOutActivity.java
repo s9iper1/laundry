@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import com.byteshaft.laundry.laundry.OrderItem;
 import com.byteshaft.laundry.utils.AppGlobals;
+import com.byteshaft.laundry.utils.WebServiceHelpers;
+import com.byteshaft.requests.HttpRequest;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -38,7 +40,8 @@ import java.util.Map;
 import static com.byteshaft.laundry.laundry.LaundryCategoriesActivity.order;
 
 
-public class CheckOutActivity extends AppCompatActivity implements View.OnClickListener {
+public class CheckOutActivity extends AppCompatActivity implements View.OnClickListener,
+        HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener {
 
     //    private Button addButton;
 //    private Button minusButton;
@@ -113,20 +116,21 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                 }
                 break;
             case R.id.send:
-                System.out.println("working");
                 JSONArray jsonArray = new JSONArray();
-                for (int i = 0; i < keysArrayList.size(); i++) {
-                    OrderItem orderItem = order.get(i);
+                for (Integer key : keysArrayList) {
+                    OrderItem orderItem = order.get(key);
                     try {
                         JSONObject jsonObject = new JSONObject();
+                        System.out.println(jsonObject + "object");
                         jsonObject.put("id", orderItem.getId());
                         jsonObject.put("quantity", orderItem.getQuantity());
                         jsonArray.put(jsonObject);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 }
+                System.out.println(jsonArray + "array");
                 break;
         }
     }
@@ -291,6 +295,41 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         public int getCount() {
             return orderData.size();
         }
+    }
+
+    @Override
+    public void onError(HttpRequest request, int readyState, short error, Exception exception) {
+
+    }
+
+    @Override
+    public void onReadyStateChange(HttpRequest request, int readyState) {
+
+
+    }
+
+    private void orderRequest(String address, JSONArray itemsquantity) {
+        HttpRequest request = new HttpRequest(AppGlobals.getContext());
+        request.setOnReadyStateChangeListener(this);
+        request.setOnErrorListener(this);
+        request.open("POST", String.format("%slaundry/request", AppGlobals.BASE_URL));
+        request.setRequestHeader("Authorization", "Token " +
+                AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
+        request.send(orderRequestData(address, itemsquantity));
+        WebServiceHelpers.showProgressDialog(CheckOutActivity.this, "Sending your order..");
+    }
+
+    private String orderRequestData(String address, JSONArray itemsquantity) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("address", address);
+            jsonObject.put("service_items", itemsquantity);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println(jsonObject.toString());
+        return jsonObject.toString();
+
     }
 
     private class ViewHolder {
