@@ -20,5 +20,7 @@
     </string-array>
     <string name="title_activity_pick_laundry">Map</string>
     <string name="api_key">AIzaSyDq-HdIopJoLx8pw46o1CArjVHZqnXE24w</string>
+    <string name="delivery_address_same_as_pick_address">Delivery Address : Same as Pick Address</string>
+    <string name="delivery_address_change">Delivery Address : Enter Your Address</string>
 
 </resources>
