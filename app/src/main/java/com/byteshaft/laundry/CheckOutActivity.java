@@ -111,7 +111,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                         dialog.show();
                     } else {
                         pickOption = true;
-                        startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
+                        startActivity(new Intent(getApplicationContext(), AddressesActivity.class));
                     }
                 }
                 break;

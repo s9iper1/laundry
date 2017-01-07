@@ -1,6 +1,7 @@
 package com.byteshaft.laundry;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -45,7 +46,7 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
         HttpRequest mRequest = new HttpRequest(AppGlobals.getContext());
         mRequest.setOnReadyStateChangeListener(this);
         mRequest.open("GET", AppGlobals.LOCATIONS_URL);
-        mRequest.setRequestHeader("Authorization", "Token 8e03188a6310033b9258e53d8903c655299553ad"); // // TODO: 07/01/2017 Set saved token  
+        mRequest.setRequestHeader("Authorization", "Token 8e03188a6310033b9258e53d8903c655299553ad"); // // TODO: 07/01/2017 Set saved token
         mRequest.send();
     }
 
@@ -53,7 +54,7 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_location:
-                // TODO: 04/01/2017 add location
+                startActivity(new Intent(this, PickLDropLaundryActivity.class));
         }
     }
 
