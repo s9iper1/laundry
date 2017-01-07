@@ -147,11 +147,11 @@ public class UpdateProfile extends Fragment implements HttpRequest.OnErrorListen
         WebServiceHelpers.showProgressDialog(getActivity(), "Updating User Profile");
     }
 
-    private String updateUserData(String username, String password, String phoneNumner) {
+    private String updateUserData(String username, String password, String phoneNumber) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("full_name", username);
-            jsonObject.put("phone_number", phoneNumner);
+            jsonObject.put("phone_number", phoneNumber);
             jsonObject.put("password", password);
         } catch (JSONException e) {
             e.printStackTrace();

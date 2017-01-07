@@ -187,6 +187,7 @@ public class CodeConfirmationActivity extends Activity implements
                             String phoneNumber = jsonObject.getString(AppGlobals.KEY_PHONE_NUMBER);
                             String token = jsonObject.getString(AppGlobals.KEY_TOKEN);
 
+                            Log.i("TAG", "Token "+ token);
                             //saving values
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_FULL_NAME, username);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
