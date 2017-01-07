@@ -15,7 +15,7 @@
         android:id="@+id/add_location"
         style="@style/AppTheme.Button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:text="Add Location"
         android:textAllCaps="false" />
 

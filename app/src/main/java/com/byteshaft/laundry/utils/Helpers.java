@@ -43,7 +43,6 @@ public class Helpers {
         return simpleDateFormat.format(calendar.getTime());
     }
 
-
     public static void alertDialog(Activity activity, String title, String msg, final Runnable runnable) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
         alertDialogBuilder.setTitle(title);

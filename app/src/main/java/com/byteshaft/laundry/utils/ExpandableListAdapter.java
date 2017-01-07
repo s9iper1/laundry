@@ -7,11 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.byteshaft.laundry.R;
+import com.byteshaft.requests.HttpRequest;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,16 +28,12 @@ import java.util.List;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
-    private Context _context;
-    private List<String> _listDataHeader; // header titles
-    // child data in format of header title, child title
-    private HashMap<String, List<String>> _listDataChild;
+    private Context mContext;
+    JSONArray mItems;
 
-    public ExpandableListAdapter(Context context, List<String> listDataHeader,
-                                 HashMap<String, List<String>> listChildData) {
-        this._context = context;
-        this._listDataHeader = listDataHeader;
-        this._listDataChild = listChildData;
+    public ExpandableListAdapter(Context context, JSONArray items) {
+        mContext = context;
+        mItems = items;
     }
 
     static class ViewHolder {
@@ -39,17 +42,32 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     static class SubItemsViewHolder {
-        TextView addressTextView;
-        TextView houseNumber;
-        TextView cityAddress;
-        TextView streetNumber;
-        TextView zipCode;
+        TextView pickupCity;
+        TextView pickupStreet;
+        TextView pickupHouse;
+        TextView pickupZipCode;
+        TextView pickupLocation;
+
+        // drop textViews
+        TextView dropCity;
+        TextView dropStreet;
+        TextView dropHouse;
+        TextView dropZipCode;
+        TextView dropLocation;
+
+        RelativeLayout relativeLayout;
+
     }
 
+
     @Override
-    public Object getChild(int groupPosition, int childPosititon) {
-        return this._listDataChild.get(this._listDataHeader.get(groupPosition))
-                .get(childPosititon);
+    public Object getChild(int groupPosition, int childPosition) {
+        try {
+            return mItems.get(groupPosition);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -61,41 +79,76 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
         final SubItemsViewHolder holder;
-        final String childText = (String) getChild(groupPosition, childPosition);
 
         if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) this._context
+            LayoutInflater infalInflater = (LayoutInflater) this.mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.list_item_delegate, null);
             holder = new SubItemsViewHolder();
-            holder.addressTextView = (TextView) convertView.findViewById(R.id.tv_address_title);
-            holder.houseNumber = (TextView) convertView.findViewById(R.id.tv_house_name);
-            holder.cityAddress = (TextView) convertView.findViewById(R.id.tv_city_address);
-            holder.streetNumber = (TextView) convertView.findViewById(R.id.tv_street_number);
-            holder.zipCode = (TextView) convertView.findViewById(R.id.tv_zip_code_);
+
+            holder.relativeLayout = (RelativeLayout) convertView.findViewById(R.id.drop_layout);
+
+            // pickup textViews
+            holder.pickupCity = (TextView) convertView.findViewById(R.id.pickup_city);
+            holder.pickupStreet = (TextView) convertView.findViewById(R.id.pickup_street_number);
+            holder.pickupHouse = (TextView) convertView.findViewById(R.id.pickup_house_name);
+            holder.pickupZipCode = (TextView) convertView.findViewById(R.id.pickup_zip_code_);
+            holder.pickupLocation = (TextView) convertView.findViewById(R.id.pickup_location);
+
+            // drop textViews
+
+            holder.dropCity = (TextView) convertView.findViewById(R.id.drop_city);
+            holder.dropStreet = (TextView) convertView.findViewById(R.id.drop_street_number);
+            holder.dropHouse = (TextView) convertView.findViewById(R.id.drop_house_name);
+            holder.dropZipCode = (TextView) convertView.findViewById(R.id.drop_zip_code_);
             convertView.setTag(holder);
-        }  else {
+        } else {
             holder = (SubItemsViewHolder) convertView.getTag();
         }
+        JSONObject subItems = (JSONObject) getChild(groupPosition, childPosition);
+        try {
+            holder.pickupCity.setText("City: " + subItems.getString("pickup_city"));
+            holder.pickupStreet.setText("Street: " + subItems.getString("pickup_street"));
+            holder.pickupHouse.setText("House #: " + subItems.getString("pickup_house_number"));
+            holder.pickupZipCode.setText("Zip Code: " + subItems.getString("pickup_zip"));
+            holder.pickupLocation.setText(subItems.getString("location"));
 
-        holder.addressTextView.setText(childText);
+            boolean drop_on_pickup_location = subItems.getBoolean("drop_on_pickup_location");
+            if (drop_on_pickup_location) {
+                holder.relativeLayout.setVisibility(View.VISIBLE);
+                holder.dropCity.setText("City: " +subItems.getString("drop_city"));
+                holder.dropStreet.setText("Street: " + subItems.getString("drop_street"));
+                holder.dropHouse.setText("House #: " + subItems.getString("drop_house_number"));
+                holder.dropZipCode.setText( "Zip Code: " +subItems.getString("drop_zip"));
+
+            } else {
+                holder.relativeLayout.setVisibility(View.GONE);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return convertView;
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return this._listDataChild.get(this._listDataHeader.get(groupPosition))
-                .size();
+        return 1;
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return this._listDataHeader.get(groupPosition);
+        try {
+            return mItems.get(groupPosition);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
     public int getGroupCount() {
-        return this._listDataHeader.size();
+        return mItems.length();
     }
 
     @Override
@@ -107,9 +160,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
-        String headerTitle = (String) getGroup(groupPosition);
         if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) this._context
+            LayoutInflater infalInflater = (LayoutInflater) this.mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.list_header_delegate, null);
             viewHolder = new ViewHolder();
@@ -121,7 +173,13 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         viewHolder.headerTextView.setTypeface(null, Typeface.BOLD);
-        viewHolder.headerTextView.setText(headerTitle);
+        JSONObject header = (JSONObject) getGroup(groupPosition);
+        try {
+            viewHolder.headerTextView.setAllCaps(true);
+            viewHolder.headerTextView.setText(header.getString("name"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         if (isExpanded) {
             viewHolder.collapseExpandIndicator.setImageResource(R.mipmap.ic_collapse);

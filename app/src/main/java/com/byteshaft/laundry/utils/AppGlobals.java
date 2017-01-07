@@ -27,6 +27,7 @@ public class AppGlobals extends Application {
     public static MainActivity sActivity;
     public static boolean logout = false;
     public static final String BASE_URL = "http://178.62.87.25/api/";
+    public static final String LOCATIONS_URL = "http://178.62.87.25/api/user/addresses";
 
     @Override
     public void onCreate() {
