@@ -104,7 +104,6 @@ public class UpdateProfile extends Fragment implements HttpRequest.OnErrorListen
 
     @Override
     public void onReadyStateChange(HttpRequest request, int readyState) {
-
         switch (readyState) {
             case HttpRequest.STATE_DONE:
                 WebServiceHelpers.dismissProgressDialog();
@@ -147,7 +146,6 @@ public class UpdateProfile extends Fragment implements HttpRequest.OnErrorListen
                 AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
         WebServiceHelpers.showProgressDialog(getActivity(), "Updating User Profile");
     }
-
 
     private String updateUserData(String username, String password, String phoneNumner) {
         JSONObject jsonObject = new JSONObject();
