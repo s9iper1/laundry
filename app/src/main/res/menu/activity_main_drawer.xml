@@ -8,6 +8,11 @@
                 android:icon="@mipmap/login"
                 android:title="Login" />
             <item
+                android:id="@+id/active"
+                android:icon="@mipmap/activate_user"
+                android:visible="false"
+                android:title="Activate User" />
+            <item
                 android:id="@+id/nav_reset_password"
                 android:icon="@mipmap/forgot_password"
                 android:title="Reset Password"/>

@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.byteshaft.laundry.account.CodeConfirmationActivity;
 import com.byteshaft.laundry.account.LoginActivity;
 import com.byteshaft.laundry.account.ResetPassword;
 import com.byteshaft.laundry.fragments.UpdateProfile;
@@ -64,14 +65,13 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         header = navigationView.getHeaderView(0);
-
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        MenuItem login,logout;
+        MenuItem login,logout, active;
         Menu menu = navigationView.getMenu();
         if (!AppGlobals.isUserLoggedIn()) {
             login = menu.findItem(R.id.login);
@@ -80,13 +80,20 @@ public class MainActivity extends AppCompatActivity
             logout.setVisible(false);
         } else {
             login = menu.findItem(R.id.login);
+            active = menu.findItem(R.id.active);
+            if (!AppGlobals.isUserActive()) {
+                active.setVisible(true);
+            } else {
+                active.setVisible(false);
+            }
             logout = menu.findItem(R.id.nav_logout);
             login.setVisible(false);
             logout.setVisible(true);
         }
         mName = (TextView) header.findViewById(R.id.nav_user_name);
         mEmail = (TextView) header.findViewById(R.id.nav_user_email);
-        if (!AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME).equals("")) {
+        if (!AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME).equals("")
+                && AppGlobals.isUserActive()) {
             String simpleName = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME);
             String firstUpperCaseName = simpleName.substring(0, 1).toUpperCase() + simpleName.substring(1);
             mName.setText(firstUpperCaseName);
@@ -97,6 +104,25 @@ public class MainActivity extends AppCompatActivity
             mEmail.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_EMAIL));
         } else {
             mEmail.setText("abc@xyz.com");
+        }
+        if (!AppGlobals.isUserActive() && !AppGlobals.dialogCancel) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("User not active");
+            alertDialogBuilder.setMessage("please activate your account")
+                    .setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+                    startActivity(new Intent(getApplicationContext(), CodeConfirmationActivity.class));
+                }
+            });
+            alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    AppGlobals.dialogCancel = true;
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         }
 
 //        CircleImageView circularImageView = (CircleImageView) header.findViewById(R.id.imageView);
@@ -150,6 +176,9 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.login:
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                break;
+            case R.id.active:
+                startActivity(new Intent(getApplicationContext(), CodeConfirmationActivity.class));
                 break;
             case R.id.nav_update_profile:
                 loadFragment(new UpdateProfile());

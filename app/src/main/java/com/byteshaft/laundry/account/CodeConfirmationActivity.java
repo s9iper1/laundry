@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.View;
@@ -77,8 +78,9 @@ public class CodeConfirmationActivity extends Activity implements
             }
         });
         String number = getIntent().getStringExtra("mobile_number");
-        mobileNumber.setText(number);
-        email = getIntent().getStringExtra("email");
+        System.out.println(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_PHONE_NUMBER));
+        mobileNumber.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_PHONE_NUMBER));
+        email = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_EMAIL);
         smsListener = new SmsListener();
         IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
         this.registerReceiver(smsListener, filter);
@@ -161,7 +163,6 @@ public class CodeConfirmationActivity extends Activity implements
     @Override
     public void onBackPressed() {
         finish();
-        MainActivity.getInstance().finish();
         super.onBackPressed();
     }
 
@@ -193,6 +194,7 @@ public class CodeConfirmationActivity extends Activity implements
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_TOKEN, token);
+                            AppGlobals.saveUserActive(true);
                             RegisterActivity.getInstance().finish();
                             finish();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));

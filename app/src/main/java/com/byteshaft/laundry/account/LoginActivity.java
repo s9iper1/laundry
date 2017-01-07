@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.byteshaft.laundry.MainActivity;
 import com.byteshaft.laundry.R;
@@ -62,7 +63,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mEmailString = mEmail.getText().toString();
         mPasswordString = mPassword.getText().toString();
-
         if (mEmailString.trim().isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.
                 matcher(mEmailString).matches()) {
             mEmail.setError("enter a valid email address");
@@ -131,11 +131,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     case HttpURLConnection.HTTP_NOT_FOUND:
                         AppGlobals.alertDialog(LoginActivity.this, "Login Failed!", "provide a valid EmailAddress");
                         break;
-                    case HttpURLConnection.HTTP_FORBIDDEN:
-                        AppGlobals.alertDialog(LoginActivity.this, "Login Failed!", "Account not activated");
-                        break;
                     case HttpURLConnection.HTTP_UNAUTHORIZED:
                         AppGlobals.alertDialog(LoginActivity.this, "Login Failed!", "Please enter correct password");
+                        break;
+                    case HttpURLConnection.HTTP_FORBIDDEN:
+                        System.out.println("LOgin" +AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME));
+                        Toast.makeText(getApplicationContext(), "Please activate your account !", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getApplicationContext(), CodeConfirmationActivity.class);
+                        startActivity(intent);
                         break;
                     case HttpURLConnection.HTTP_OK:
                         System.out.println(request.getResponseText() + "working ");

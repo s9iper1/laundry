@@ -199,7 +199,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
                                         }
                                         wholeData.put(categories.get(sCounter)
                                                 .getCategoryName(), laundryItems);
-                                        sCounter = sCounter+1;
+                                        sCounter = sCounter + 1;
                                         if (sCounter == categories.size()) {
                                             mAdapter = new Adapter(getSupportFragmentManager());
                                             mViewPager.setAdapter(mAdapter);
@@ -237,7 +237,6 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
             http.send();
         }
     }
-
 
     @Override
     public void onError(HttpRequest request, int readyState, short error, Exception exception) {

@@ -41,7 +41,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
     private String mUsernameString;
     private String mEmailAddressString;
     private String mVerifyPasswordString;
-    private String mPhoneNumberString;
+    public String mPhoneNumberString;
     private String mPasswordString;
     private static final int MY_PERMISSIONS_REQUEST_READ_SMS = 0;
 
@@ -227,7 +227,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                 Log.i("TAG", "Response " + request.getResponseText());
                 switch (request.getStatus()) {
                     case HttpRequest.ERROR_NETWORK_UNREACHABLE:
-                        AppGlobals.alertDialog(RegisterActivity.this, "Login Failed!", "please check your internet connection");
+                        AppGlobals.alertDialog(RegisterActivity.this, "Registration Failed!", "please check your internet connection");
                         break;
                     case HttpURLConnection.HTTP_BAD_REQUEST:
                         AppGlobals.alertDialog(RegisterActivity.this, "Registration Failed!", "Email already in use");
@@ -237,6 +237,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                         Toast.makeText(getApplicationContext(), "Activation code has been sent to you! Please check your Email", Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonObject = new JSONObject(request.getResponseText());
+                            System.out.println(jsonObject + "working ");
                             String username = jsonObject.getString(AppGlobals.KEY_FULL_NAME);
                             String userId = jsonObject.getString(AppGlobals.KEY_USER_ID);
                             String email = jsonObject.getString(AppGlobals.KEY_EMAIL);
@@ -246,13 +247,12 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                             Log.i("user name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME));
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_EMAIL, email);
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_PHONE_NUMBER, phoneNumber);
+                            Log.i("user name", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_PHONE_NUMBER));
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_USER_ID, userId);
                             AppGlobals.saveUserLogin(true);
                             LoginActivity.getInstance().finish();
                             finish();
                             Intent intent = new Intent(getApplicationContext(), CodeConfirmationActivity.class);
-                            intent.putExtra("mobile_number", mPhoneNumberString);
-                            intent.putExtra("email", mEmailAddressString);
                             startActivity(intent);
                         } catch (JSONException e) {
                             e.printStackTrace();
