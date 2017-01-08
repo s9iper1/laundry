@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.byteshaft.laundry.account.LoginActivity;
 import com.byteshaft.laundry.laundry.OrderItem;
 import com.byteshaft.laundry.utils.AppGlobals;
 import com.byteshaft.laundry.utils.WebServiceHelpers;
@@ -44,8 +45,9 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener {
 
     //    private Button addButton;
-//    private Button minusButton;
-//    private TextView weightTextView;
+    //    private Button minusButton;
+    //    private TextView weightTextView;
+
     private int weight = 2;
     private Button selectLocation;
     private static final int PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 0;
@@ -111,7 +113,27 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                         dialog.show();
                     } else {
                         pickOption = true;
-                        startActivity(new Intent(getApplicationContext(), AddressesActivity.class));
+                        if (AppGlobals.isUserLoggedIn()) {
+                            startActivity(new Intent(getApplicationContext(), AddressesActivity.class));
+                        } else {
+                            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                            alertDialogBuilder.setTitle("Not logged in !");
+                            alertDialogBuilder.setMessage("Do you want to login?");
+                            alertDialogBuilder.setCancelable(false);
+                            alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                                }
+                            });
+                            alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            AlertDialog alertDialog = alertDialogBuilder.create();
+                            alertDialog.show();
+                        }
                     }
                 }
                 break;
@@ -260,7 +282,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
             String titleLowerCase = orderItem.getName();
             String firstUpper = titleLowerCase.substring(0, 1).toUpperCase() + titleLowerCase.substring(1);
             viewHolder.name.setText(firstUpper);
-            viewHolder.quantity.setText("Qty: "+orderItem.getQuantity());
+            viewHolder.quantity.setText("Qty: " + orderItem.getQuantity());
             int price = 0;
             Log.i("TAG", "qty " + orderItem.getQuantity());
             if (Integer.valueOf(orderItem.getQuantity()) > 1) {
@@ -268,7 +290,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                 for (int i = 1; i <= Integer.valueOf(orderItem.getQuantity()); i++) {
                     price = price + Integer.valueOf(orderItem.getPrice());
                 }
-                viewHolder.price.setText("Total:" + price +" SAR");
+                viewHolder.price.setText("Total:" + price + " SAR");
             } else {
                 viewHolder.price.setText("Total:" + orderItem.getPrice());
             }
