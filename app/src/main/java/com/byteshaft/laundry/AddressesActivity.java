@@ -1,14 +1,17 @@
 package com.byteshaft.laundry;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 
+import com.byteshaft.laundry.account.LoginActivity;
 import com.byteshaft.laundry.utils.AppGlobals;
 import com.byteshaft.laundry.utils.ExpandableListAdapter;
 import com.byteshaft.laundry.utils.Helpers;
@@ -21,18 +24,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class AddressesActivity extends AppCompatActivity implements View.OnClickListener, HttpRequest.OnReadyStateChangeListener {
+public class AddressesActivity extends AppCompatActivity implements View.OnClickListener,
+        HttpRequest.OnReadyStateChangeListener {
 
     private Button addAddress;
-
-    ExpandableListAdapter listAdapter;
-    ExpandableListView expListView;
-    ProgressDialog progress;
-
+    private ExpandableListAdapter listAdapter;
+    private ExpandableListView expListView;
+    private ProgressDialog progress;
+    private String mToken;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addresses);
+        mToken = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN);
         getLocationData();
         addAddress = (Button) findViewById(R.id.add_location);
         addAddress.setOnClickListener(this);
@@ -46,7 +50,7 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
         HttpRequest mRequest = new HttpRequest(AppGlobals.getContext());
         mRequest.setOnReadyStateChangeListener(this);
         mRequest.open("GET", AppGlobals.LOCATIONS_URL);
-        mRequest.setRequestHeader("Authorization", "Token 8e03188a6310033b9258e53d8903c655299553ad"); // // TODO: 07/01/2017 Set saved token
+        mRequest.setRequestHeader("Authorization", "Token " + mToken);
         mRequest.send();
     }
 
@@ -55,6 +59,7 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
         switch (v.getId()) {
             case R.id.add_location:
                 startActivity(new Intent(this, PickLDropLaundryActivity.class));
+                break;
         }
     }
 
@@ -67,6 +72,7 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
                 try {
                     JSONArray array = new JSONArray(request.getResponseText());
                     listAdapter = new ExpandableListAdapter(this, array);
+                    listAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
