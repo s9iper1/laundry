@@ -27,7 +27,6 @@ public class ForgotPasswordActivity extends AppCompatActivity implements
     private Button mRecoverButton;
     private EditText mEmail;
     private String mEmailString;
-
     private HttpRequest request;
 
     @Override
@@ -39,6 +38,8 @@ public class ForgotPasswordActivity extends AppCompatActivity implements
         setContentView(R.layout.forgot_password_activity);
         mEmail = (EditText) findViewById(R.id.email_address);
         mRecoverButton = (Button) findViewById(R.id.recover);
+        mEmail.setTypeface(AppGlobals.typefaceNormal);
+        mRecoverButton.setTypeface(AppGlobals.typefaceNormal);
         mRecoverButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

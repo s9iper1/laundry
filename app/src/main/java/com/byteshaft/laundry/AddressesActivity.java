@@ -32,6 +32,7 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
         getSupportActionBar().setHomeButtonEnabled(true);
         mToken = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN);
         addAddress = (Button) findViewById(R.id.add_location);
+        addAddress.setTypeface(AppGlobals.typefaceNormal);
         addAddress.setOnClickListener(this);
         expListView = (ExpandableListView) findViewById(R.id.address_list);
     }

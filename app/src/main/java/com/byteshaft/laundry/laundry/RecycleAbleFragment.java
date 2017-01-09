@@ -249,6 +249,9 @@ public class RecycleAbleFragment extends Fragment {
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.layout);
             cardView = (CardView) itemView.findViewById(R.id.card_view);
             spinner = (Spinner) itemView.findViewById(R.id.quantity_spinner);
+            titleTextView.setTypeface(AppGlobals.typefaceNormal);
+            price.setTypeface(AppGlobals.typefaceNormal);
+            titleTextView.setTypeface(AppGlobals.typefaceNormal);
         }
     }
 }

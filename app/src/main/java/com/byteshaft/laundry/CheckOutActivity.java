@@ -73,6 +73,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         listView = (ListView) findViewById(R.id.order_list);
         selectLocation.setOnClickListener(this);
         sendButton = (Button) findViewById(R.id.send);
+        selectLocation.setTypeface(AppGlobals.typefaceNormal);
+        sendButton.setTypeface(AppGlobals.typefaceNormal);
         sendButton.setOnClickListener(this);
         keysArrayList = new ArrayList<>();
         for (Map.Entry<Integer, OrderItem> map : order.entrySet()) {
@@ -290,6 +292,9 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                 viewHolder.quantity = (TextView) convertView.findViewById(R.id.order_quantity);
                 viewHolder.imageView = (ImageView) convertView.findViewById(R.id.order_image);
                 viewHolder.price = (TextView) convertView.findViewById(R.id.order_price);
+                viewHolder.name.setTypeface(AppGlobals.typefaceNormal);
+                viewHolder.quantity.setTypeface(AppGlobals.typefaceNormal);
+                viewHolder.price.setTypeface(AppGlobals.typefaceNormal);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();

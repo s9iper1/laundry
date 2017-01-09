@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.preference.PreferenceManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.View;
@@ -65,6 +64,13 @@ public class CodeConfirmationActivity extends Activity implements
         mResendButton = (Button) findViewById(R.id.btn_confirmation_code_resend);
         timeTextView = (TextView) findViewById(R.id.text_view_time);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mobileNumber.setTypeface(AppGlobals.typefaceNormal);
+        editTextOne.setTypeface(AppGlobals.typefaceNormal);
+        editTextTwo.setTypeface(AppGlobals.typefaceNormal);
+        editTextThree.setTypeface(AppGlobals.typefaceNormal);
+        editTextFour.setTypeface(AppGlobals.typefaceNormal);
+        editTextFive.setTypeface(AppGlobals.typefaceNormal);
+        mResendButton.setTypeface(AppGlobals.typefaceNormal);
         mResendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -65,6 +65,11 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         mPassword = (EditText) findViewById(R.id.password);
         mVerifyPassword = (EditText) findViewById(R.id.verify_password);
         mRegisterButton = (Button) findViewById(R.id.register_button);
+        mUsername.setTypeface(AppGlobals.typefaceNormal);
+        mEmailAddress.setTypeface(AppGlobals.typefaceNormal);
+        mPassword.setTypeface(AppGlobals.typefaceNormal);
+        mVerifyPassword.setTypeface(AppGlobals.typefaceNormal);
+        mRegisterButton.setTypeface(AppGlobals.typefaceNormal);
         mRegisterButton.setOnClickListener(this);
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_PHONE_STATE)

@@ -12,7 +12,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.byteshaft.laundry.MainActivity;
 import com.byteshaft.laundry.R;
 import com.byteshaft.laundry.utils.AppGlobals;
 import com.byteshaft.laundry.utils.WebServiceHelpers;
@@ -56,6 +55,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mRegisterButton.setOnClickListener(this);
         mForgotPasswordTextView = (TextView) findViewById(R.id.tv_forgot_password);
         mForgotPasswordTextView.setOnClickListener(this);
+        mEmail.setTypeface(AppGlobals.typefaceNormal);
+        mPassword.setTypeface(AppGlobals.typefaceNormal);
+        mLoginButton.setTypeface(AppGlobals.typefaceNormal);
+        mRegisterButton.setTypeface(AppGlobals.typefaceNormal);
+        mForgotPasswordTextView.setTypeface(AppGlobals.typefaceNormal);
     }
 
     public boolean validate() {
