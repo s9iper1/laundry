@@ -37,12 +37,17 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addresses);
         mToken = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN);
-        getLocationData();
         addAddress = (Button) findViewById(R.id.add_location);
         addAddress.setOnClickListener(this);
         expListView = (ExpandableListView) findViewById(R.id.address_list);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println(mToken);
+        getLocationData();
+    }
 
     private void getLocationData() {
         progress = ProgressDialog.show(this, "Please wait..",

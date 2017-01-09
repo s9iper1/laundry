@@ -165,7 +165,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                     jsonObject.put("name", addressTitle.getText().toString());
                     jsonObject.put("pickup_city", cityEditText.getText().toString());
                     jsonObject.put("pickup_house_number", houseNumberEditText.getText().toString());
-                    jsonObject.put("pickup_street", addressTitle.getText().toString());
+                    jsonObject.put("pickup_street", streetEditText.getText().toString());
                     jsonObject.put("pickup_zip", zipCodeEditText.getText().toString());
                     Log.i("TAG", "switch state "+ switchOn);
                     if (!switchOn) {
