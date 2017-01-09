@@ -36,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -158,7 +159,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                     try {
                         JSONObject jsonObject = new JSONObject();
                         System.out.println(jsonObject + "object");
-                        jsonObject.put("id", orderItem.getId());
+                        jsonObject.put("item", orderItem.getId());
                         jsonObject.put("quantity", orderItem.getQuantity());
                         jsonArray.put(jsonObject);
 
@@ -167,6 +168,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                     }
                 }
                 System.out.println(jsonArray + "array");
+                orderRequest("17", jsonArray);
                 break;
         }
     }
@@ -340,8 +342,20 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onReadyStateChange(HttpRequest request, int readyState) {
-
-
+        switch (readyState) {
+            case HttpRequest.STATE_DONE:
+                WebServiceHelpers.dismissProgressDialog();
+                switch (request.getStatus()) {
+                    case HttpRequest.ERROR_NETWORK_UNREACHABLE:
+                        AppGlobals.alertDialog(CheckOutActivity.this, "Request Failed!", "please check your internet connection");
+                        break;
+                    case HttpURLConnection.HTTP_CREATED:
+                        System.out.println(request.getResponseText() + "working ");
+                        Toast.makeText(getApplicationContext(), "Your request has been received", Toast.LENGTH_SHORT).show();
+                        finish();
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                }
+        }
     }
 
     private void orderRequest(String address, JSONArray itemsquantity) {
@@ -355,17 +369,16 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         WebServiceHelpers.showProgressDialog(CheckOutActivity.this, "Sending your order..");
     }
 
-    private String orderRequestData(String address, JSONArray itemsquantity) {
+    private String orderRequestData(String addressId, JSONArray itemsquantity) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("address", address);
+            jsonObject.put("address", addressId);
             jsonObject.put("service_items", itemsquantity);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         System.out.println(jsonObject.toString());
         return jsonObject.toString();
-
     }
 
     private class ViewHolder {

@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             mEmail.setText("abc@xyz.com");
         }
-        if (!AppGlobals.isUserActive() && !AppGlobals.dialogCancel) {
+        if (!AppGlobals.isUserActive() && !AppGlobals.dialogCancel && AppGlobals.isUserLoggedIn()) {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setTitle("User not active");
             alertDialogBuilder.setMessage("please activate your account")
@@ -124,17 +124,6 @@ public class MainActivity extends AppCompatActivity
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
         }
-
-//        CircleImageView circularImageView = (CircleImageView) header.findViewById(R.id.imageView);
-//        if (AppGlobals.isUserLoggedIn()) {
-//            final Resources res = getResources();
-//            int[] array = getResources().getIntArray(R.array.letter_tile_colors);
-//            final BitmapWithCharacter tileProvider = new BitmapWithCharacter();
-//            final Bitmap letterTile = tileProvider.getLetterTile(AppGlobals.
-//                            getStringFromSharedPreferences(AppGlobals.KEY_FIRST_NAME),
-//                    String.valueOf(array[new Random().nextInt(array.length)]), 100, 100);
-//            circularImageView.setImageBitmap(letterTile);
-//        }
     }
 
     @Override
