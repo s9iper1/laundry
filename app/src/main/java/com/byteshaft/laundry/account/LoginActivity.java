@@ -159,6 +159,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             AppGlobals.saveDataToSharedPreferences(AppGlobals.KEY_TOKEN, token);
                             Log.i("token", " " + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
                             AppGlobals.saveUserLogin(true);
+                            AppGlobals.saveUserActive(true);
                             finish();
                         } catch (JSONException e) {
                             e.printStackTrace();
