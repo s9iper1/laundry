@@ -86,6 +86,8 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_laundry);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -165,7 +167,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                     jsonObject.put("name", addressTitle.getText().toString());
                     jsonObject.put("pickup_city", cityEditText.getText().toString());
                     jsonObject.put("pickup_house_number", houseNumberEditText.getText().toString());
-                    jsonObject.put("pickup_street", addressTitle.getText().toString());
+                    jsonObject.put("pickup_street", streetEditText.getText().toString());
                     jsonObject.put("pickup_zip", zipCodeEditText.getText().toString());
                     Log.i("TAG", "switch state "+ switchOn);
                     if (!switchOn) {
@@ -182,6 +184,9 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                     e.printStackTrace();
                 }
             }
+            return true;
+        } else if(id == android.R.id.home) {
+            onBackPressed();
             return true;
         }
 

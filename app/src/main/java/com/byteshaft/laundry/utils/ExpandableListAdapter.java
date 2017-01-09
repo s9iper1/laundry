@@ -1,7 +1,9 @@
 package com.byteshaft.laundry.utils;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +56,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         TextView dropHouse;
         TextView dropZipCode;
         TextView dropLocation;
-
         RelativeLayout relativeLayout;
 
     }
@@ -108,18 +109,20 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         JSONObject subItems = (JSONObject) getChild(groupPosition, childPosition);
         try {
             holder.pickupCity.setText("City: " + subItems.getString("pickup_city"));
-            holder.pickupStreet.setText("Street: " + subItems.getString("pickup_street"));
-            holder.pickupHouse.setText("House #: " + subItems.getString("pickup_house_number"));
+            holder.pickupStreet.setText("Street#: " + subItems.getString("pickup_street"));
+            holder.pickupHouse.setText("House#: " + subItems.getString("pickup_house_number"));
             holder.pickupZipCode.setText("Zip Code: " + subItems.getString("pickup_zip"));
+//            holder.pickupLocation.setTextColor(Color.BLUE);
+            // "https://maps.google.com/maps?q=" + 
             holder.pickupLocation.setText(subItems.getString("location"));
 
             boolean drop_on_pickup_location = subItems.getBoolean("drop_on_pickup_location");
             if (drop_on_pickup_location) {
                 holder.relativeLayout.setVisibility(View.VISIBLE);
-                holder.dropCity.setText("City: " +subItems.getString("drop_city"));
-                holder.dropStreet.setText("Street: " + subItems.getString("drop_street"));
-                holder.dropHouse.setText("House #: " + subItems.getString("drop_house_number"));
-                holder.dropZipCode.setText( "Zip Code: " +subItems.getString("drop_zip"));
+                holder.dropCity.setText("City: " + subItems.getString("drop_city"));
+                holder.dropStreet.setText("Street#: " + subItems.getString("drop_street"));
+                holder.dropHouse.setText("House#: " + subItems.getString("drop_house_number"));
+                holder.dropZipCode.setText("Zip Code: " + subItems.getString("drop_zip"));
 
             } else {
                 holder.relativeLayout.setVisibility(View.GONE);
