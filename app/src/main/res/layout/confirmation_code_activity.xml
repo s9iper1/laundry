@@ -20,7 +20,7 @@
             android:layout_margin="10dp"
             android:orientation="vertical">
 
-            <TextView
+            <com.byteshaft.laundry.utils.HeadingTextView
                 android:id="@+id/tv_confirmation_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

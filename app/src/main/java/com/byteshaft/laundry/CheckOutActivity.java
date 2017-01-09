@@ -40,15 +40,12 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static com.byteshaft.laundry.AddressesActivity.sAddressId;
 import static com.byteshaft.laundry.laundry.LaundryCategoriesActivity.order;
 
 
 public class CheckOutActivity extends AppCompatActivity implements View.OnClickListener,
         HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener {
-
-    //    private Button addButton;
-    //    private Button minusButton;
-    //    private TextView weightTextView;
 
     private int weight = 2;
     private Button selectLocation;
@@ -73,6 +70,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         listView = (ListView) findViewById(R.id.order_list);
         selectLocation.setOnClickListener(this);
         sendButton = (Button) findViewById(R.id.send);
+        selectLocation.setTypeface(AppGlobals.typefaceNormal);
+        sendButton.setTypeface(AppGlobals.typefaceNormal);
         sendButton.setOnClickListener(this);
         keysArrayList = new ArrayList<>();
         for (Map.Entry<Integer, OrderItem> map : order.entrySet()) {
@@ -153,6 +152,10 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                 }
                 break;
             case R.id.send:
+                if (sAddressId == -1) {
+                    Toast.makeText(this, "please select your address", Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 JSONArray jsonArray = new JSONArray();
                 for (Integer key : keysArrayList) {
                     OrderItem orderItem = order.get(key);
@@ -162,13 +165,12 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                         jsonObject.put("item", orderItem.getId());
                         jsonObject.put("quantity", orderItem.getQuantity());
                         jsonArray.put(jsonObject);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
                 System.out.println(jsonArray + "array");
-                orderRequest("17", jsonArray);
+                orderRequest(jsonArray);
                 break;
         }
     }
@@ -290,6 +292,9 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                 viewHolder.quantity = (TextView) convertView.findViewById(R.id.order_quantity);
                 viewHolder.imageView = (ImageView) convertView.findViewById(R.id.order_image);
                 viewHolder.price = (TextView) convertView.findViewById(R.id.order_price);
+                viewHolder.name.setTypeface(AppGlobals.typefaceNormal);
+                viewHolder.quantity.setTypeface(AppGlobals.typefaceNormal);
+                viewHolder.price.setTypeface(AppGlobals.typefaceNormal);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -358,21 +363,21 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void orderRequest(String address, JSONArray itemsquantity) {
+    private void orderRequest(JSONArray itemsquantity) {
         HttpRequest request = new HttpRequest(AppGlobals.getContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
         request.open("POST", String.format("%slaundry/request", AppGlobals.BASE_URL));
         request.setRequestHeader("Authorization", "Token " +
                 AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
-        request.send(orderRequestData(address, itemsquantity));
+        request.send(orderRequestData(itemsquantity));
         WebServiceHelpers.showProgressDialog(CheckOutActivity.this, "Sending your order..");
     }
 
-    private String orderRequestData(String addressId, JSONArray itemsquantity) {
+    private String orderRequestData(JSONArray itemsquantity) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("address", addressId);
+            jsonObject.put("address", sAddressId);
             jsonObject.put("service_items", itemsquantity);
         } catch (JSONException e) {
             e.printStackTrace();

@@ -5,7 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.graphics.Typeface;
 import android.support.v7.app.AlertDialog;
 
 import com.byteshaft.laundry.MainActivity;
@@ -29,11 +29,15 @@ public class AppGlobals extends Application {
     public static final String BASE_URL = "http://178.62.87.25/api/";
     public static boolean dialogCancel = false;
     public static final String LOCATIONS_URL = "http://178.62.87.25/api/user/addresses";
+    public static Typeface typefaceBold;
+    public static Typeface typefaceNormal;
 
     @Override
     public void onCreate() {
         super.onCreate();
         sContext = getApplicationContext();
+        typefaceBold = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/bold.ttf");
+        typefaceNormal = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/normal.ttf");
     }
 
     public static Context getContext() {

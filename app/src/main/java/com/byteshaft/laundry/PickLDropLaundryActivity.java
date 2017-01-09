@@ -105,6 +105,17 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         deliveryZipCodeEditText = (EditText) findViewById(R.id.delivery_zip_code);
         switchTextView = (TextView) findViewById(R.id.switch_text);
         deliveryHouseNumber = (EditText) findViewById(R.id.delivery_house_number);
+        addressTitle.setTypeface(AppGlobals.typefaceNormal);
+        cityEditText.setTypeface(AppGlobals.typefaceNormal);
+        houseNumberEditText.setTypeface(AppGlobals.typefaceNormal);
+        streetEditText.setTypeface(AppGlobals.typefaceNormal);
+        zipCodeEditText.setTypeface(AppGlobals.typefaceNormal);
+        deliverySwitch.setTypeface(AppGlobals.typefaceNormal);
+        deliveryCityEditText.setTypeface(AppGlobals.typefaceNormal);
+        deliveryStreetEditText.setTypeface(AppGlobals.typefaceNormal);
+        deliveryZipCodeEditText.setTypeface(AppGlobals.typefaceNormal);
+        switchTextView.setTypeface(AppGlobals.typefaceNormal);
+        deliveryHouseNumber.setTypeface(AppGlobals.typefaceNormal);
         deliverySwitch.setOnCheckedChangeListener(this);
         slideDown = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.slide_down);

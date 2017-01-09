@@ -32,7 +32,6 @@ public class ResetPassword extends AppCompatActivity implements
     private EditText mOldPassword;
     private EditText mEmail;
     private Button mResetButton;
-
     private String mEmailAddressString;
     private String mOldPasswordString;
     private String mPasswordString;
@@ -50,6 +49,10 @@ public class ResetPassword extends AppCompatActivity implements
         mOldPassword = (EditText) findViewById(R.id.old_password);
         mNewPassword = (EditText) findViewById(R.id.password);
         mResetButton = (Button) findViewById(R.id.reset_button);
+        mEmail.setTypeface(AppGlobals.typefaceNormal);
+        mEmail.setTypeface(AppGlobals.typefaceNormal);
+        mOldPassword.setTypeface(AppGlobals.typefaceNormal);
+        mNewPassword.setTypeface(AppGlobals.typefaceNormal);
         mResetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

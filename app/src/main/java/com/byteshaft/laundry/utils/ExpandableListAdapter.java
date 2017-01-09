@@ -1,9 +1,6 @@
 package com.byteshaft.laundry.utils;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +10,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.byteshaft.laundry.R;
-import com.byteshaft.requests.HttpRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import static com.byteshaft.laundry.AddressesActivity.sSelectedPosition;
 
 /**
  * Created by shahid on 04/01/2017.
@@ -88,20 +81,26 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             holder = new SubItemsViewHolder();
 
             holder.relativeLayout = (RelativeLayout) convertView.findViewById(R.id.drop_layout);
-
             // pickup textViews
             holder.pickupCity = (TextView) convertView.findViewById(R.id.pickup_city);
             holder.pickupStreet = (TextView) convertView.findViewById(R.id.pickup_street_number);
             holder.pickupHouse = (TextView) convertView.findViewById(R.id.pickup_house_name);
             holder.pickupZipCode = (TextView) convertView.findViewById(R.id.pickup_zip_code_);
             holder.pickupLocation = (TextView) convertView.findViewById(R.id.pickup_location);
-
+            holder.pickupCity.setTypeface(AppGlobals.typefaceNormal);
+            holder.pickupStreet.setTypeface(AppGlobals.typefaceNormal);
+            holder.pickupHouse.setTypeface(AppGlobals.typefaceNormal);
+            holder.pickupZipCode.setTypeface(AppGlobals.typefaceNormal);
+            holder.pickupLocation.setTypeface(AppGlobals.typefaceNormal);
             // drop textViews
-
             holder.dropCity = (TextView) convertView.findViewById(R.id.drop_city);
             holder.dropStreet = (TextView) convertView.findViewById(R.id.drop_street_number);
             holder.dropHouse = (TextView) convertView.findViewById(R.id.drop_house_name);
             holder.dropZipCode = (TextView) convertView.findViewById(R.id.drop_zip_code_);
+            holder.dropCity.setTypeface(AppGlobals.typefaceNormal);
+            holder.dropStreet.setTypeface(AppGlobals.typefaceNormal);
+            holder.dropHouse.setTypeface(AppGlobals.typefaceNormal);
+            holder.dropZipCode.setTypeface(AppGlobals.typefaceNormal);
             convertView.setTag(holder);
         } else {
             holder = (SubItemsViewHolder) convertView.getTag();
@@ -175,13 +174,19 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.headerTextView.setTypeface(null, Typeface.BOLD);
+        viewHolder.headerTextView.setTypeface(AppGlobals.typefaceBold);
         JSONObject header = (JSONObject) getGroup(groupPosition);
         try {
             viewHolder.headerTextView.setAllCaps(true);
             viewHolder.headerTextView.setText(header.getString("name"));
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+
+        if (sSelectedPosition != -1 && sSelectedPosition == groupPosition) {
+            convertView.setBackgroundColor(mContext.getResources().getColor(R.color.card_selected_color));
+        } else {
+            convertView.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
         }
 
         if (isExpanded) {

@@ -92,6 +92,8 @@ public class MainActivity extends AppCompatActivity
         }
         mName = (TextView) header.findViewById(R.id.nav_user_name);
         mEmail = (TextView) header.findViewById(R.id.nav_user_email);
+        mName.setTypeface(AppGlobals.typefaceBold);
+        mEmail.setTypeface(AppGlobals.typefaceNormal);
         if (!AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME).equals("")
                 && AppGlobals.isUserActive()) {
             String simpleName = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME);

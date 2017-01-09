@@ -54,6 +54,12 @@ public class UpdateProfile extends Fragment implements HttpRequest.OnErrorListen
         mPassword = (EditText) mBaseView.findViewById(R.id.password);
         mVerifyPassword = (EditText) mBaseView.findViewById(R.id.verify_password);
         mUpdateButton = (Button) mBaseView.findViewById(R.id.update_button);
+        mUsername.setTypeface(AppGlobals.typefaceNormal);
+        mEmailAddress.setTypeface(AppGlobals.typefaceNormal);
+        mPhoneNumber.setTypeface(AppGlobals.typefaceNormal);
+        mPassword.setTypeface(AppGlobals.typefaceNormal);
+        mVerifyPassword.setTypeface(AppGlobals.typefaceNormal);
+        mUpdateButton.setTypeface(AppGlobals.typefaceNormal);
 
         //getting user saved data from sharedPreference
         mUsername.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME));
