@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -65,6 +66,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         selectLocation = (Button) findViewById(R.id.select_location);
         listView = (ListView) findViewById(R.id.order_list);
         selectLocation.setOnClickListener(this);
@@ -76,6 +79,17 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         }
         Adapter adapter = new Adapter(getApplicationContext(), R.layout.delegate_order_list, keysArrayList);
         listView.setAdapter(adapter);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

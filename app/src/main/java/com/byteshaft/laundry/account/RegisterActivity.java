@@ -37,7 +37,6 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
     private EditText mEmailAddress;
     private EditText mPassword;
     private EditText mVerifyPassword;
-
     private String mUsernameString;
     private String mEmailAddressString;
     private String mVerifyPasswordString;
