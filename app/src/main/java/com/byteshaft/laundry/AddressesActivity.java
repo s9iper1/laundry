@@ -4,8 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 
@@ -15,6 +17,7 @@ import com.byteshaft.requests.HttpRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class AddressesActivity extends AppCompatActivity implements View.OnClickListener,
         HttpRequest.OnReadyStateChangeListener {
@@ -24,6 +27,10 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
     private ExpandableListView expListView;
     private ProgressDialog progress;
     private String mToken;
+    private JSONArray array;
+    public static int sSelectedPosition = -1;
+    public static int sAddressId = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +42,32 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
         addAddress.setTypeface(AppGlobals.typefaceNormal);
         addAddress.setOnClickListener(this);
         expListView = (ExpandableListView) findViewById(R.id.address_list);
+        expListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (ExpandableListView.getPackedPositionType(l) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+                    int groupPosition = ExpandableListView.getPackedPositionGroup(l);
+                    int childPosition = ExpandableListView.getPackedPositionChild(l);
+                    Log.i("TAG", "group position" + groupPosition);
+                    try {
+                        JSONObject jsonObject = array.getJSONObject(groupPosition);
+                        Log.i("TAG", "id " + jsonObject.getString("id"));
+                        sAddressId = jsonObject.getInt("id");
+                        sSelectedPosition = groupPosition;
+                        listAdapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    finish();
+                    // You now have everything that you would as if this was an OnChildClickListener()
+                    // Add your logic here.
+
+                    // Return true as we are handling the event.
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
 
@@ -81,7 +114,7 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
                 progress.dismiss();
                 System.out.println(request.getResponseText());
                 try {
-                    JSONArray array = new JSONArray(request.getResponseText());
+                    array = new JSONArray(request.getResponseText());
                     listAdapter = new ExpandableListAdapter(this, array);
                     listAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {

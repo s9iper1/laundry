@@ -15,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.byteshaft.laundry.AddressesActivity.sSelectedPosition;
+
 /**
  * Created by shahid on 04/01/2017.
  */
@@ -179,6 +181,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             viewHolder.headerTextView.setText(header.getString("name"));
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+
+        if (sSelectedPosition != -1 && sSelectedPosition == groupPosition) {
+            convertView.setBackgroundColor(mContext.getResources().getColor(R.color.card_selected_color));
+        } else {
+            convertView.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
         }
 
         if (isExpanded) {
