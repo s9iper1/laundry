@@ -149,7 +149,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                             initUI();
                             initCodes();
                         }
-                    }, 1000);
+                    }, 500);
                 } else {
                     Toast.makeText(this, "Select your country manually", Toast.LENGTH_SHORT).show();
                 }
