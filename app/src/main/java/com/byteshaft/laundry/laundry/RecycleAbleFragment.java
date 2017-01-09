@@ -157,7 +157,7 @@ public class RecycleAbleFragment extends Fragment {
                                 .getColor(android.R.color.white));
                     }
                 }
-            }, 500);
+            }, 100);
         }
 
         @Override
