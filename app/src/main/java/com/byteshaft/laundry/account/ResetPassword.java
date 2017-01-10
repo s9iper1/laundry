@@ -45,6 +45,7 @@ public class ResetPassword extends AppCompatActivity implements
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.reset_password);
+        overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         mEmail = (EditText) findViewById(R.id.email_address);
         mOldPassword = (EditText) findViewById(R.id.old_password);
         mNewPassword = (EditText) findViewById(R.id.password);
@@ -145,6 +146,12 @@ public class ResetPassword extends AppCompatActivity implements
                         Toast.makeText(ResetPassword.this, "Your password successfully changed", Toast.LENGTH_SHORT).show();
                 }
         }
+    }
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+        overridePendingTransition(R.anim.anim_right_in, R.anim.anim_right_out);
     }
 
 }

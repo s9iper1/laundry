@@ -19,6 +19,7 @@
                 android:id="@+id/pickup_city"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
                 android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
                 android:paddingTop="5dp"
                 android:text="City" />
@@ -28,6 +29,7 @@
                 android:id="@+id/pickup_street_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
                 android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
                 android:text="Street Number" />
 
@@ -35,6 +37,7 @@
                 android:id="@+id/pickup_house_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
                 android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
                 android:text="House Number" />
 
@@ -43,6 +46,7 @@
                 android:id="@+id/pickup_zip_code_"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
                 android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
                 android:text="Zip Code" />
 
@@ -102,6 +106,7 @@
                 android:id="@+id/drop_city"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
                 android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
                 android:paddingTop="5dp"
                 android:text="City" />
@@ -111,6 +116,7 @@
                 android:id="@+id/drop_street_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
                 android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
                 android:text="Street Number" />
 
@@ -118,6 +124,7 @@
                 android:id="@+id/drop_house_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
                 android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
                 android:text="House Number" />
 
@@ -127,6 +134,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
+                android:textColor="@android:color/white"
                 android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
                 android:text="Zip Code" />
 

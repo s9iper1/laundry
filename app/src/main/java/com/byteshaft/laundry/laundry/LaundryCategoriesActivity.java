@@ -55,6 +55,8 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         getCategories();
         setContentView(R.layout.activity_selection);
+        setTitle("Laundry Categories");
+        overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         sInstance = this;
         categories = new ArrayList<>();
         wholeData = new HashMap<>();
@@ -99,6 +101,8 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+        overridePendingTransition(R.anim.anim_right_in, R.anim.anim_right_out);
+
     }
 
     @Override
