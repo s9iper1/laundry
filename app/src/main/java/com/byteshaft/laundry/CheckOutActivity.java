@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.byteshaft.laundry.account.LoginActivity;
+import com.byteshaft.laundry.laundry.LaundryCategoriesActivity;
 import com.byteshaft.laundry.laundry.OrderItem;
 import com.byteshaft.laundry.utils.AppGlobals;
 import com.byteshaft.laundry.utils.WebServiceHelpers;
@@ -55,7 +56,6 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
     public static double sPickLocationLongitude = 0.0;
     public static double sDropLocationLatitude = 0.0;
     public static double sDropLocationLongitude = 0.0;
-    public static boolean pickOption = false;
     private Button sendButton;
     private ListView listView;
     private ArrayList<Integer> keysArrayList;
@@ -127,7 +127,6 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                         });
                         dialog.show();
                     } else {
-                        pickOption = true;
                         if (AppGlobals.isUserLoggedIn()) {
                             startActivity(new Intent(getApplicationContext(), AddressesActivity.class));
                         } else {
@@ -209,7 +208,6 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                             });
                             dialog.show();
                         } else {
-                            pickOption = true;
                             startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
                         }
                     } else {
@@ -236,7 +234,6 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                             });
                             dialog.show();
                         } else {
-                            pickOption = false;
                             startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
                         }
                     }
@@ -358,6 +355,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                     case HttpURLConnection.HTTP_CREATED:
                         System.out.println(request.getResponseText() + "working ");
                         Toast.makeText(getApplicationContext(), "Your request has been received", Toast.LENGTH_SHORT).show();
+                        LaundryCategoriesActivity.getInstance().finish();
                         finish();
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 }
