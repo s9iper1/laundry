@@ -55,6 +55,7 @@ public class CodeConfirmationActivity extends Activity implements
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.confirmation_code_activity);
+        overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         mobileNumber = (EditText) findViewById(R.id.et_confirmation_code_mobile_number);
         editTextOne = (EditText) findViewById(R.id.et_confirmation_code_one);
         editTextTwo = (EditText) findViewById(R.id.et_confirmation_code_two);
@@ -170,6 +171,7 @@ public class CodeConfirmationActivity extends Activity implements
     public void onBackPressed() {
         finish();
         super.onBackPressed();
+        overridePendingTransition(R.anim.anim_right_in, R.anim.anim_right_out);
     }
 
     @Override
