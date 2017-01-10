@@ -64,6 +64,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
+        setTitle("Checkout");
         overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
