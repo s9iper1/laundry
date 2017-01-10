@@ -22,7 +22,7 @@ import android.widget.TextView;
 import com.byteshaft.laundry.account.CodeConfirmationActivity;
 import com.byteshaft.laundry.account.LoginActivity;
 import com.byteshaft.laundry.account.ResetPassword;
-import com.byteshaft.laundry.fragments.UpdateProfile;
+import com.byteshaft.laundry.account.UpdateProfile;
 import com.byteshaft.laundry.laundry.LaundryCategoriesActivity;
 import com.byteshaft.laundry.utils.AppGlobals;
 
@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity
     private TextView mName;
     private TextView mEmail;
     NavigationView navigationView;
-
 
     public static MainActivity getInstance() {
         return sInstance;
@@ -172,7 +171,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(getApplicationContext(), CodeConfirmationActivity.class));
                 break;
             case R.id.nav_update_profile:
-                loadFragment(new UpdateProfile());
+                startActivity(new Intent(getApplicationContext(), UpdateProfile.class));
                 break;
             case R.id.nav_reset_password:
                 startActivity(new Intent(getApplicationContext(), ResetPassword.class));
