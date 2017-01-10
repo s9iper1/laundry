@@ -48,16 +48,12 @@ import static com.byteshaft.laundry.laundry.LaundryCategoriesActivity.order;
 public class CheckOutActivity extends AppCompatActivity implements View.OnClickListener,
         HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener {
 
-    private int weight = 2;
     private Button selectLocation;
     private static final int PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private static final int DROP_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 1;
-    public static double sPickLocationLatitude = 0.0;
-    public static double sPickLocationLongitude = 0.0;
-    public static double sDropLocationLatitude = 0.0;
-    public static double sDropLocationLongitude = 0.0;
     private Button sendButton;
     private ListView listView;
+    private TextView nothingInCart;
     private ArrayList<Integer> keysArrayList;
 
     @Override
@@ -70,6 +66,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setHomeButtonEnabled(true);
         selectLocation = (Button) findViewById(R.id.select_location);
         listView = (ListView) findViewById(R.id.order_list);
+        nothingInCart = (TextView) findViewById(R.id.nothing_in_cart);
         selectLocation.setOnClickListener(this);
         sendButton = (Button) findViewById(R.id.send);
         selectLocation.setTypeface(AppGlobals.typefaceNormal);
@@ -78,6 +75,11 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         keysArrayList = new ArrayList<>();
         for (Map.Entry<Integer, OrderItem> map : order.entrySet()) {
             keysArrayList.add(map.getKey());
+        }
+        if (keysArrayList.size() > 0) {
+            nothingInCart.setVisibility(View.VISIBLE);
+        }else {
+            nothingInCart.setVisibility(View.GONE);
         }
         Adapter adapter = new Adapter(getApplicationContext(), R.layout.delegate_order_list, keysArrayList);
         listView.setAdapter(adapter);

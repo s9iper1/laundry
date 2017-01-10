@@ -147,9 +147,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             holder.pickupHouse.setText("House#: " + subItems.getString("pickup_house_number"));
             holder.pickupZipCode.setText("Zip Code: " + subItems.getString("pickup_zip"));
             String loc = subItems.getString("location");
+            Log.i("TAG", "loc" + loc);
             String[] pickDrop = loc.split("\\|");
-            String removeLatlng = pickDrop[0].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");
-            String[] latLng = removeLatlng.split(",");
+            String removeLatLng = pickDrop[0].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");
+            String[] latLng = removeLatLng.split(",");
             final double latitude = Double.parseDouble(latLng[0]);
             final double longitude = Double.parseDouble(latLng[1]);
             holder.pickupLocation.setText(latitude+","+longitude);
@@ -170,6 +171,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 holder.dropStreet.setText("Street#: " + subItems.getString("drop_street"));
                 holder.dropHouse.setText("House#: " + subItems.getString("drop_house_number"));
                 holder.dropZipCode.setText("Zip Code: " + subItems.getString("drop_zip"));
+
                 Log.i("TAG", "drop" + pickDrop[1]);
                 String replaceLatLng = pickDrop[1].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");;
                 String[] dropLatLng = replaceLatLng.split(",");
