@@ -74,10 +74,12 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         for (Map.Entry<Integer, OrderItem> map : order.entrySet()) {
             keysArrayList.add(map.getKey());
         }
-        if (keysArrayList.size() > 0) {
+        if (keysArrayList.size() < 1) {
             nothingInCart.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.GONE);
         }else {
             nothingInCart.setVisibility(View.GONE);
+            listView.setVisibility(View.VISIBLE);
         }
         Adapter adapter = new Adapter(getApplicationContext(), R.layout.delegate_order_list, keysArrayList);
         listView.setAdapter(adapter);
