@@ -48,7 +48,6 @@ import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Locale;
 
-import static com.byteshaft.laundry.CheckOutActivity.pickOption;
 
 public class PickLDropLaundryActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -76,11 +75,15 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
     private RelativeLayout relativeLayout;
     private TextView switchTextView;
     private Switch deliverySwitch;
-    private boolean switchOn = false;
+    private boolean switchOn = true;
     private EditText deliveryHouseNumber;
     private EditText deliveryCityEditText;
     private EditText deliveryStreetEditText;
     private EditText deliveryZipCodeEditText;
+    private LatLng pickUpLatLong;
+    private LatLng dropLatLong;
+    private MenuItem menuItem;
+    private boolean updateMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +108,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         deliveryZipCodeEditText = (EditText) findViewById(R.id.delivery_zip_code);
         switchTextView = (TextView) findViewById(R.id.switch_text);
         deliveryHouseNumber = (EditText) findViewById(R.id.delivery_house_number);
-        addressTitle.setTypeface(AppGlobals.typefaceNormal);
+        addressTitle.setTypeface(AppGlobals.typefaceBold);
         cityEditText.setTypeface(AppGlobals.typefaceNormal);
         houseNumberEditText.setTypeface(AppGlobals.typefaceNormal);
         streetEditText.setTypeface(AppGlobals.typefaceNormal);
@@ -116,6 +119,37 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         deliveryZipCodeEditText.setTypeface(AppGlobals.typefaceNormal);
         switchTextView.setTypeface(AppGlobals.typefaceNormal);
         deliveryHouseNumber.setTypeface(AppGlobals.typefaceNormal);
+        if (getIntent().getExtras() != null) {
+            addressTitle.setText(getIntent().getStringExtra("title"));
+            cityEditText.setText(getIntent().getStringExtra("city"));
+            streetEditText.setText(getIntent().getStringExtra("street"));
+            houseNumberEditText.setText(getIntent().getStringExtra("house"));
+            zipCodeEditText.setText(getIntent().getStringExtra("zip"));
+            String loc = getIntent().getStringExtra("pick_location");
+            String[] pickDrop = loc.split("\\|");
+            String removeLatlng = pickDrop[0].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");
+            String[] latLng = removeLatlng.split(",");
+            final double latitude = Double.parseDouble(latLng[0]);
+            final double longitude = Double.parseDouble(latLng[1]);
+            pickUpLatLong = new LatLng(latitude, longitude);
+            boolean sameDropLocation = getIntent().getBooleanExtra("boolean", false);
+            deliverySwitch.setChecked(sameDropLocation);
+            if (!sameDropLocation) {
+                deliveryCityEditText.setText(getIntent().getStringExtra("drop_city"));
+                deliveryStreetEditText.setText(getIntent().getStringExtra("drop_street"));
+                deliveryHouseNumber.setText(getIntent().getStringExtra("drop_house"));
+                deliveryZipCodeEditText.setText(getIntent().getStringExtra("drop_zip"));
+                String replaceLatLng = pickDrop[1].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");;
+                String[] dropLatLng = replaceLatLng.split(",");
+                final double dropLatitude = Double.parseDouble(dropLatLng[0]);
+                final double dropLongitude = Double.parseDouble(dropLatLng[1]);
+                dropLatLong = new LatLng(dropLatitude, dropLongitude);
+                relativeLayout.setVisibility(View.VISIBLE);
+                relativeLayout.setAnimation(slideDown);
+            }
+            menuItem.setTitle("Update");
+            updateMode = true;
+        }
         deliverySwitch.setOnCheckedChangeListener(this);
         slideDown = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.slide_down);
@@ -126,7 +160,6 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        pickOption = false;
         finish();
     }
 
@@ -157,12 +190,21 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                 return false;
             }
         }
+        if (dropLatLong == null) {
+            Toast.makeText(this, "please select drop location on map", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (pickUpLatLong == null) {
+            Toast.makeText(this, "please select pickup location on map", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         return true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_address_menu, menu);
+        menuItem = menu.findItem(R.id.save_address);
         return true;
     }
 
@@ -173,14 +215,19 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         if (id == R.id.save_address) {
             if (validateFields()) {
                 JSONObject jsonObject = new JSONObject();
+                String location = "";
+                if (switchOn) {
+                    location = pickUpLatLong.toString();
+                } else {
+                    location = pickUpLatLong + "|" + dropLatLong;
+                }
                 try {
-                    jsonObject.put("location", latitude + ", " + longitude);
+                    jsonObject.put("location", location);
                     jsonObject.put("name", addressTitle.getText().toString());
                     jsonObject.put("pickup_city", cityEditText.getText().toString());
                     jsonObject.put("pickup_house_number", houseNumberEditText.getText().toString());
                     jsonObject.put("pickup_street", streetEditText.getText().toString());
                     jsonObject.put("pickup_zip", zipCodeEditText.getText().toString());
-                    Log.i("TAG", "switch state "+ switchOn);
                     if (!switchOn) {
                         Log.i("TAG", "Running drop part");
                         jsonObject.put("drop_city", deliveryCityEditText.getText().toString());
@@ -196,7 +243,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                 }
             }
             return true;
-        } else if(id == android.R.id.home) {
+        } else if (id == android.R.id.home) {
             onBackPressed();
             return true;
         }
@@ -230,7 +277,8 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                         finish();
                         Toast.makeText(this, "Address added!", Toast.LENGTH_SHORT).show();
                         break;
-                    default:Toast.makeText(this, "Failed!", Toast.LENGTH_SHORT).show();
+                    default:
+                        Toast.makeText(this, "Failed!", Toast.LENGTH_SHORT).show();
 
                 }
         }
@@ -245,9 +293,15 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
             relativeLayout.setVisibility(View.VISIBLE);
             relativeLayout.setAnimation(slideDown);
             deliveryCityEditText.setText(cityEditText.getText().toString());
+            mMap.clear();
+            Toast.makeText(this, "please select drop location on map", Toast.LENGTH_SHORT).show();
         } else {
             switchTextView.setText(getResources().getString(R.string.delivery_address_same_as_pick_address));
             switchOn = true;
+            mMap.addMarker(new MarkerOptions()
+                    .position(pickUpLatLong).title("pickup").icon(BitmapDescriptorFactory
+                            .defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            );
             relativeLayout.setVisibility(View.GONE);
             relativeLayout.setAnimation(slideUp);
         }
@@ -255,59 +309,89 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        boolean sameDropLocation = getIntent().getBooleanExtra("boolean", false);
         mMap = googleMap;
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
                 mMap.clear();
+                String title;
+                if (switchOn) {
+                    title = "pickup";
+                } else {
+                    title = "drop";
+                }
                 mMap.addMarker(new MarkerOptions()
-                        .position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                        .position(latLng).title(title).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
 
                 );
-
                 longitude = latLng.longitude;
                 latitude = latLng.latitude;
-                System.out.println(latLng + "Position");
-                String Position = "" + latLng;
-                System.out.println(Position + "current Position");
-                System.out.println(longitude + "longitude");
-                System.out.println(latitude + "latitude");
-
-                if (pickOption) {
-                    Log.i("TAG", "null" + String.valueOf(longitude == null));
-                    CheckOutActivity.sPickLocationLongitude = longitude;
-                    CheckOutActivity.sPickLocationLatitude = latitude;
+                if (switchOn) {
+                    pickUpLatLong = new LatLng(latitude, longitude);
                 } else {
-                    Log.i("TAG", "null" + String.valueOf(longitude == null));
-                    CheckOutActivity.sDropLocationLongitude = longitude;
-                    CheckOutActivity.sDropLocationLatitude = latitude;
+                    dropLatLong = new LatLng(latitude, longitude);
+                    Log.i("TAG", "dropLatlong" + dropLatLong);
                 }
                 getCompleteAddressString(latitude, longitude);
             }
         });
-
         buildGoogleApiClient();
         mGoogleApiClient.connect();
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        if (getIntent().getExtras() != null) {
+            mMap.addMarker(new MarkerOptions()
+                    .position(pickUpLatLong).title("pickup")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+
+            );
+            if (!sameDropLocation) {
+                mMap.addMarker(new MarkerOptions()
+                        .position(dropLatLong).title("drop").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+
+                );
+            }
+        }
     }
 
 
-    private String getCompleteAddressString(double lattitude, double longitude) {
+    private String getCompleteAddressString(double latitude, double longitude) {
         String strAdd = "";
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
-            List<Address> addresses = geocoder.getFromLocation(lattitude, longitude, 1);
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
             if (addresses != null) {
                 address = addresses.get(0).getAddressLine(0);
-                if (!address.trim().isEmpty() && address != null) {
-                    cityEditText.setText(address);
+                if (address != null && !address.trim().isEmpty()) {
+                    if (switchOn) {
+                        cityEditText.setText(address);
+                    } else {
+                        deliveryCityEditText.setText(address);
+                    }
                 }
                 city = addresses.get(0).getLocality();
-                if (!city.trim().isEmpty() && city != null) {
-                    cityEditText.setText(address + " " + city);
+                if (city != null && !city.trim().isEmpty()) {
+                    if (switchOn) {
+                        cityEditText.setText(address + " " + city);
+                    } else {
+                        deliveryCityEditText.setText(address + " " + city);
+                    }
                 }
                 zipCode = addresses.get(0).getPostalCode();
-                if (!zipCode.trim().isEmpty() && zipCode != null) {
+                if (zipCode != null && !zipCode.trim().isEmpty()) {
+                    if (switchOn)
                     zipCodeEditText.setText(zipCode);
+                    else deliveryZipCodeEditText.setText(zipCode);
                 }
                 Log.i("TAG", "address " + address + city + zipCode);
             } else {
@@ -367,33 +451,38 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
 
     @Override
     public void onLocationChanged(Location location) {
-        if (currLocationMarker != null) {
-            currLocationMarker.remove();
-        }
-        latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        currLocationMarker = mMap.addMarker(markerOptions);
+        if (getIntent().getExtras() == null) {
+            if (currLocationMarker != null) {
+                currLocationMarker.remove();
+            }
+            latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title("Current Position");
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            currLocationMarker = mMap.addMarker(markerOptions);
 
-        if (counter < 1) {
-            longitude = latLng.longitude;
-            latitude = latLng.latitude;
-            getCompleteAddressString(latitude, longitude);
-        }
-        counter++;
-        //zoom to current position:
-        if (pickOption) {
-            CheckOutActivity.sPickLocationLongitude = latLng.longitude;
-            CheckOutActivity.sPickLocationLatitude = latLng.latitude;
+            if (counter < 1) {
+                longitude = latLng.longitude;
+                latitude = latLng.latitude;
+                getCompleteAddressString(latitude, longitude);
+            }
+            counter++;
+            //zoom to current position:
+            if (switchOn) {
+                pickUpLatLong = new LatLng(latitude, longitude);
+            } else {
+                dropLatLong = new LatLng(latitude, longitude);
+            }
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(latLng).zoom(16).build();
+            mMap.animateCamera(CameraUpdateFactory
+                    .newCameraPosition(cameraPosition));
         } else {
-            CheckOutActivity.sDropLocationLongitude = latLng.longitude;
-            CheckOutActivity.sDropLocationLatitude = latLng.latitude;
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(pickUpLatLong).zoom(5).build();
+            mMap.animateCamera(CameraUpdateFactory
+                    .newCameraPosition(cameraPosition));
         }
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(latLng).zoom(16).build();
-        mMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
     }
 }

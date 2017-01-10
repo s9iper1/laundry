@@ -1,19 +1,26 @@
 package com.byteshaft.laundry.utils;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.byteshaft.laundry.PickLDropLaundryActivity;
 import com.byteshaft.laundry.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Locale;
 
 import static com.byteshaft.laundry.AddressesActivity.sSelectedPosition;
 
@@ -42,6 +49,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         TextView pickupHouse;
         TextView pickupZipCode;
         TextView pickupLocation;
+        ImageView editButton;
 
         // drop textViews
         TextView dropCity;
@@ -70,7 +78,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int groupPosition, final int childPosition,
+    public View getChildView(final int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
         final SubItemsViewHolder holder;
 
@@ -87,6 +95,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             holder.pickupHouse = (TextView) convertView.findViewById(R.id.pickup_house_name);
             holder.pickupZipCode = (TextView) convertView.findViewById(R.id.pickup_zip_code_);
             holder.pickupLocation = (TextView) convertView.findViewById(R.id.pickup_location);
+            holder.editButton = (ImageButton) convertView.findViewById(R.id.edit);
             holder.pickupCity.setTypeface(AppGlobals.typefaceNormal);
             holder.pickupStreet.setTypeface(AppGlobals.typefaceNormal);
             holder.pickupHouse.setTypeface(AppGlobals.typefaceNormal);
@@ -97,32 +106,84 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             holder.dropStreet = (TextView) convertView.findViewById(R.id.drop_street_number);
             holder.dropHouse = (TextView) convertView.findViewById(R.id.drop_house_name);
             holder.dropZipCode = (TextView) convertView.findViewById(R.id.drop_zip_code_);
+            holder.dropLocation = (TextView) convertView.findViewById(R.id.drop_location);
             holder.dropCity.setTypeface(AppGlobals.typefaceNormal);
             holder.dropStreet.setTypeface(AppGlobals.typefaceNormal);
             holder.dropHouse.setTypeface(AppGlobals.typefaceNormal);
             holder.dropZipCode.setTypeface(AppGlobals.typefaceNormal);
+            holder.dropLocation.setTypeface(AppGlobals.typefaceNormal);
             convertView.setTag(holder);
         } else {
             holder = (SubItemsViewHolder) convertView.getTag();
         }
+        holder.editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    JSONObject jsonObject =(JSONObject) getChild(groupPosition, childPosition);
+                    Intent intent = new Intent(mContext, PickLDropLaundryActivity.class);
+                    intent.putExtra("title", jsonObject.getString("name"));
+                    intent.putExtra("city", jsonObject.getString("pickup_city"));
+                    intent.putExtra("street", jsonObject.getString("pickup_street"));
+                    intent.putExtra("house", jsonObject.getString("pickup_house_number"));
+                    intent.putExtra("zip", jsonObject.getString("pickup_zip"));
+                    intent.putExtra("pick_location", jsonObject.getString("location"));
+                    intent.putExtra("boolean", jsonObject.getBoolean("drop_on_pickup_location"));
+                    intent.putExtra("drop_city", jsonObject.getString("drop_city"));
+                    intent.putExtra("drop_street", jsonObject.getString("drop_street"));
+                    intent.putExtra("drop_house", jsonObject.getString("drop_house_number"));
+                    intent.putExtra("drop_zip", jsonObject.getString("drop_zip"));
+                    intent.putExtra("drop_location", jsonObject.getString("location"));
+                    mContext.startActivity(intent);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         JSONObject subItems = (JSONObject) getChild(groupPosition, childPosition);
         try {
             holder.pickupCity.setText("City: " + subItems.getString("pickup_city"));
             holder.pickupStreet.setText("Street#: " + subItems.getString("pickup_street"));
             holder.pickupHouse.setText("House#: " + subItems.getString("pickup_house_number"));
             holder.pickupZipCode.setText("Zip Code: " + subItems.getString("pickup_zip"));
-//            holder.pickupLocation.setTextColor(Color.BLUE);
-            // "https://maps.google.com/maps?q=" + 
-            holder.pickupLocation.setText(subItems.getString("location"));
+            String loc = subItems.getString("location");
+            String[] pickDrop = loc.split("\\|");
+            String removeLatlng = pickDrop[0].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");
+            String[] latLng = removeLatlng.split(",");
+            final double latitude = Double.parseDouble(latLng[0]);
+            final double longitude = Double.parseDouble(latLng[1]);
+            holder.pickupLocation.setText(latitude+","+longitude);
+            holder.pickupLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String uri = String.format(Locale.ENGLISH, "geo:%f,%f", latitude, longitude);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                    mContext.startActivity(intent);
+                }
+            });
 
             boolean drop_on_pickup_location = subItems.getBoolean("drop_on_pickup_location");
-            if (drop_on_pickup_location) {
+            Log.i("TAG", "drop_on_pickup_location" + drop_on_pickup_location);
+            if (!drop_on_pickup_location) {
                 holder.relativeLayout.setVisibility(View.VISIBLE);
                 holder.dropCity.setText("City: " + subItems.getString("drop_city"));
                 holder.dropStreet.setText("Street#: " + subItems.getString("drop_street"));
                 holder.dropHouse.setText("House#: " + subItems.getString("drop_house_number"));
                 holder.dropZipCode.setText("Zip Code: " + subItems.getString("drop_zip"));
-
+                Log.i("TAG", "drop" + pickDrop[1]);
+                String replaceLatLng = pickDrop[1].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");;
+                String[] dropLatLng = replaceLatLng.split(",");
+                final double dropLatitude = Double.parseDouble(dropLatLng[0]);
+                final double dropLongitude = Double.parseDouble(dropLatLng[1]);
+                holder.dropLocation.setText(dropLatitude+"," +dropLongitude);
+                holder.dropLocation.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String uri = String.format(Locale.ENGLISH, "geo:%f,%f", dropLatitude, dropLongitude);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                        mContext.startActivity(intent);
+                    }
+                });
             } else {
                 holder.relativeLayout.setVisibility(View.GONE);
             }
