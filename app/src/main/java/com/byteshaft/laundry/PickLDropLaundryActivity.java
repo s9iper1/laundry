@@ -213,33 +213,34 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         int id = item.getItemId();
 
         if (id == R.id.save_address) {
-            if (validateFields()) {
-                JSONObject jsonObject = new JSONObject();
-                String location = "";
-                if (switchOn) {
-                    location = pickUpLatLong.toString();
-                } else {
-                    location = pickUpLatLong + "|" + dropLatLong;
-                }
-                try {
-                    jsonObject.put("location", location);
-                    jsonObject.put("name", addressTitle.getText().toString());
-                    jsonObject.put("pickup_city", cityEditText.getText().toString());
-                    jsonObject.put("pickup_house_number", houseNumberEditText.getText().toString());
-                    jsonObject.put("pickup_street", streetEditText.getText().toString());
-                    jsonObject.put("pickup_zip", zipCodeEditText.getText().toString());
-                    if (!switchOn) {
-                        Log.i("TAG", "Running drop part");
-                        jsonObject.put("drop_city", deliveryCityEditText.getText().toString());
-                        jsonObject.put("drop_house_number", deliveryHouseNumber.getText().toString());
-                        jsonObject.put("drop_street", deliveryStreetEditText.getText().toString());
-                        jsonObject.put("drop_zip", deliveryZipCodeEditText.getText().toString());
-                        jsonObject.put("drop_on_pickup_location", "false");
+            if (!updateMode) {
+                if (validateFields()) {
+                    JSONObject jsonObject = new JSONObject();
+                    String location = "";
+                    if (switchOn) {
+                        location = pickUpLatLong.toString();
+                    } else {
+                        location = pickUpLatLong + "|" + dropLatLong;
                     }
-                    Log.i("TAG", "Data " + jsonObject.toString());
-                    addLocation(jsonObject);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    try {
+                        jsonObject.put("location", location);
+                        jsonObject.put("name", addressTitle.getText().toString());
+                        jsonObject.put("pickup_city", cityEditText.getText().toString());
+                        jsonObject.put("pickup_house_number", houseNumberEditText.getText().toString());
+                        jsonObject.put("pickup_street", streetEditText.getText().toString());
+                        jsonObject.put("pickup_zip", zipCodeEditText.getText().toString());
+                        if (!switchOn) {
+                            jsonObject.put("drop_city", deliveryCityEditText.getText().toString());
+                            jsonObject.put("drop_house_number", deliveryHouseNumber.getText().toString());
+                            jsonObject.put("drop_street", deliveryStreetEditText.getText().toString());
+                            jsonObject.put("drop_zip", deliveryZipCodeEditText.getText().toString());
+                            jsonObject.put("drop_on_pickup_location", "false");
+                        }
+                        Log.i("TAG", "Data " + jsonObject.toString());
+                        addLocation(jsonObject);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             return true;
