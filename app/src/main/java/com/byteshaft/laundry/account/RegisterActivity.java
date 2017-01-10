@@ -59,6 +59,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.register);
+        overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         sInstance = this;
         mUsername = (EditText) findViewById(R.id.user_name);
         mEmailAddress = (EditText) findViewById(R.id.email);
@@ -272,5 +273,12 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         switch (request.getStatus()) {
             case HttpURLConnection.HTTP_UNAUTHORIZED:
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+        overridePendingTransition(R.anim.anim_right_in, R.anim.anim_right_out);
     }
 }

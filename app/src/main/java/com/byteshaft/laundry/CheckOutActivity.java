@@ -64,6 +64,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
+        overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         selectLocation = (Button) findViewById(R.id.select_location);
@@ -389,5 +390,13 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         public TextView quantity;
         public TextView price;
         public ImageView imageView;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        overridePendingTransition(R.anim.anim_right_in, R.anim.anim_right_out);
+
     }
 }
