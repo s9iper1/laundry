@@ -47,6 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
+                android:layout_centerHorizontal="true"
                 android:padding="2dp"
                 android:src="@mipmap/ic_launcher"/>
 
@@ -67,7 +68,7 @@
                 android:layout_alignParentLeft="true"
                 android:textSize="16sp"
                 android:textStyle="italic|bold"
-                android:padding="2dp"
+                android:padding="4dp"
                 android:id="@+id/name" />
 
             <View
