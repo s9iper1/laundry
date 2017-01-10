@@ -35,6 +35,7 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addresses);
+        setTitle("Addresses");
         overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);

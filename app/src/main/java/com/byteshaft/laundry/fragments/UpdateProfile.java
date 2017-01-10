@@ -47,6 +47,7 @@ public class UpdateProfile extends Fragment implements HttpRequest.OnErrorListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBaseView = inflater.inflate(R.layout.update_profile, container, false);
         setHasOptionsMenu(true);
+        getActivity().setTitle("Update Profile");
         //initialization
         mUsername = (EditText) mBaseView.findViewById(R.id.user_name);
         mEmailAddress = (EditText) mBaseView.findViewById(R.id.email);
