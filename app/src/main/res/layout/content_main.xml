@@ -9,9 +9,12 @@
     tools:context="com.byteshaft.laundry.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <FrameLayout
-        android:id="@+id/container"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:scrollbars="vertical"
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        />
 
 </RelativeLayout>
