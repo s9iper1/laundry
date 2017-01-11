@@ -14,7 +14,7 @@
 
     <Button
         android:id="@+id/add_location"
-        style="@style/AppTheme.Button"
+        android:background="@drawable/apptheme_btn_default_holo_light"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:text="Add Location"

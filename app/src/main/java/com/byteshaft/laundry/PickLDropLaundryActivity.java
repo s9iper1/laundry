@@ -191,7 +191,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                 return false;
             }
         }
-        if (dropLatLong == null) {
+        if (dropLatLong == null && !switchOn) {
             Toast.makeText(this, "please select drop location on map", Toast.LENGTH_SHORT).show();
             return false;
         }

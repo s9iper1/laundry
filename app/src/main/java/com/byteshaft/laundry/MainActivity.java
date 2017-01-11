@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -53,9 +54,11 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sInstance = this;
+        overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         setContentView(R.layout.activity_main);
         overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         AppGlobals.sActivity = MainActivity.this;
+        Log.i("TAG", "" + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
