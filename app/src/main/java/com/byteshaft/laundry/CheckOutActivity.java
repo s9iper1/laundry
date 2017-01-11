@@ -320,7 +320,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
             }
             Picasso.with(AppGlobals.getContext())
                     .load(orderItem.getImageUrl())
-                    .resize(200, 200)
+                    .resize(150, 150)
                     .centerCrop()
                     .into(viewHolder.imageView, new Callback() {
                         @Override

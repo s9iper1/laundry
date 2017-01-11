@@ -160,7 +160,7 @@
         android:textColor="@android:color/white"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/apptheme_btn_default_holo_light"
+        android:background="@drawable/apptheme_btn_default_holo_dark"
         android:padding="10dp"
         android:text="Resend Confirmation code" />
 </RelativeLayout>

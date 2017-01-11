@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.byteshaft.laundry.utils.AppGlobals;
 import com.byteshaft.laundry.utils.ExpandableListAdapter;
@@ -60,7 +61,13 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    finish();
+                    Toast.makeText(AddressesActivity.this, "selected", Toast.LENGTH_SHORT).show();
+                    new android.os.Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                           finish();
+                        }
+                    }, 1000);
                     // You now have everything that you would as if this was an OnChildClickListener()
                     // Add your logic here.
 
