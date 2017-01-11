@@ -10,11 +10,13 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -89,7 +91,6 @@ public class RecycleAbleFragment extends Fragment {
         private GestureDetector mGestureDetector;
         private CustomView viewHolder;
 
-
         public CustomAdapter(ArrayList<LaundryItem> categories, Context context, OnItemClickListener listener) {
             this.items = categories;
             mListener = listener;
@@ -158,6 +159,31 @@ public class RecycleAbleFragment extends Fragment {
                     }
                 }
             }, 100);
+            viewHolder.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    if (order.containsKey(items.get(holder.getAdapterPosition()).getId())) {
+                        Log.i("TAG", "OK");
+                        order.remove(items.get(holder.getAdapterPosition()).getId());
+                        OrderItem orderItem = new OrderItem();
+                        orderItem.setId(items.get(holder.getAdapterPosition()).getId());
+                        orderItem.setName(items.get(holder.getAdapterPosition()).getName());
+                        Spinner spinner = (Spinner) mRecyclerView
+                                .findViewHolderForAdapterPosition(holder.getAdapterPosition()).
+                                        itemView.findViewById(R.id.quantity_spinner);
+                        orderItem.setQuantity(String.valueOf(spinner.getSelectedItem()));
+                        orderItem.setPrice(items.get(holder.getAdapterPosition()).getPrice());
+                        orderItem.setImageUrl(items.get(holder.getAdapterPosition()).getImageUri());
+                        order.put(items.get(holder.getAdapterPosition()).getId(),
+                                orderItem);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
         }
 
         @Override
