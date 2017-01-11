@@ -352,6 +352,12 @@ public class MainActivity extends AppCompatActivity
                 JSONObject addressObject = jsonObject.getJSONObject("address");
                 JSONArray itemsArray = jsonObject.getJSONArray("service_items");
                 viewHolder.address.setText("Address: " + addressObject.getString("name"));
+                boolean isDone = jsonObject.getBoolean("done");
+                if (isDone) {
+                    viewHolder.status.setText("Status: Done");
+                } else {
+                    viewHolder.status.setText("Status: Pending");
+                }
                 StringBuilder stringBuilder = new StringBuilder();
                 for (int i = 0; i < itemsArray.length(); i++) {
                     JSONObject itemDetails = itemsArray.getJSONObject(i);
@@ -400,14 +406,14 @@ public class MainActivity extends AppCompatActivity
             public TextView address;
             public TextView textItem;
             public TextView itemName;
-            public TextView itemQuantity;
+            public TextView status;
 
             public CustomView(View itemView) {
                 super(itemView);
                 address = (TextView) itemView.findViewById(R.id.tv_address);
                 textItem = (TextView) itemView.findViewById(R.id.tv_item);
                 itemName = (TextView) itemView.findViewById(R.id.tv_item_name);
-                itemQuantity = (TextView) itemView.findViewById(R.id.tv_quantity);
+                status = (TextView) itemView.findViewById(R.id.tv_status);
             }
         }
     }

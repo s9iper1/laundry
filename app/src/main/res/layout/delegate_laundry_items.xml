@@ -10,8 +10,7 @@
         android:layout_marginBottom="4dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="4dp"
-        card_view:cardBackgroundColor="@android:color/transparent">
+        android:layout_marginTop="4dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -25,8 +24,8 @@
                 android:id="@+id/tv_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textStyle="bold"
                 android:text="Address"
-                android:textColor="@android:color/white"
                 android:textSize="18sp" />
 
             <TextView
@@ -35,7 +34,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_address"
                 android:text="Items"
-                android:textColor="@android:color/white"
                 android:textSize="18sp" />
 
             <TextView
@@ -44,16 +42,14 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_item"
                 android:text="Item Name"
-                android:textColor="@android:color/white"
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/tv_quantity"
+                android:id="@+id/tv_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_item_name"
-                android:text="Quantity"
-                android:textColor="@android:color/white"
+                android:text="Status: "
                 android:textSize="18sp" />
 
         </RelativeLayout>
