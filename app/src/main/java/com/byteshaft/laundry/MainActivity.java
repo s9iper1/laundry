@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -26,7 +24,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.byteshaft.laundry.account.CodeConfirmationActivity;
@@ -41,9 +38,6 @@ import com.byteshaft.requests.HttpRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.byteshaft.laundry.utils.BitmapWithCharacter;
-
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -242,12 +236,12 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
-//            case R.id.add_address:
-//                startActivity(new Intent(getApplicationContext(), AddressesActivity.class));
-//                break;
-//            case R.id.request_laundry:
-//                startActivity(new Intent(getApplicationContext(), LaundryCategoriesActivity.class));
-//                break;
+            case R.id.add_address:
+                startActivity(new Intent(getApplicationContext(), AddressesActivity.class));
+                break;
+            case R.id.request_laundry:
+                startActivity(new Intent(getApplicationContext(), LaundryCategoriesActivity.class));
+                break;
             case R.id.login:
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 break;
@@ -300,17 +294,9 @@ public class MainActivity extends AppCompatActivity
                 System.out.println("Ok kro :   " + request.getResponseText());
                 try {
                     array = new JSONArray(request.getResponseText());
-                    try {
-                        JSONObject jsonObject = array.getJSONObject(0);
-                        Log.i("Tag", jsonObject.toString());
-                        JSONObject addressObject = jsonObject.getJSONObject("address");
-                        JSONArray itemsArray = jsonObject.getJSONArray("service_items");
-                        listAdapter = new CustomAdapter(itemsArray, addressObject,
-                                jsonObject.getString("created"), jsonObject.getBoolean("done"));
+                        listAdapter = new CustomAdapter(array);
                         mRecyclerView.setAdapter(listAdapter);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -321,9 +307,6 @@ public class MainActivity extends AppCompatActivity
             RecyclerView.OnItemTouchListener {
 
         private JSONArray items;
-        private JSONObject mAddresses;
-        private String mCreatedDate;
-        private boolean mIsDone;
         private CustomView viewHolder;
         private OnItemClickListener mListener;
         private GestureDetector mGestureDetector;
@@ -345,10 +328,10 @@ public class MainActivity extends AppCompatActivity
                     });
         }
 
-        public CustomAdapter(JSONArray categories, JSONObject addresses, String createdDate, boolean isDone) {
-            mAddresses = addresses;
-            mCreatedDate = createdDate;
-            mIsDone = isDone;
+        public CustomAdapter(JSONArray categories) {
+//            mAddresses = addresses;
+//            mCreatedDate = createdDate;
+//            mIsDone = isDone;
             items = categories;
         }
 
@@ -365,11 +348,22 @@ public class MainActivity extends AppCompatActivity
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             holder.setIsRecyclable(false);
             try {
-                viewHolder.address.setText("Address: " + mAddresses.getString("name"));
                 JSONObject jsonObject = items.getJSONObject(position);
-                viewHolder.textItem.setText("Items: " +jsonObject.getString("item"));
-                viewHolder.itemName.setText("Item Name: " + jsonObject.getString("name"));
-                viewHolder.itemQuantity.setText("Quantity: " + jsonObject.getString("quantity"));
+                Log.i("Tag", jsonObject.toString());
+                JSONObject addressObject = jsonObject.getJSONObject("address");
+                JSONArray itemsArray = jsonObject.getJSONArray("service_items");
+                viewHolder.address.setText("Address: " + addressObject.getString("name"));
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0; i < itemsArray.length(); i++) {
+                    JSONObject itemDetails = itemsArray.getJSONObject(i);
+                    stringBuilder.append(itemDetails.getString("name"));
+                    stringBuilder.append(" ");
+                    stringBuilder.append(itemDetails.getString("quantity"));
+                    if (i < itemsArray.length()) {
+                        stringBuilder.append(" , ");
+                    }
+                    viewHolder.itemName.setText(stringBuilder.toString());
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
