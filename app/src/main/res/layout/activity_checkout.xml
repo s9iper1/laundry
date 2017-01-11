@@ -31,7 +31,7 @@
             android:layout_centerHorizontal="true"
             android:layout_margin="10dp"
             android:drawableLeft="@mipmap/marker"
-            android:background="@drawable/apptheme_btn_default_holo_light"
+            android:background="@drawable/apptheme_btn_default_holo_dark"
             android:drawablePadding="5dp"
             android:padding="10dp"
             android:text="Choose address"
@@ -79,7 +79,7 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/apptheme_btn_default_holo_light"
+        android:background="@drawable/apptheme_btn_default_holo_dark"
         android:drawablePadding="5dp"
         android:text="Send"
         android:textColor="@android:color/white" />
