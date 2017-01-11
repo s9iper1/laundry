@@ -14,8 +14,20 @@
         android:id="@+id/recycler"
         android:scrollbars="vertical"
         android:layout_margin="10dp"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
+
+    <com.byteshaft.laundry.utils.HeadingTextView
+        android:id="@+id/laundry_text"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="28sp"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:text="Let's do some Laundry!"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>
