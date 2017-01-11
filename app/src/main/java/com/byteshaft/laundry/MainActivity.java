@@ -211,6 +211,12 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
+            case R.id.add_address:
+                startActivity(new Intent(getApplicationContext(), AddressesActivity.class));
+                break;
+            case R.id.request_laundry:
+                startActivity(new Intent(getApplicationContext(), LaundryCategoriesActivity.class));
+                break;
             case R.id.login:
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 break;
