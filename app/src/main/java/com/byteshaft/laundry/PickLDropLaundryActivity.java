@@ -49,6 +49,8 @@ import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Locale;
 
+import static android.R.attr.breadCrumbShortTitle;
+import static android.R.attr.cacheColorHint;
 import static android.R.attr.id;
 
 
@@ -139,6 +141,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
             final double longitude = Double.parseDouble(latLng[1]);
             pickUpLatLong = new LatLng(latitude, longitude);
             boolean sameDropLocation = getIntent().getBooleanExtra("boolean", false);
+            switchOn = sameDropLocation;
             deliverySwitch.setChecked(sameDropLocation);
             if (!sameDropLocation) {
                 deliveryCityEditText.setText(getIntent().getStringExtra("drop_city"));
@@ -151,6 +154,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                 final double dropLatitude = Double.parseDouble(dropLatLng[0]);
                 final double dropLongitude = Double.parseDouble(dropLatLng[1]);
                 dropLatLong = new LatLng(dropLatitude, dropLongitude);
+                Log.i("TAG", "drop lat lng "+ dropLatLong);
                 relativeLayout.setVisibility(View.VISIBLE);
                 relativeLayout.setAnimation(slideDown);
             }
@@ -230,6 +234,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                 } else {
                     location = pickUpLatLong + "|" + dropLatLong;
                 }
+                Log.i("TAG", "Location to be added " + location);
                 try {
                     jsonObject.put("location", location);
                     jsonObject.put("name", addressTitle.getText().toString());
@@ -266,7 +271,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         String method;
         if (updateMode) {
             method = "PUT";
-            url = String.format("%suser/addresses%s", AppGlobals.BASE_URL, id);
+            url = String.format("%suser/addresses/%s", AppGlobals.BASE_URL, id);
         } else {
             method = "POST";
             url = String.format("%suser/addresses", AppGlobals.BASE_URL);
@@ -293,6 +298,11 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                     case HttpURLConnection.HTTP_CREATED:
                         finish();
                         Toast.makeText(this, "Address added!", Toast.LENGTH_SHORT).show();
+                        break;
+                    case HttpURLConnection.HTTP_OK:
+                        if (updateMode)
+                        finish();
+                        Toast.makeText(this, "Address update!", Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         Toast.makeText(this, "Failed!", Toast.LENGTH_SHORT).show();
@@ -497,7 +507,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                     .newCameraPosition(cameraPosition));
         } else {
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(pickUpLatLong).zoom(5).build();
+                    .target(pickUpLatLong).zoom(10).build();
             mMap.animateCamera(CameraUpdateFactory
                     .newCameraPosition(cameraPosition));
         }
