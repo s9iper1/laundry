@@ -25,17 +25,23 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
 
     private Button addAddress;
     private ExpandableListAdapter listAdapter;
-    private ExpandableListView expListView;
+    public ExpandableListView expListView;
     private ProgressDialog progress;
     private String mToken;
     private JSONArray array;
     public static int sSelectedPosition = -1;
     public static int sAddressId = -1;
+    private static AddressesActivity sInstance;
+
+    public static AddressesActivity getInstance() {
+        return sInstance;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addresses);
+        sInstance = this;
         setTitle("Addresses");
         overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -2,6 +2,7 @@ package com.byteshaft.laundry.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,13 +14,18 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.byteshaft.laundry.AddressesActivity;
 import com.byteshaft.laundry.PickLDropLaundryActivity;
 import com.byteshaft.laundry.R;
+import com.byteshaft.requests.HttpRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import static com.byteshaft.laundry.AddressesActivity.sSelectedPosition;
@@ -49,7 +55,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         TextView pickupHouse;
         TextView pickupZipCode;
         TextView pickupLocation;
-        ImageView editButton;
+        ImageButton editButton;
+        ImageButton deletButton;
 
         // drop textViews
         TextView dropCity;
@@ -96,6 +103,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             holder.pickupZipCode = (TextView) convertView.findViewById(R.id.pickup_zip_code_);
             holder.pickupLocation = (TextView) convertView.findViewById(R.id.pickup_location);
             holder.editButton = (ImageButton) convertView.findViewById(R.id.edit);
+            holder.deletButton = (ImageButton) convertView.findViewById(R.id.delete);
             holder.pickupCity.setTypeface(AppGlobals.typefaceNormal);
             holder.pickupStreet.setTypeface(AppGlobals.typefaceNormal);
             holder.pickupHouse.setTypeface(AppGlobals.typefaceNormal);
@@ -120,8 +128,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View view) {
                 try {
-                    JSONObject jsonObject =(JSONObject) getChild(groupPosition, childPosition);
+                    JSONObject jsonObject = (JSONObject) getChild(groupPosition, childPosition);
                     Intent intent = new Intent(mContext, PickLDropLaundryActivity.class);
+                    intent.putExtra("id", jsonObject.getString("id"));
                     intent.putExtra("title", jsonObject.getString("name"));
                     intent.putExtra("city", jsonObject.getString("pickup_city"));
                     intent.putExtra("street", jsonObject.getString("pickup_street"));
@@ -135,6 +144,17 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                     intent.putExtra("drop_zip", jsonObject.getString("drop_zip"));
                     intent.putExtra("drop_location", jsonObject.getString("location"));
                     mContext.startActivity(intent);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        holder.deletButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                JSONObject subItems = (JSONObject) getChild(groupPosition, childPosition);
+                try {
+                    deleteLocation(subItems.getInt("id"), groupPosition);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -171,7 +191,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 holder.dropStreet.setText("Street#: " + subItems.getString("drop_street"));
                 holder.dropHouse.setText("House#: " + subItems.getString("drop_house_number"));
                 holder.dropZipCode.setText("Zip Code: " + subItems.getString("drop_zip"));
-
                 Log.i("TAG", "drop" + pickDrop[1]);
                 String replaceLatLng = pickDrop[1].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");;
                 String[] dropLatLng = replaceLatLng.split(",");
@@ -194,6 +213,67 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             e.printStackTrace();
         }
         return convertView;
+    }
+
+    public static List<JSONObject> asList(final JSONArray ja) {
+        final int len = ja.length();
+        final ArrayList<JSONObject> result = new ArrayList<>(len);
+        for (int i = 0; i < len; i++) {
+            final JSONObject obj = ja.optJSONObject(i);
+            if (obj != null) {
+                result.add(obj);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void registerDataSetObserver(DataSetObserver observer) {
+        super.registerDataSetObserver(observer);
+        notifyDataSetChanged();
+    }
+
+    public JSONArray remove(final int idx, final JSONArray from) {
+        final List<JSONObject> objs = asList(from);
+        objs.remove(idx);
+
+        final JSONArray ja = new JSONArray();
+        for (final JSONObject obj : objs) {
+            ja.put(obj);
+        }
+        AddressesActivity.getInstance().expListView.deferNotifyDataSetChanged();
+        return ja;
+    }
+
+    private void deleteLocation(int id, final int index) {
+        HttpRequest request = new HttpRequest(AppGlobals.getContext());
+        request.setOnReadyStateChangeListener(new HttpRequest.OnReadyStateChangeListener() {
+            @Override
+            public void onReadyStateChange(HttpRequest request, int readyState) {
+                switch (readyState) {
+                    case HttpRequest.STATE_DONE:
+                        WebServiceHelpers.dismissProgressDialog();
+                        Log.i("TAG", ""+ request.getStatus());
+                        switch (request.getStatus()) {
+                            case HttpURLConnection.HTTP_NO_CONTENT:
+                                remove(index, mItems);
+                                notifyDataSetChanged();
+                                break;
+
+                        }
+                }
+            }
+        });
+        request.setOnErrorListener(new HttpRequest.OnErrorListener() {
+            @Override
+            public void onError(HttpRequest request, int readyState, short error, Exception exception) {
+
+            }
+        });
+        request.open("DELETE", String.format("%suser/addresses/%s", AppGlobals.BASE_URL, id));
+        request.setRequestHeader("Authorization", "Token " +
+                AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
+        request.send();
     }
 
     @Override
