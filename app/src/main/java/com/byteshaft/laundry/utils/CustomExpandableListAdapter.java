@@ -24,8 +24,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import static com.byteshaft.laundry.AddressesActivity.sSelectedPosition;
@@ -34,12 +32,12 @@ import static com.byteshaft.laundry.AddressesActivity.sSelectedPosition;
  * Created by shahid on 04/01/2017.
  */
 
-public class ExpandableListAdapter extends BaseExpandableListAdapter {
+public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context mContext;
-    JSONArray mItems;
+    private JSONArray mItems;
 
-    public ExpandableListAdapter(Context context, JSONArray items) {
+    public CustomExpandableListAdapter(Context context, JSONArray items) {
         mContext = context;
         mItems = items;
     }
@@ -154,7 +152,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             public void onClick(View view) {
                 JSONObject subItems = (JSONObject) getChild(groupPosition, childPosition);
                 try {
-                    deleteLocation(subItems.getInt("id"), groupPosition);
+                    deleteLocation(subItems.getInt("id"), (int) getGroupId(groupPosition));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -215,34 +213,33 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    public static List<JSONObject> asList(final JSONArray ja) {
-        final int len = ja.length();
-        final ArrayList<JSONObject> result = new ArrayList<>(len);
-        for (int i = 0; i < len; i++) {
-            final JSONObject obj = ja.optJSONObject(i);
-            if (obj != null) {
-                result.add(obj);
-            }
-        }
-        return result;
-    }
-
     @Override
     public void registerDataSetObserver(DataSetObserver observer) {
         super.registerDataSetObserver(observer);
         notifyDataSetChanged();
     }
 
-    public JSONArray remove(final int idx, final JSONArray from) {
-        final List<JSONObject> objs = asList(from);
-        objs.remove(idx);
 
-        final JSONArray ja = new JSONArray();
-        for (final JSONObject obj : objs) {
-            ja.put(obj);
+    public JSONArray remove(final int idx) {
+        JSONArray result = new JSONArray();
+        for(int i = 1; i < AddressesActivity.getInstance().array.length(); i++) {
+            Log.i("TAG", "idex" + idx + " i "+ i);
+            if(i != idx) {
+                try {
+                    result.put(AddressesActivity.getInstance().array.get(i));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        AddressesActivity.getInstance().expListView.deferNotifyDataSetChanged();
-        return ja;
+        if (result.length() > 0 ) {
+            Log.i("TAG", "result 0");
+            return result;
+        } else {
+            Log.i("TAG", "result !0");
+            new JSONArray();
+        }
+        return result;
     }
 
     private void deleteLocation(int id, final int index) {
@@ -256,8 +253,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                         Log.i("TAG", ""+ request.getStatus());
                         switch (request.getStatus()) {
                             case HttpURLConnection.HTTP_NO_CONTENT:
-                                remove(index, mItems);
+                                AddressesActivity.getInstance().array = remove(index);
                                 notifyDataSetChanged();
+                                AddressesActivity.getInstance().listAdapter.notifyDataSetChanged();
+                                AddressesActivity.getInstance().expListView.invalidateViews();
+                                Log.i("TAG", "array" + AddressesActivity.getInstance().array);
                                 break;
 
                         }

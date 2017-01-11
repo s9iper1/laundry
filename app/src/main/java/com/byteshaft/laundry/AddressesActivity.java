@@ -13,7 +13,7 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.byteshaft.laundry.utils.AppGlobals;
-import com.byteshaft.laundry.utils.ExpandableListAdapter;
+import com.byteshaft.laundry.utils.CustomExpandableListAdapter;
 import com.byteshaft.requests.HttpRequest;
 
 import org.json.JSONArray;
@@ -24,11 +24,11 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
         HttpRequest.OnReadyStateChangeListener {
 
     private Button addAddress;
-    private ExpandableListAdapter listAdapter;
+    public CustomExpandableListAdapter listAdapter;
     public ExpandableListView expListView;
     private ProgressDialog progress;
     private String mToken;
-    private JSONArray array;
+    public JSONArray array;
     public static int sSelectedPosition = -1;
     public static int sAddressId = -1;
     private static AddressesActivity sInstance;
@@ -130,7 +130,9 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
                 System.out.println(request.getResponseText());
                 try {
                     array = new JSONArray(request.getResponseText());
-                    listAdapter = new ExpandableListAdapter(this, array);
+                    Log.i("TAG", "array size" + array.length());
+
+                    listAdapter = new CustomExpandableListAdapter(this, array);
                     listAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
