@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:title="Services">
+        <menu>
+            <item
+                android:id="@+id/add_address"
+                android:icon="@mipmap/add_address"
+                android:title="Add Address" />
+            <item
+                android:id="@+id/request_laundry"
+                android:icon="@mipmap/request_laundry"
+                android:title="Request laundry" />
+        </menu>
+    </item>
+
     <item android:title="Account">
         <menu>
             <item
