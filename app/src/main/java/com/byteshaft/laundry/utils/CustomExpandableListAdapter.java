@@ -1,9 +1,11 @@
 package com.byteshaft.laundry.utils;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,13 +21,11 @@ import com.byteshaft.laundry.PickLDropLaundryActivity;
 import com.byteshaft.laundry.R;
 import com.byteshaft.requests.HttpRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
 
 import static com.byteshaft.laundry.AddressesActivity.sSelectedPosition;
@@ -34,12 +34,12 @@ import static com.byteshaft.laundry.AddressesActivity.sSelectedPosition;
  * Created by shahid on 04/01/2017.
  */
 
-public class ExpandableListAdapter extends BaseExpandableListAdapter {
+public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context mContext;
-    JSONArray mItems;
+    private HashMap<Integer, JSONObject> mItems;
 
-    public ExpandableListAdapter(Context context, JSONArray items) {
+    public CustomExpandableListAdapter(Context context, HashMap<Integer, JSONObject> items) {
         mContext = context;
         mItems = items;
     }
@@ -71,12 +71,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        try {
-            return mItems.get(groupPosition);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return mItems.get(groupPosition);
     }
 
     @Override
@@ -152,12 +147,28 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         holder.deletButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                JSONObject subItems = (JSONObject) getChild(groupPosition, childPosition);
-                try {
-                    deleteLocation(subItems.getInt("id"), groupPosition);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+                alertDialogBuilder.setTitle("Delete Address");
+                alertDialogBuilder.setMessage("Are you sure you want to delete address?")
+                        .setCancelable(false).setPositiveButton("continue", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                        JSONObject subItems = (JSONObject) getChild(groupPosition, childPosition);
+                        try {
+                            deleteLocation(subItems.getInt("id"), groupPosition);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                });
+                alertDialogBuilder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
             }
         });
         JSONObject subItems = (JSONObject) getChild(groupPosition, childPosition);
@@ -173,7 +184,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             String[] latLng = removeLatLng.split(",");
             final double latitude = Double.parseDouble(latLng[0]);
             final double longitude = Double.parseDouble(latLng[1]);
-            holder.pickupLocation.setText(latitude+","+longitude);
+            holder.pickupLocation.setText(latitude + "," + longitude);
             holder.pickupLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -192,11 +203,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 holder.dropHouse.setText("House#: " + subItems.getString("drop_house_number"));
                 holder.dropZipCode.setText("Zip Code: " + subItems.getString("drop_zip"));
                 Log.i("TAG", "drop" + pickDrop[1]);
-                String replaceLatLng = pickDrop[1].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");;
+                String replaceLatLng = pickDrop[1].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");
+                ;
                 String[] dropLatLng = replaceLatLng.split(",");
                 final double dropLatitude = Double.parseDouble(dropLatLng[0]);
                 final double dropLongitude = Double.parseDouble(dropLatLng[1]);
-                holder.dropLocation.setText(dropLatitude+"," +dropLongitude);
+                holder.dropLocation.setText(dropLatitude + "," + dropLongitude);
                 holder.dropLocation.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -215,34 +227,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    public static List<JSONObject> asList(final JSONArray ja) {
-        final int len = ja.length();
-        final ArrayList<JSONObject> result = new ArrayList<>(len);
-        for (int i = 0; i < len; i++) {
-            final JSONObject obj = ja.optJSONObject(i);
-            if (obj != null) {
-                result.add(obj);
-            }
-        }
-        return result;
-    }
-
     @Override
     public void registerDataSetObserver(DataSetObserver observer) {
         super.registerDataSetObserver(observer);
         notifyDataSetChanged();
-    }
-
-    public JSONArray remove(final int idx, final JSONArray from) {
-        final List<JSONObject> objs = asList(from);
-        objs.remove(idx);
-
-        final JSONArray ja = new JSONArray();
-        for (final JSONObject obj : objs) {
-            ja.put(obj);
-        }
-        AddressesActivity.getInstance().expListView.deferNotifyDataSetChanged();
-        return ja;
     }
 
     private void deleteLocation(int id, final int index) {
@@ -253,11 +241,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 switch (readyState) {
                     case HttpRequest.STATE_DONE:
                         WebServiceHelpers.dismissProgressDialog();
-                        Log.i("TAG", ""+ request.getStatus());
+                        Log.i("TAG", "" + request.getStatus());
                         switch (request.getStatus()) {
                             case HttpURLConnection.HTTP_NO_CONTENT:
-                                remove(index, mItems);
+                                mItems.remove(index);
                                 notifyDataSetChanged();
+                                AddressesActivity.getInstance().expListView.invalidateViews();
                                 break;
 
                         }
@@ -283,17 +272,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getGroup(int groupPosition) {
-        try {
-            return mItems.get(groupPosition);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return mItems.get(groupPosition);
     }
 
     @Override
     public int getGroupCount() {
-        return mItems.length();
+        return mItems.size();
     }
 
     @Override

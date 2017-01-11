@@ -205,7 +205,6 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-            overridePendingTransition(R.anim.anim_right_in, R.anim.anim_right_out);
         }
     }
 
