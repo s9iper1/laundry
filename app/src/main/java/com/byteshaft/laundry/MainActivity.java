@@ -1,5 +1,6 @@
 package com.byteshaft.laundry;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,11 +33,18 @@ import com.byteshaft.laundry.account.ResetPassword;
 import com.byteshaft.laundry.account.UpdateProfile;
 import com.byteshaft.laundry.laundry.LaundryCategoriesActivity;
 import com.byteshaft.laundry.utils.AppGlobals;
+import com.byteshaft.laundry.utils.HeadingTextView;
+import com.byteshaft.requests.HttpRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        HttpRequest.OnReadyStateChangeListener {
 
     public static MainActivity sInstance;
     private View header;
@@ -45,6 +53,11 @@ public class MainActivity extends AppCompatActivity
     private TextView mName;
     private TextView mEmail;
     NavigationView navigationView;
+    private ProgressDialog progress;
+    HeadingTextView laundryText;
+    private String mToken;
+    private JSONArray array;
+    private CustomAdapter listAdapter;
 
     public static MainActivity getInstance() {
         return sInstance;
@@ -57,7 +70,9 @@ public class MainActivity extends AppCompatActivity
         overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         setContentView(R.layout.activity_main);
         overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
+        laundryText = (HeadingTextView) findViewById(R.id.laundry_text);
         AppGlobals.sActivity = MainActivity.this;
+        mToken = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN);
         Log.i("TAG", "" + AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -82,6 +97,7 @@ public class MainActivity extends AppCompatActivity
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.canScrollVertically(LinearLayoutManager.VERTICAL);
         mRecyclerView.setHasFixedSize(true);
+
 //        mAdapter = new CustomAdapter(arrayList);
 //        mRecyclerView.setAdapter(mAdapter);
 //        mRecyclerView.addOnItemTouchListener(new CustomAdapter(arrayList , AppGlobals.getContext()
@@ -96,11 +112,29 @@ public class MainActivity extends AppCompatActivity
 //        }));
     }
 
+    private void laundryRequestDetails() {
+        progress = ProgressDialog.show(this, "Please wait..",
+                "Getting data", true);
+        HttpRequest mRequest = new HttpRequest(AppGlobals.getContext());
+        mRequest.setOnReadyStateChangeListener(this);
+        mRequest.open("GET", AppGlobals.LAUNDRY_REQUEST_URL);
+        mRequest.setRequestHeader("Authorization", "Token " + mToken);
+        mRequest.send();
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        MenuItem login,logout, active;
+        if (!AppGlobals.isUserActive() && !AppGlobals.isUserLoggedIn()) {
+            laundryText.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+        } else {
+            laundryText.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+            laundryRequestDetails();
+        }
+
+        MenuItem login, logout, active;
         Menu menu = navigationView.getMenu();
         if (!AppGlobals.isUserLoggedIn()) {
             login = menu.findItem(R.id.login);
@@ -239,10 +273,38 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onReadyStateChange(HttpRequest request, int readyState) {
+        switch (readyState) {
+            case HttpRequest.STATE_DONE:
+                progress.dismiss();
+                System.out.println("Ok kro :   " + request.getResponseText());
+                try {
+                    array = new JSONArray(request.getResponseText());
+                    try {
+                        JSONObject jsonObject = array.getJSONObject(0);
+                        Log.i("Tag", jsonObject.toString());
+                        JSONObject addressObject = jsonObject.getJSONObject("address");
+                        JSONArray itemsArray = jsonObject.getJSONArray("service_items");
+                        listAdapter = new CustomAdapter(itemsArray, addressObject,
+                                jsonObject.getString("created"), jsonObject.getBoolean("done"));
+                        mRecyclerView.setAdapter(listAdapter);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+        }
+    }
+
     static class CustomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements
             RecyclerView.OnItemTouchListener {
 
-        private ArrayList<String> items;
+        private JSONArray items;
+        private JSONObject mAddresses;
+        private String mCreatedDate;
+        private boolean mIsDone;
         private CustomView viewHolder;
         private OnItemClickListener mListener;
         private GestureDetector mGestureDetector;
@@ -251,7 +313,7 @@ public class MainActivity extends AppCompatActivity
             void onItem(String item);
         }
 
-        public CustomAdapter(ArrayList<String> categories, Context context,
+        public CustomAdapter(JSONArray categories, Context context,
                              OnItemClickListener listener) {
             this.items = categories;
             mListener = listener;
@@ -264,8 +326,11 @@ public class MainActivity extends AppCompatActivity
                     });
         }
 
-        public CustomAdapter(ArrayList<String> categories) {
-            this.items = categories;
+        public CustomAdapter(JSONArray categories, JSONObject addresses, String createdDate, boolean isDone) {
+            mAddresses = addresses;
+            mCreatedDate = createdDate;
+            mIsDone = isDone;
+            items = categories;
         }
 
 
@@ -280,12 +345,20 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             holder.setIsRecyclable(false);
-
+            try {
+                viewHolder.address.setText("Address: " + mAddresses.getString("name"));
+                JSONObject jsonObject = items.getJSONObject(position);
+                viewHolder.textItem.setText("Items: " +jsonObject.getString("item"));
+                viewHolder.itemName.setText("Item Name: " + jsonObject.getString("name"));
+                viewHolder.itemQuantity.setText("Quantity: " + jsonObject.getString("quantity"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
         public int getItemCount() {
-            return items.size();
+            return items.length();
         }
 
         @Override
@@ -312,13 +385,17 @@ public class MainActivity extends AppCompatActivity
            xml it takes view in constructor
          */
         public class CustomView extends RecyclerView.ViewHolder {
-            public TextView textView;
-            public ImageView imageView;
+            public TextView address;
+            public TextView textItem;
+            public TextView itemName;
+            public TextView itemQuantity;
 
             public CustomView(View itemView) {
                 super(itemView);
-//                textView = (TextView) itemView.findViewById(R.id.category_title);
-//                imageView = (ImageView) itemView.findViewById(R.id.selected_category_image);
+                address = (TextView) itemView.findViewById(R.id.tv_address);
+                textItem = (TextView) itemView.findViewById(R.id.tv_item);
+                itemName = (TextView) itemView.findViewById(R.id.tv_item_name);
+                itemQuantity = (TextView) itemView.findViewById(R.id.tv_quantity);
             }
         }
     }

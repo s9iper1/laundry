@@ -31,6 +31,7 @@ public class AppGlobals extends Application {
     public static final String LOCATIONS_URL = "http://178.62.87.25/api/user/addresses";
     public static Typeface typefaceBold;
     public static Typeface typefaceNormal;
+    public static final String LAUNDRY_REQUEST_URL = "http://178.62.87.25/api/laundry/request";
 
     @Override
     public void onCreate() {
