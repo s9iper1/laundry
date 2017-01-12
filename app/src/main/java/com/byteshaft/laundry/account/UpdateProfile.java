@@ -3,6 +3,8 @@ package com.byteshaft.laundry.account;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -38,6 +40,7 @@ public class UpdateProfile extends Activity implements HttpRequest.OnErrorListen
     private String mPhoneNumberString;
     private String mPasswordString;
     private String mVerifyPasswordString;
+    private boolean isPasswordChaged = false;
 
     private HttpRequest request;
 
@@ -66,17 +69,63 @@ public class UpdateProfile extends Activity implements HttpRequest.OnErrorListen
         mEmailAddress.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_EMAIL));
         mPhoneNumber.setText(AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_PHONE_NUMBER));
         mEmailAddress.setEnabled(false);
+
+        mPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                isPasswordChaged = true;
+
+            }
+        });
+
+        mVerifyPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                isPasswordChaged = true;
+            }
+        });
         mUpdateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateUser();
                 mUsernameString = mUsername.getText().toString();
                 mPhoneNumberString = mPhoneNumber.getText().toString();
-                if (validateEditText()) {
+                System.out.println(mPhoneNumberString + "working");
+                if (isPasswordChaged) {
+                    if (validateEditText()) {
+                        updateUser(mUsernameString, mPasswordString, mPhoneNumberString);
+                    }
+                } else {
 
+                    updateUser(mUsernameString, mPasswordString, mPhoneNumberString);
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isPasswordChaged = false;
     }
 
     private boolean validateEditText() {
@@ -143,13 +192,14 @@ public class UpdateProfile extends Activity implements HttpRequest.OnErrorListen
 
     }
 
-    private void updateUser() {
+    private void updateUser(String username, String password, String phoneNumber) {
         HttpRequest request = new HttpRequest(AppGlobals.getContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
-        request.open("GET", "http://178.62.87.25/api/user/me");
+        request.open("PUT", "http://178.62.87.25/api/user/me");
         request.setRequestHeader("Authorization", "Token " +
                 AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
+        request.send(updateUserData(username, password, phoneNumber));
         WebServiceHelpers.showProgressDialog(this, "Updating User Profile");
     }
 
@@ -157,7 +207,7 @@ public class UpdateProfile extends Activity implements HttpRequest.OnErrorListen
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("full_name", username);
-            jsonObject.put("phone_number", phoneNumber);
+            jsonObject.put("mobile_number", phoneNumber);
             jsonObject.put("password", password);
         } catch (JSONException e) {
             e.printStackTrace();
