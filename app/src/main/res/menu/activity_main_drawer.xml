@@ -6,6 +6,7 @@
             <item
                 android:id="@+id/add_address"
                 android:icon="@mipmap/add_address"
+                android:visible="false"
                 android:title="Add Address" />
             <item
                 android:id="@+id/request_laundry"

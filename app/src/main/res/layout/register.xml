@@ -28,7 +28,7 @@
             <EditText
                 android:id="@+id/user_name"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
@@ -42,7 +42,7 @@
             <EditText
                 android:id="@+id/email"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
@@ -73,7 +73,7 @@
                 <EditText
                     android:id="@+id/phone"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="2.5"
                     android:background="@drawable/apptheme_edit_text_holo_light"
                     android:hint="Phone number"
@@ -87,7 +87,7 @@
             <EditText
                 android:id="@+id/password"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
@@ -101,7 +101,7 @@
             <EditText
                 android:id="@+id/verify_password"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
