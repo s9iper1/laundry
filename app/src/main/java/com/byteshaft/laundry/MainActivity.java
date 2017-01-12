@@ -298,8 +298,8 @@ public class MainActivity extends AppCompatActivity
                 System.out.println("Ok kro :   " + request.getResponseText());
                 try {
                     array = new JSONArray(request.getResponseText());
-                        listAdapter = new CustomAdapter(array);
-                        mRecyclerView.setAdapter(listAdapter);
+                    listAdapter = new CustomAdapter(array);
+                    mRecyclerView.setAdapter(listAdapter);
                     if (array.length() < 1) {
                         laundryText.setVisibility(View.VISIBLE);
                         mRecyclerView.setVisibility(View.GONE);
