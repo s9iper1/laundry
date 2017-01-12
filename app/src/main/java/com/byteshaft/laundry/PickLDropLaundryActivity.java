@@ -23,6 +23,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.byteshaft.laundry.account.LoginActivity;
 import com.byteshaft.laundry.utils.AppGlobals;
 import com.byteshaft.laundry.utils.WebServiceHelpers;
 import com.byteshaft.requests.HttpRequest;
@@ -47,6 +48,10 @@ import org.json.JSONObject;
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Locale;
+
+import static android.R.attr.breadCrumbShortTitle;
+import static android.R.attr.cacheColorHint;
+import static android.R.attr.id;
 
 
 public class PickLDropLaundryActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -84,12 +89,13 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
     private LatLng dropLatLong;
     private MenuItem menuItem;
     private boolean updateMode = false;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_laundry);
-        setTitle("Chose Address");
+        setTitle("Choose Address");
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -121,6 +127,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         switchTextView.setTypeface(AppGlobals.typefaceNormal);
         deliveryHouseNumber.setTypeface(AppGlobals.typefaceNormal);
         if (getIntent().getExtras() != null) {
+            id = Integer.parseInt(getIntent().getStringExtra("id"));
             addressTitle.setText(getIntent().getStringExtra("title"));
             cityEditText.setText(getIntent().getStringExtra("city"));
             streetEditText.setText(getIntent().getStringExtra("street"));
@@ -134,21 +141,23 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
             final double longitude = Double.parseDouble(latLng[1]);
             pickUpLatLong = new LatLng(latitude, longitude);
             boolean sameDropLocation = getIntent().getBooleanExtra("boolean", false);
+            switchOn = sameDropLocation;
             deliverySwitch.setChecked(sameDropLocation);
             if (!sameDropLocation) {
                 deliveryCityEditText.setText(getIntent().getStringExtra("drop_city"));
                 deliveryStreetEditText.setText(getIntent().getStringExtra("drop_street"));
                 deliveryHouseNumber.setText(getIntent().getStringExtra("drop_house"));
                 deliveryZipCodeEditText.setText(getIntent().getStringExtra("drop_zip"));
-                String replaceLatLng = pickDrop[1].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");;
+                String replaceLatLng = pickDrop[1].replaceAll("lat/lng: ", "").replace("(", "").replace(")", "");
+                ;
                 String[] dropLatLng = replaceLatLng.split(",");
                 final double dropLatitude = Double.parseDouble(dropLatLng[0]);
                 final double dropLongitude = Double.parseDouble(dropLatLng[1]);
                 dropLatLong = new LatLng(dropLatitude, dropLongitude);
+                Log.i("TAG", "drop lat lng "+ dropLatLong);
                 relativeLayout.setVisibility(View.VISIBLE);
                 relativeLayout.setAnimation(slideDown);
             }
-            menuItem.setTitle("Update");
             updateMode = true;
         }
         deliverySwitch.setOnCheckedChangeListener(this);
@@ -206,6 +215,9 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_address_menu, menu);
         menuItem = menu.findItem(R.id.save_address);
+        if (getIntent().getExtras() != null) {
+            menuItem.setTitle("Update");
+        }
         return true;
     }
 
@@ -214,34 +226,33 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         int id = item.getItemId();
 
         if (id == R.id.save_address) {
-            if (!updateMode) {
-                if (validateFields()) {
-                    JSONObject jsonObject = new JSONObject();
-                    String location = "";
-                    if (switchOn) {
-                        location = pickUpLatLong.toString();
-                    } else {
-                        location = pickUpLatLong + "|" + dropLatLong;
+            if (validateFields()) {
+                JSONObject jsonObject = new JSONObject();
+                String location = "";
+                if (switchOn) {
+                    location = pickUpLatLong.toString();
+                } else {
+                    location = pickUpLatLong + "|" + dropLatLong;
+                }
+                Log.i("TAG", "Location to be added " + location);
+                try {
+                    jsonObject.put("location", location);
+                    jsonObject.put("name", addressTitle.getText().toString());
+                    jsonObject.put("pickup_city", cityEditText.getText().toString());
+                    jsonObject.put("pickup_house_number", houseNumberEditText.getText().toString());
+                    jsonObject.put("pickup_street", streetEditText.getText().toString());
+                    jsonObject.put("pickup_zip", zipCodeEditText.getText().toString());
+                    if (!switchOn) {
+                        jsonObject.put("drop_city", deliveryCityEditText.getText().toString());
+                        jsonObject.put("drop_house_number", deliveryHouseNumber.getText().toString());
+                        jsonObject.put("drop_street", deliveryStreetEditText.getText().toString());
+                        jsonObject.put("drop_zip", deliveryZipCodeEditText.getText().toString());
+                        jsonObject.put("drop_on_pickup_location", "false");
                     }
-                    try {
-                        jsonObject.put("location", location);
-                        jsonObject.put("name", addressTitle.getText().toString());
-                        jsonObject.put("pickup_city", cityEditText.getText().toString());
-                        jsonObject.put("pickup_house_number", houseNumberEditText.getText().toString());
-                        jsonObject.put("pickup_street", streetEditText.getText().toString());
-                        jsonObject.put("pickup_zip", zipCodeEditText.getText().toString());
-                        if (!switchOn) {
-                            jsonObject.put("drop_city", deliveryCityEditText.getText().toString());
-                            jsonObject.put("drop_house_number", deliveryHouseNumber.getText().toString());
-                            jsonObject.put("drop_street", deliveryStreetEditText.getText().toString());
-                            jsonObject.put("drop_zip", deliveryZipCodeEditText.getText().toString());
-                            jsonObject.put("drop_on_pickup_location", "false");
-                        }
-                        Log.i("TAG", "Data " + jsonObject.toString());
-                        addLocation(jsonObject);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    Log.i("TAG", "Data " + jsonObject.toString());
+                    addLocation(jsonObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
             return true;
@@ -249,7 +260,6 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
             onBackPressed();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -257,7 +267,16 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         HttpRequest request = new HttpRequest(AppGlobals.getContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
-        request.open("POST", String.format("%suser/addresses", AppGlobals.BASE_URL));
+        String url;
+        String method;
+        if (updateMode) {
+            method = "PUT";
+            url = String.format("%suser/addresses/%s", AppGlobals.BASE_URL, id);
+        } else {
+            method = "POST";
+            url = String.format("%suser/addresses", AppGlobals.BASE_URL);
+        }
+        request.open(method, url);
         request.setRequestHeader("Authorization", "Token " +
                 AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
         request.send(jsonObject.toString());
@@ -274,10 +293,16 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
         switch (readyState) {
             case HttpRequest.STATE_DONE:
                 WebServiceHelpers.dismissProgressDialog();
+                Log.i("TAG", "address " + request.getStatus());
                 switch (request.getStatus()) {
                     case HttpURLConnection.HTTP_CREATED:
                         finish();
                         Toast.makeText(this, "Address added!", Toast.LENGTH_SHORT).show();
+                        break;
+                    case HttpURLConnection.HTTP_OK:
+                        if (updateMode)
+                        finish();
+                        Toast.makeText(this, "Address update!", Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         Toast.makeText(this, "Failed!", Toast.LENGTH_SHORT).show();
@@ -392,7 +417,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                 zipCode = addresses.get(0).getPostalCode();
                 if (zipCode != null && !zipCode.trim().isEmpty()) {
                     if (switchOn)
-                    zipCodeEditText.setText(zipCode);
+                        zipCodeEditText.setText(zipCode);
                     else deliveryZipCodeEditText.setText(zipCode);
                 }
                 Log.i("TAG", "address " + address + city + zipCode);
@@ -482,7 +507,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                     .newCameraPosition(cameraPosition));
         } else {
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(pickUpLatLong).zoom(5).build();
+                    .target(pickUpLatLong).zoom(10).build();
             mMap.animateCamera(CameraUpdateFactory
                     .newCameraPosition(cameraPosition));
         }
