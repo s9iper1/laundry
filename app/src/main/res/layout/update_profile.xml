@@ -28,7 +28,7 @@
             <EditText
                 android:id="@+id/user_name"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
@@ -42,7 +42,7 @@
             <EditText
                 android:id="@+id/email"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"
@@ -55,7 +55,7 @@
             <EditText
                 android:id="@+id/phone"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:textColorHint="@color/light_gray"
                 android:textColor="@android:color/white"
@@ -69,7 +69,7 @@
             <EditText
                 android:id="@+id/password"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:textColorHint="@color/light_gray"
                 android:textColor="@android:color/white"
@@ -83,7 +83,7 @@
             <EditText
                 android:id="@+id/verify_password"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:drawablePadding="9dp"

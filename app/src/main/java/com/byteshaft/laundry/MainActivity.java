@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -56,9 +58,9 @@ public class MainActivity extends AppCompatActivity
     private CustomAdapter mAdapter;
     private TextView mName;
     private TextView mEmail;
-    NavigationView navigationView;
+    private NavigationView navigationView;
     private ProgressDialog progress;
-    HeadingTextView laundryText;
+    private HeadingTextView laundryText;
     private String mToken;
     private JSONArray array;
     private CustomAdapter listAdapter;
@@ -132,8 +134,7 @@ public class MainActivity extends AppCompatActivity
             mRecyclerView.setVisibility(View.VISIBLE);
             laundryRequestDetails();
         }
-
-        MenuItem login, logout, active;
+        MenuItem login, logout, active, addLocation;
         Menu menu = navigationView.getMenu();
         if (!AppGlobals.isUserLoggedIn()) {
             login = menu.findItem(R.id.login);
@@ -146,12 +147,19 @@ public class MainActivity extends AppCompatActivity
             if (!AppGlobals.isUserActive()) {
                 active.setVisible(true);
             } else {
+                if (ContextCompat.checkSelfPermission(this,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    addLocation = menu.findItem(R.id.add_address);
+                    addLocation.setVisible(true);
+                }
                 active.setVisible(false);
             }
             logout = menu.findItem(R.id.nav_logout);
             login.setVisible(false);
             logout.setVisible(true);
         }
+
         mName = (TextView) header.findViewById(R.id.nav_user_name);
         mEmail = (TextView) header.findViewById(R.id.nav_user_email);
         mName.setTypeface(AppGlobals.typefaceBold);
