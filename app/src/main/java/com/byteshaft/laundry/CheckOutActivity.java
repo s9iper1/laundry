@@ -362,7 +362,6 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                         Toast.makeText(getApplicationContext(), "Your request has been received", Toast.LENGTH_SHORT).show();
                         LaundryCategoriesActivity.getInstance().finish();
                         finish();
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 }
         }
     }

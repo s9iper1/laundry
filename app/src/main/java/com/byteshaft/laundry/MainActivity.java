@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity
     private String mToken;
     private JSONArray array;
     private CustomAdapter listAdapter;
+    private boolean onResumeCalled = false;
 
     public static MainActivity getInstance() {
         return sInstance;
@@ -70,8 +72,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sInstance = this;
-        setContentView(R.layout.activity_main);
         overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
+        setContentView(R.layout.activity_main);
         laundryText = (HeadingTextView) findViewById(R.id.laundry_text);
         AppGlobals.sActivity = MainActivity.this;
         mToken = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN);
@@ -102,13 +104,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void laundryRequestDetails() {
-        progress = ProgressDialog.show(this, "Please wait..",
-                "Getting data", true);
+        if (!onResumeCalled) {
+            progress = ProgressDialog.show(this, "Please wait..",
+                    "Getting data", true);
+        }
         HttpRequest mRequest = new HttpRequest(AppGlobals.getContext());
         mRequest.setOnReadyStateChangeListener(this);
         mRequest.open("GET", AppGlobals.LAUNDRY_REQUEST_URL);
         mRequest.setRequestHeader("Authorization", "Token " + mToken);
         mRequest.send();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        onResumeCalled = true;
     }
 
     @Override
@@ -204,7 +214,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_options, menu);
+//        getMenuInflater().inflate(R.menu.main_options, menu);
         return true;
     }
 
@@ -282,12 +292,18 @@ public class MainActivity extends AppCompatActivity
     public void onReadyStateChange(HttpRequest request, int readyState) {
         switch (readyState) {
             case HttpRequest.STATE_DONE:
-                progress.dismiss();
+                if (!onResumeCalled) {
+                    progress.dismiss();
+                }
                 System.out.println("Ok kro :   " + request.getResponseText());
                 try {
                     array = new JSONArray(request.getResponseText());
                     listAdapter = new CustomAdapter(array);
                     mRecyclerView.setAdapter(listAdapter);
+                    if (array.length() < 1) {
+                        laundryText.setVisibility(View.VISIBLE);
+                        mRecyclerView.setVisibility(View.GONE);
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -345,21 +361,26 @@ public class MainActivity extends AppCompatActivity
                 JSONObject addressObject = jsonObject.getJSONObject("address");
                 JSONArray itemsArray = jsonObject.getJSONArray("service_items");
                 viewHolder.address.setText("Address: " + addressObject.getString("name"));
+                viewHolder.address.setTypeface(AppGlobals.typefaceBold);
                 boolean isDone = jsonObject.getBoolean("done");
+                viewHolder.status.setTypeface(AppGlobals.typefaceNormal);
                 if (isDone) {
                     viewHolder.status.setText("Status: Done");
+                    viewHolder.status.setTextColor(Color.parseColor("#009900"));
                 } else {
                     viewHolder.status.setText("Status: Pending");
+                    viewHolder.status.setTextColor(Color.parseColor("#b20000"));
                 }
                 StringBuilder stringBuilder = new StringBuilder();
                 for (int i = 0; i < itemsArray.length(); i++) {
                     JSONObject itemDetails = itemsArray.getJSONObject(i);
                     stringBuilder.append(itemDetails.getString("name"));
-                    stringBuilder.append(" ");
-                    stringBuilder.append(itemDetails.getString("quantity"));
-                    if (i < itemsArray.length()) {
+                    stringBuilder.append(" (");
+                    stringBuilder.append(itemDetails.getString("quantity") +")");
+                    if (i+1 < itemsArray.length()) {
                         stringBuilder.append(" , ");
                     }
+                    viewHolder.itemName.setTypeface(AppGlobals.typefaceNormal);
                     viewHolder.itemName.setText(stringBuilder.toString());
                 }
             } catch (JSONException e) {
@@ -405,6 +426,7 @@ public class MainActivity extends AppCompatActivity
                 super(itemView);
                 address = (TextView) itemView.findViewById(R.id.tv_address);
                 textItem = (TextView) itemView.findViewById(R.id.tv_item);
+                textItem.setTypeface(AppGlobals.typefaceBold);
                 itemName = (TextView) itemView.findViewById(R.id.tv_item_name);
                 status = (TextView) itemView.findViewById(R.id.tv_status);
             }
