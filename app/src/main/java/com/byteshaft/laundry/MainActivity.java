@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -32,12 +34,16 @@ import com.byteshaft.laundry.account.ResetPassword;
 import com.byteshaft.laundry.account.UpdateProfile;
 import com.byteshaft.laundry.laundry.LaundryCategoriesActivity;
 import com.byteshaft.laundry.utils.AppGlobals;
+import com.byteshaft.laundry.utils.BitmapWithCharacter;
 import com.byteshaft.laundry.utils.HeadingTextView;
 import com.byteshaft.requests.HttpRequest;
+import com.github.siyamed.shapeimageview.CircularImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -93,19 +99,6 @@ public class MainActivity extends AppCompatActivity
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.canScrollVertically(LinearLayoutManager.VERTICAL);
         mRecyclerView.setHasFixedSize(true);
-
-//        mAdapter = new CustomAdapter(arrayList);
-//        mRecyclerView.setAdapter(mAdapter);
-//        mRecyclerView.addOnItemTouchListener(new CustomAdapter(arrayList , AppGlobals.getContext()
-//                , new CustomAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItem(String item) {
-//                Intent intent = new Intent(getActivity().getApplicationContext(),
-//                        SelectedCategoryList.class);
-//                intent.putExtra(AppGlobals.CATEGORY_INTENT_KEY, item);
-//                startActivity(intent);
-//            }
-//        }));
     }
 
     private void laundryRequestDetails() {
@@ -166,16 +159,16 @@ public class MainActivity extends AppCompatActivity
         } else {
             mEmail.setText("abc@xyz.com");
         }
-//        CircularImageView circularImageView = (CircularImageView) header.findViewById(R.id.imageView);
-//        if (AppGlobals.isUserLoggedIn()) {
-//            final Resources res = getResources();
-//            int[] array = getResources().getIntArray(R.array.letter_tile_colors);
-//            final BitmapWithCharacter tileProvider = new BitmapWithCharacter();
-//            final Bitmap letterTile = tileProvider.getLetterTile(AppGlobals.
-//                            getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME),
-//                    String.valueOf(array[new Random().nextInt(array.length)]), 100, 100);
-//            circularImageView.setImageBitmap(letterTile);
-//        }
+        CircularImageView circularImageView = (CircularImageView) header.findViewById(R.id.imageView);
+        if (AppGlobals.isUserLoggedIn()) {
+            final Resources res = getResources();
+            int[] array = getResources().getIntArray(R.array.letter_tile_colors);
+            final BitmapWithCharacter tileProvider = new BitmapWithCharacter();
+            final Bitmap letterTile = tileProvider.getLetterTile(AppGlobals.
+                            getStringFromSharedPreferences(AppGlobals.KEY_FULL_NAME),
+                    String.valueOf(array[new Random().nextInt(array.length)]), 100, 100);
+            circularImageView.setImageBitmap(letterTile);
+        }
 
         if (!AppGlobals.isUserActive() && !AppGlobals.dialogCancel && AppGlobals.isUserLoggedIn()) {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -293,8 +286,8 @@ public class MainActivity extends AppCompatActivity
                 System.out.println("Ok kro :   " + request.getResponseText());
                 try {
                     array = new JSONArray(request.getResponseText());
-                        listAdapter = new CustomAdapter(array);
-                        mRecyclerView.setAdapter(listAdapter);
+                    listAdapter = new CustomAdapter(array);
+                    mRecyclerView.setAdapter(listAdapter);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
