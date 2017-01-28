@@ -48,11 +48,17 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
     private Adapter adapter;
     public static int sAddressId = -1;
     public static HashMap<Integer, Integer> sTotalPrice;
+    private static CheckOutActivity sInstance;
+
+    public static CheckOutActivity getInstance() {
+        return sInstance;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
+        sInstance = this;
         setTitle("Checkout");
         sTotalPrice = new HashMap<>();
         AddressesActivity.getLocationData();
@@ -104,7 +110,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void sendData() {
+    public void sendData(String dropTime, String laundryType) {
         if (sAddressId == -1) {
             Toast.makeText(this, "please select your address", Toast.LENGTH_SHORT).show();
             return;
@@ -114,7 +120,6 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
             OrderItem orderItem = order.get(key);
             try {
                 JSONObject jsonObject = new JSONObject();
-                System.out.println(jsonObject + "object");
                 jsonObject.put("item", orderItem.getId());
                 jsonObject.put("quantity", orderItem.getQuantity());
                 jsonArray.put(jsonObject);
@@ -122,8 +127,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                 e.printStackTrace();
             }
         }
-        System.out.println(jsonArray + "array");
-        orderRequest(jsonArray);
+        orderRequest(jsonArray, dropTime, laundryType);
     }
 
 
@@ -262,29 +266,33 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                         AppGlobals.alertDialog(CheckOutActivity.this, "Request Failed!", "please check your internet connection");
                         break;
                     case HttpURLConnection.HTTP_CREATED:
-                        System.out.println(request.getResponseText() + "working ");
+                        System.out.println(request.getResponseURL());
                         Toast.makeText(getApplicationContext(), "Your request has been received", Toast.LENGTH_SHORT).show();
                         LaundryCategoriesActivity.getInstance().finish();
                         finish();
+                        CheckoutStageTwo.getInstance().finish();
                 }
         }
     }
 
-    private void orderRequest(JSONArray itemsquantity) {
+    private void orderRequest(JSONArray itemsQuantity, String dropTime, String laundryType) {
         HttpRequest request = new HttpRequest(AppGlobals.getContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
         request.open("POST", String.format("%slaundry/request", AppGlobals.BASE_URL));
         request.setRequestHeader("Authorization", "Token " +
                 AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
-        request.send(orderRequestData(itemsquantity));
+        Log.i("TAG", AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
+        request.send(orderRequestData(itemsQuantity, dropTime, laundryType));
         WebServiceHelpers.showProgressDialog(CheckOutActivity.this, "Sending your order..");
     }
 
-    private String orderRequestData(JSONArray itemsQuantity) {
+    private String orderRequestData(JSONArray itemsQuantity, String dropTime, String laundryType) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("address", sAddressId);
+            jsonObject.put("drop_time", dropTime);
+            jsonObject.put("laundry_type", laundryType);
             jsonObject.put("service_items", itemsQuantity);
         } catch (JSONException e) {
             e.printStackTrace();

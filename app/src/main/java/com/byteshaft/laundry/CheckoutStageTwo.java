@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
@@ -52,7 +53,7 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
     private static final int DROP_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 1;
     private JSONArray jsonArray;
     private ArrayList<String> locationNames;
-    private String addNewLocation = "Add new location";
+    private String addNewLocation = "Add new address";
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;
     private static final String DATE_PICKER_TAG = "date_picker";
@@ -69,11 +70,19 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
     private int totalPriceOfItems = 0;
     private int expressPrice = 0;
     private int normalPrice = 0;
+    private Button sendRequest;
+    private String laundryType = "normal";
+    private static CheckoutStageTwo sInstance;
+
+    public static CheckoutStageTwo getInstance() {
+        return sInstance;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_stage_two);
+        sInstance = this;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         setTitle("Checkout");
@@ -83,14 +92,14 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
         selectTime = (TextView) findViewById(R.id.select_time);
         switchCompat = (SwitchCompat) findViewById(R.id.express_service);
         totalPrice = (TextView) findViewById(R.id.total_price);
+        sendRequest = (Button) findViewById(R.id.send_request);
+        sendRequest.setOnClickListener(this);
         switchCompat.setOnCheckedChangeListener(this);
         dropTime.setOnClickListener(this);
         switchCompat.setTypeface(AppGlobals.typefaceBold);
         refreshData();
         printMap(CheckOutActivity.sTotalPrice);
         selectLocation.setOnItemSelectedListener(this);
-//        selectLocation.setOnClickListener(this);
-//        selectLocation.setTypeface(AppGlobals.typefaceNormal);
 
         final Calendar calendar = Calendar.getInstance();
         datePickerDialog = new DatePickerDialog(CheckoutStageTwo.this, R.style.MyDialogTheme,
@@ -98,8 +107,6 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH));
-//        datePickerDialog = DatePickerDialog.newInstance(this, calendar.get(Calendar.YEAR),
-//                calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         timePickerDialog = new TimePickerDialog(CheckoutStageTwo.this,
                 R.style.MyDialogTheme, this,
                 calendar.get(Calendar.HOUR_OF_DAY)
@@ -166,12 +173,25 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
             case R.id.spinner:
                 break;
             case R.id.button_drop_time:
+                dropDateSelected = false;
                 datePickerDialog.setTitle("Select date");
-                long addOneDay = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS);
+                long addOneDay;
+                if (switchCompat.isChecked()) {
+                    addOneDay = TimeUnit.MILLISECONDS.convert(0, TimeUnit.DAYS);
+                } else {
+                    addOneDay = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS);
+                }
                 long tenDays = TimeUnit.MILLISECONDS.convert(10, TimeUnit.DAYS);
                 datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() + addOneDay);
                 datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() + tenDays);
                 datePickerDialog.show();
+                break;
+            case R.id.send_request:
+                if (!dropDateSelected) {
+                    Toast.makeText(this, "please select drop time & date", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                CheckOutActivity.getInstance().sendData(dropDateString + " "+ dropTimeString, laundryType);
                 break;
         }
     }
@@ -373,6 +393,8 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
         Log.i("TAG", "hour " + i + "minute " + i1);
         if (i < 13 || i > 20 && !switchCompat.isChecked()) {
             Toast.makeText(this, "Delivery time must be between 14:00 - 20:00", Toast.LENGTH_SHORT).show();
@@ -384,9 +406,17 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
                 }
             }, 1000);
             return;
+        } else if (i < hour+2 && switchCompat.isChecked()) {
+            Toast.makeText(this, "Delivery time must be after two hours of pickup", Toast.LENGTH_SHORT).show();
+            new android.os.Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    timePickerDialog.setTitle("Please select Drop Time");
+                    timePickerDialog.show();
+                }
+            }, 1000);
+            return;
         }
-        Calendar c = Calendar.getInstance();
-        int hour = c.get(Calendar.HOUR_OF_DAY);
         Log.i("TAG", "hour" + hour);
         if (i < hour) {
             Toast.makeText(this, "Drop Time must be one day after Pickup please select again", Toast.LENGTH_SHORT)
@@ -400,7 +430,7 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
             }, 1000);
             return;
         }
-        dropTimeString = i1 + ":" + i;
+        dropTimeString = i + ":" + i1;
         dropDateSelected = true;
         Toast.makeText(this, "Time set", Toast.LENGTH_SHORT).show();
     }
@@ -408,6 +438,7 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         if (b) {
+            laundryType = "express";
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setTitle("Express Laundry");
             alertDialogBuilder.setMessage("Express laundry service will allow you to get your laundry done rapidly." +
@@ -421,6 +452,7 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
             selectTime.setText("Select Drop Time(Minimum 2 hours after pickup)");
             totalPrice.setText(expressPrice + " SAR");
         } else {
+            laundryType = "normal";
             selectTime.setText("Select Drop Time(Must be between 14:00 - 20:00)");
             totalPrice.setText((normalPrice) + " SAR");
         }

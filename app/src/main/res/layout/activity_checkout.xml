@@ -20,7 +20,7 @@
             android:gravity="center"
             android:text="Cart"
             android:textColor="@android:color/white"
-            android:textSize="20sp"
+            android:textSize="26sp"
             android:textStyle="bold" />
 
     </RelativeLayout>

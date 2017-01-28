@@ -61,11 +61,16 @@
         android:orientation="horizontal"
         android:weightSum="4"
         android:padding="5dp"
-        android:layout_margin="30dp">
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp">
     <com.byteshaft.laundry.utils.HeadingTextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
+        android:drawableLeft="@drawable/tag"
+        android:gravity="center"
+        android:layout_weight="2.5"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:text="Total Price: "/>
@@ -76,7 +81,7 @@
         android:textSize="18sp"
         android:layout_width="0dp"
         android:gravity="right"
-        android:layout_weight="2"
+        android:layout_weight="1.5"
         android:layout_height="wrap_content" />
 
     </LinearLayout>
