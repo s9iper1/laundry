@@ -99,13 +99,18 @@ public class CodeConfirmationActivity extends Activity implements
 
     private void runTimer() {
         mResendButton.setEnabled(false);
-        new CountDownTimer(60000, 1000) { // adjust the milli seconds here
+        new CountDownTimer(120000, 1000) { // adjust the milli seconds here
 
             public void onTick(long millisUntilFinished) {
-                timeTextView.setText(""+String.format("%d0 : %d",
+                String time = String.format("0%d:%d",
                         TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
                         TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)));
+                if (Integer.valueOf(time.split(":")[1]) < 10) {
+                    String[] ifLess = time.split(":");
+                    time = ifLess[0] + ":" + "0" + ifLess[1];
+                }
+                timeTextView.setText(time);
             }
 
             @Override
@@ -162,9 +167,15 @@ public class CodeConfirmationActivity extends Activity implements
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         if (smsListener != null) {
             unregisterReceiver(smsListener);
         }
+
     }
 
     @Override

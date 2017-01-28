@@ -16,4 +16,5 @@
     <color name="button_color">#0288D1</color>
     <color name="button_text_color">#ffffff</color>
     <color name="button_color_two">#FF9800</color>
+    <color name="express_color">#006600</color>
 </resources>

@@ -31,6 +31,12 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="MyDialogTheme" parent="android:Theme.DeviceDefault.Light.Dialog"/>
+
+    <style name="ColorSwitchStyle">
+        <item name="colorControlActivated">@color/express_color</item>
+    </style>
+
     <!--<style name="AppTheme.Button" parent="Widget.AppCompat.Button.Colored">-->
         <!--<item name="colorButtonNormal">@color/button_color</item>-->
         <!--<item name="android:textColor">@color/button_text_color</item>-->
