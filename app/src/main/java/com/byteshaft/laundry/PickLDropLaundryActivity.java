@@ -298,6 +298,7 @@ public class PickLDropLaundryActivity extends AppCompatActivity implements OnMap
                     case HttpURLConnection.HTTP_CREATED:
                         finish();
                         Toast.makeText(this, "Address added!", Toast.LENGTH_SHORT).show();
+                        AddressesActivity.getLocationData();
                         break;
                     case HttpURLConnection.HTTP_OK:
                         if (updateMode)

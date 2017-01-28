@@ -2,7 +2,7 @@ package com.byteshaft.laundry.laundry;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -10,17 +10,16 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.byteshaft.laundry.R;
 import com.byteshaft.laundry.utils.AppGlobals;
@@ -122,7 +121,7 @@ public class RecycleAbleFragment extends Fragment {
             String titleLowerCase = laundryItem.getName();
             String firstUpper = titleLowerCase.substring(0, 1).toUpperCase() + titleLowerCase.substring(1);
             viewHolder.titleTextView.setText(firstUpper);
-            viewHolder.price.setText(String.valueOf(laundryItem.getPrice()+" SAR"));
+            viewHolder.price.setText(String.valueOf(laundryItem.getPrice() + " SAR"));
             Picasso.with(AppGlobals.getContext())
                     .load(laundryItem.getImageUri())
                     .resize(300, 300)
@@ -159,31 +158,20 @@ public class RecycleAbleFragment extends Fragment {
                     }
                 }
             }, 100);
-            viewHolder.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    if (order.containsKey(items.get(holder.getAdapterPosition()).getId())) {
-                        Log.i("TAG", "OK");
-                        order.remove(items.get(holder.getAdapterPosition()).getId());
-                        OrderItem orderItem = new OrderItem();
-                        orderItem.setId(items.get(holder.getAdapterPosition()).getId());
-                        orderItem.setName(items.get(holder.getAdapterPosition()).getName());
-                        Spinner spinner = (Spinner) mRecyclerView
-                                .findViewHolderForAdapterPosition(holder.getAdapterPosition()).
-                                        itemView.findViewById(R.id.quantity_spinner);
-                        orderItem.setQuantity(String.valueOf(spinner.getSelectedItem()));
-                        orderItem.setPrice(items.get(holder.getAdapterPosition()).getPrice());
-                        orderItem.setImageUrl(items.get(holder.getAdapterPosition()).getImageUri());
-                        order.put(items.get(holder.getAdapterPosition()).getId(),
-                                orderItem);
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-
-                }
-            });
+//            viewHolder.quantityTextView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                @Override
+//                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                    if (order.containsKey(items.get(holder.getAdapterPosition()).getId())) {
+//                        Log.i("TAG", "OK");
+//                    }
+//                }
+//
+//                @Override
+//                public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//                }
+//            });
+//        }
         }
 
         @Override
@@ -197,44 +185,52 @@ public class RecycleAbleFragment extends Fragment {
             if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e) &&
                     (!Spinner.class.isInstance(childView))) {
                 mListener.onItem(items.get(rv.getChildPosition(childView)).getId());
-                OrderItem orderItem = new OrderItem();
-                orderItem.setId(items.get(rv.getChildPosition(childView)).getId());
-                orderItem.setName(items.get(rv.getChildPosition(childView)).getName());
-                Spinner spinner = (Spinner) mRecyclerView
-                        .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
-                        itemView.findViewById(R.id.quantity_spinner);
-                orderItem.setQuantity(String.valueOf(spinner.getSelectedItem()));
-                orderItem.setPrice(items.get(rv.getChildPosition(childView)).getPrice());
-                orderItem.setImageUrl(items.get(rv.getChildPosition(childView)).getImageUri());
-                setBackgroundColor(rv, childView, orderItem);
+                setBackgroundColor(rv, childView);
                 return true;
             }
             return false;
         }
 
-        private void setBackgroundColor(RecyclerView rv, View childView, OrderItem orderItem) {
-            RelativeLayout cardView;
-            ColorDrawable background;
+        private void setBackgroundColor(RecyclerView rv, View childView) {
             if (order.containsKey(items.get(rv.getChildPosition(childView)).getId())) {
-                cardView = (RelativeLayout) mRecyclerView
+                TextView quantityTextView = (TextView) mRecyclerView
                         .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
-                                itemView.findViewById(R.id.layout);
-                cardView.setBackgroundColor(getResources()
-                        .getColor(android.R.color.white));
+                                itemView.findViewById(R.id.quantity_text_view);
+                if (Integer.valueOf(quantityTextView.getText().toString()) == 10) {
+                    Toast.makeText(getActivity(), "limit reached", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 order.remove(items.get(rv.getChildPosition(childView)).getId());
-                background = (ColorDrawable) cardView.getBackground();
+                OrderItem orderItem = new OrderItem();
+                orderItem.setId(items.get(rv.getChildPosition(childView)).getId());
+                orderItem.setName(items.get(rv.getChildPosition(childView)).getName());
+                orderItem.setQuantity(String.valueOf(
+                        Integer.valueOf(quantityTextView.getText().toString())+1));
+                orderItem.setPrice(items.get(rv.getChildPosition(childView)).getPrice());
+                orderItem.setImageUrl(items.get(rv.getChildPosition(childView)).getImageUri());
+                order.put(items.get(rv.getChildPosition(childView)).getId(),
+                        orderItem);
+                quantityTextView.setText(String.valueOf(orderItem.getQuantity()));
+                quantityTextView.setTextColor(Color.WHITE);
             } else {
-                Spinner spinner = (Spinner) mRecyclerView
-                        .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
-                                itemView.findViewById(R.id.quantity_spinner);
-                cardView = (RelativeLayout) mRecyclerView
+                RelativeLayout cardView = (RelativeLayout) mRecyclerView
                         .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
                                 itemView.findViewById(R.id.layout);
                 cardView.setBackgroundColor(getResources()
                         .getColor(R.color.card_selected_color));
+                OrderItem orderItem = new OrderItem();
+                orderItem.setId(items.get(rv.getChildPosition(childView)).getId());
+                orderItem.setName(items.get(rv.getChildPosition(childView)).getName());
+                orderItem.setQuantity(String.valueOf(1));
+                orderItem.setPrice(items.get(rv.getChildPosition(childView)).getPrice());
+                orderItem.setImageUrl(items.get(rv.getChildPosition(childView)).getImageUri());
                 order.put(items.get(rv.getChildPosition(childView)).getId(),
                         orderItem);
-                background = (ColorDrawable) cardView.getBackground();
+                TextView quantityTextView = (TextView) mRecyclerView
+                        .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
+                                itemView.findViewById(R.id.quantity_text_view);
+                quantityTextView.setText(String.valueOf(orderItem.getQuantity()));
+                quantityTextView.setTextColor(Color.WHITE);
             }
 //            if (order.containsKey(items.get(rv.getChildPosition(childView)).getId()) &&
 //                    background.getColor() != getResources().getColor(R.color.card_selected_color)) {
@@ -265,7 +261,7 @@ public class RecycleAbleFragment extends Fragment {
         public TextView price;
         public RelativeLayout relativeLayout;
         public CardView cardView;
-        public Spinner spinner;
+        public TextView quantityTextView;
 
         public CustomView(View itemView) {
             super(itemView);
@@ -274,7 +270,7 @@ public class RecycleAbleFragment extends Fragment {
             price = (TextView) itemView.findViewById(R.id.price);
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.layout);
             cardView = (CardView) itemView.findViewById(R.id.card_view);
-            spinner = (Spinner) itemView.findViewById(R.id.quantity_spinner);
+            quantityTextView = (TextView) itemView.findViewById(R.id.quantity_text_view);
             titleTextView.setTypeface(AppGlobals.typefaceNormal);
             price.setTypeface(AppGlobals.typefaceNormal);
             titleTextView.setTypeface(AppGlobals.typefaceNormal);

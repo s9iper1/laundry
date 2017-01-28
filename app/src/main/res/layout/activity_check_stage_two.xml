@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@mipmap/cart_img">
+
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:padding="2dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/white"
+        android:popupBackground="#ffffff"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/spinner" />
+
+    <android.support.v7.widget.SwitchCompat
+        android:text="Express Laundry Service"
+        android:textColor="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        app:theme="@style/ColorSwitchStyle"
+        android:layout_below="@+id/spinner"
+        android:id="@+id/express_service" />
+
+    <com.byteshaft.laundry.utils.HeadingTextView
+        android:id="@+id/select_time"
+        android:layout_marginTop="20dp"
+        android:textSize="18sp"
+        android:text="Select Drop Time(Must be between 14:00 - 20:00)"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/express_service"
+        android:padding="2dp"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:id="@+id/button_drop_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/select_time"
+        android:src="@mipmap/calendar"
+        android:background="@drawable/apptheme_btn_default_holo_dark"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_drop_time"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        android:padding="5dp"
+        android:layout_margin="30dp">
+    <com.byteshaft.laundry.utils.HeadingTextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:text="Total Price: "/>
+
+    <com.byteshaft.laundry.utils.HeadingTextView
+        android:id="@+id/total_price"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:layout_width="0dp"
+        android:gravity="right"
+        android:layout_weight="2"
+        android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/send_request"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:textSize="20sp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/apptheme_btn_default_holo_dark"
+        android:drawablePadding="5dp"
+        android:textAllCaps="false"
+        android:text="Send Laundry Request"
+        android:textColor="@android:color/white" />
+
+
+</RelativeLayout>

@@ -38,6 +38,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
@@ -62,10 +63,13 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".laundry.LaundryCategoriesActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".account.CodeConfirmationActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+
+            </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -73,12 +77,12 @@
 
         <activity
             android:name=".PickLDropLaundryActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_pick_laundry" />
         <activity
-            android:name=".CheckOutActivity" />
-        <activity android:name=".AddressesActivity">
-
-        </activity>
+            android:name=".CheckOutActivity" android:screenOrientation="portrait" />
+        <activity android:name=".AddressesActivity" android:screenOrientation="portrait" />
+        <activity android:name=".CheckoutStageTwo" android:screenOrientation="portrait" />
     </application>
 
 </manifest>

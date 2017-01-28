@@ -1,17 +1,9 @@
 package com.byteshaft.laundry;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -19,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -39,37 +32,36 @@ import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
-import static com.byteshaft.laundry.AddressesActivity.sAddressId;
 import static com.byteshaft.laundry.laundry.LaundryCategoriesActivity.order;
 
 
 public class CheckOutActivity extends AppCompatActivity implements View.OnClickListener,
         HttpRequest.OnReadyStateChangeListener, HttpRequest.OnErrorListener {
 
-    private Button selectLocation;
-    private static final int PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 0;
-    private static final int DROP_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 1;
     private Button sendButton;
     private ListView listView;
     private TextView nothingInCart;
     private ArrayList<Integer> keysArrayList;
+    private Adapter adapter;
+    public static int sAddressId = -1;
+    public static HashMap<Integer, Integer> sTotalPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
         setTitle("Checkout");
+        sTotalPrice = new HashMap<>();
+        AddressesActivity.getLocationData();
         overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        selectLocation = (Button) findViewById(R.id.select_location);
         listView = (ListView) findViewById(R.id.order_list);
         nothingInCart = (TextView) findViewById(R.id.nothing_in_cart);
-        selectLocation.setOnClickListener(this);
         sendButton = (Button) findViewById(R.id.send);
-        selectLocation.setTypeface(AppGlobals.typefaceNormal);
         sendButton.setTypeface(AppGlobals.typefaceNormal);
         sendButton.setOnClickListener(this);
         keysArrayList = new ArrayList<>();
@@ -83,7 +75,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
             nothingInCart.setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
         }
-        Adapter adapter = new Adapter(getApplicationContext(), R.layout.delegate_order_list, keysArrayList);
+        adapter = new Adapter(getApplicationContext(), R.layout.delegate_order_list, keysArrayList);
         listView.setAdapter(adapter);
     }
 
@@ -101,179 +93,39 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.select_location:
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                            PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION);
-                } else {
-                    if (!locationEnabled()) {
-                        // notify user
-                        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                        dialog.setMessage("Location is not enabled");
-                        dialog.setPositiveButton("Turn on", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                // TODO Auto-generated method stub
-                                Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(myIntent);
-                                //get gps
-                            }
-                        });
-                        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                // TODO Auto-generated method stub
-
-                            }
-                        });
-                        dialog.show();
-                    } else {
-                        if (AppGlobals.isUserLoggedIn()) {
-                            startActivity(new Intent(getApplicationContext(), AddressesActivity.class));
-                        } else {
-                            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-                            alertDialogBuilder.setTitle("Not logged in !");
-                            alertDialogBuilder.setMessage("Do you want to login?");
-                            alertDialogBuilder.setCancelable(false);
-                            alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                                }
-                            });
-                            alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            AlertDialog alertDialog = alertDialogBuilder.create();
-                            alertDialog.show();
-                        }
-                    }
-                }
-                break;
             case R.id.send:
-                if (sAddressId == -1) {
-                    Toast.makeText(this, "please select your address", Toast.LENGTH_SHORT).show();
-                    break;
+                if (AppGlobals.isUserLoggedIn() && AppGlobals.isUserActive()) {
+                    startActivity(new Intent(getApplicationContext(), CheckoutStageTwo.class));
+                } else {
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    Toast.makeText(this, "please login to proceed", Toast.LENGTH_SHORT).show();
                 }
-                JSONArray jsonArray = new JSONArray();
-                for (Integer key : keysArrayList) {
-                    OrderItem orderItem = order.get(key);
-                    try {
-                        JSONObject jsonObject = new JSONObject();
-                        System.out.println(jsonObject + "object");
-                        jsonObject.put("item", orderItem.getId());
-                        jsonObject.put("quantity", orderItem.getQuantity());
-                        jsonArray.put(jsonObject);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                System.out.println(jsonArray + "array");
-                orderRequest(jsonArray);
                 break;
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION:
-            case DROP_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (requestCode == PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION) {
-                        if (!locationEnabled()) {
-                            // notify user
-                            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                            dialog.setMessage("Location is not enabled");
-                            dialog.setPositiveButton("Turn on", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                    // TODO Auto-generated method stub
-                                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                    startActivity(myIntent);
-                                    //get gps
-                                }
-                            });
-                            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                    // TODO Auto-generated method stub
-
-                                }
-                            });
-                            dialog.show();
-                        } else {
-                            startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
-                        }
-                    } else {
-                        if (!locationEnabled()) {
-                            // notify user
-                            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                            dialog.setMessage("Location is not enabled");
-                            dialog.setPositiveButton("Turn on", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                    // TODO Auto-generated method stub
-                                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                    startActivity(myIntent);
-                                    //get gps
-                                }
-                            });
-                            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                    // TODO Auto-generated method stub
-
-                                }
-                            });
-                            dialog.show();
-                        } else {
-                            startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
-                        }
-                    }
-
-
-                } else {
-                    Toast.makeText(this, "Permission denied!", Toast.LENGTH_SHORT).show();
-
-                }
-                return;
+    private void sendData() {
+        if (sAddressId == -1) {
+            Toast.makeText(this, "please select your address", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        JSONArray jsonArray = new JSONArray();
+        for (Integer key : keysArrayList) {
+            OrderItem orderItem = order.get(key);
+            try {
+                JSONObject jsonObject = new JSONObject();
+                System.out.println(jsonObject + "object");
+                jsonObject.put("item", orderItem.getId());
+                jsonObject.put("quantity", orderItem.getQuantity());
+                jsonArray.put(jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
+        System.out.println(jsonArray + "array");
+        orderRequest(jsonArray);
     }
 
-    private boolean locationEnabled() {
-        LocationManager lm = (LocationManager) getApplicationContext()
-                .getSystemService(Context.LOCATION_SERVICE);
-        boolean gps_enabled = false;
-        boolean network_enabled = false;
-
-        try {
-            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch (Exception ex) {
-        }
-
-        try {
-            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch (Exception ex) {
-        }
-
-        return gps_enabled || network_enabled;
-    }
 
     private class Adapter extends ArrayAdapter<Integer> {
 
@@ -295,6 +147,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                 viewHolder.quantity = (TextView) convertView.findViewById(R.id.order_quantity);
                 viewHolder.imageView = (ImageView) convertView.findViewById(R.id.order_image);
                 viewHolder.price = (TextView) convertView.findViewById(R.id.order_price);
+                viewHolder.plusButton = (ImageButton) convertView.findViewById(R.id.plus);
+                viewHolder.minusButton = (ImageButton) convertView.findViewById(R.id.minus);
                 viewHolder.name.setTypeface(AppGlobals.typefaceNormal);
                 viewHolder.quantity.setTypeface(AppGlobals.typefaceNormal);
                 viewHolder.price.setTypeface(AppGlobals.typefaceNormal);
@@ -303,20 +157,69 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             OrderItem orderItem = order.get(orderData.get(position));
+            Log.i("TAG", "" + String.valueOf(orderItem == null));
             String titleLowerCase = orderItem.getName();
             String firstUpper = titleLowerCase.substring(0, 1).toUpperCase() + titleLowerCase.substring(1);
             viewHolder.name.setText(firstUpper);
             viewHolder.quantity.setText("Qty: " + orderItem.getQuantity());
             int price = 0;
-            Log.i("TAG", "qty " + orderItem.getQuantity());
+            viewHolder.minusButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String qty = viewHolder.quantity.getText().toString().replace("Qty: ", "");
+                    OrderItem orderItem = order.get(orderData.get(position));
+                    if (Integer.valueOf(qty) == 1) {
+                        orderData.remove(position);
+                        order.remove(orderItem.getId());
+                        Toast.makeText(CheckOutActivity.this, "Item removed", Toast.LENGTH_SHORT).show();
+                        adapter.remove(position);
+                        adapter.notifyDataSetChanged();
+                        if (orderData.size() < 1) {
+                            nothingInCart.setVisibility(View.VISIBLE);
+                            listView.setVisibility(View.GONE);
+                        }
+                        return;
+                    }
+                    orderItem.setQuantity(String.valueOf(Integer.valueOf(qty)-1));
+                    order.put(orderItem.getId(), orderItem);
+                    sTotalPrice = new HashMap<>();
+                    notifyDataSetChanged();
+                    Log.i("TAG", "minusButton click");
+                }
+            });
+            viewHolder.plusButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    String qty = viewHolder.quantity.getText().toString().replace("Qty: ", "");
+                    if (Integer.valueOf(qty) == 10) {
+                        Toast.makeText(CheckOutActivity.this, "limit reached", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    OrderItem orderItem = order.get(orderData.get(position));
+                    orderItem.setQuantity(String.valueOf(Integer.valueOf(qty)+1));
+                    order.put(orderItem.getId(), orderItem);
+                    sTotalPrice = new HashMap<>();
+                    notifyDataSetChanged();
+                    Log.i("TAG", "plusButton click");
+                }
+            });
             if (Integer.valueOf(orderItem.getQuantity()) > 1) {
                 Log.i("TAG", "qty  condition matched");
                 for (int i = 1; i <= Integer.valueOf(orderItem.getQuantity()); i++) {
                     price = price + Integer.valueOf(orderItem.getPrice());
                 }
                 viewHolder.price.setText("Total:" + price + " SAR");
+                Log.i("TAG", "sTotalPrice" + sTotalPrice + " adding "+ price);
+                if (!sTotalPrice.containsKey(orderItem.getId())) {
+                    sTotalPrice.put(orderItem.getId(), price);
+                }
             } else {
                 viewHolder.price.setText("Total:" + orderItem.getPrice());
+                if (!sTotalPrice.containsKey(orderItem.getId())) {
+                    sTotalPrice.put(orderItem.getId(), Integer.valueOf(orderItem.getPrice()));
+                }
+                Log.i("TAG", " else sTotalPrice" + sTotalPrice + " adding "+ Integer.valueOf(orderItem.getPrice()));
             }
             Picasso.with(AppGlobals.getContext())
                     .load(orderItem.getImageUrl())
@@ -334,6 +237,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
 
                         }
                     });
+
             return convertView;
         }
 
@@ -377,11 +281,11 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         WebServiceHelpers.showProgressDialog(CheckOutActivity.this, "Sending your order..");
     }
 
-    private String orderRequestData(JSONArray itemsquantity) {
+    private String orderRequestData(JSONArray itemsQuantity) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("address", sAddressId);
-            jsonObject.put("service_items", itemsquantity);
+            jsonObject.put("service_items", itemsQuantity);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -394,6 +298,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         public TextView quantity;
         public TextView price;
         public ImageView imageView;
+        public ImageButton plusButton;
+        public ImageButton minusButton;
     }
 
     @Override

@@ -126,6 +126,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        if (progress != null && progress.isShowing()) {
+            progress.dismiss();
+        }
         if (!AppGlobals.isUserActive() && !AppGlobals.isUserLoggedIn()) {
             laundryText.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
@@ -300,7 +303,7 @@ public class MainActivity extends AppCompatActivity
     public void onReadyStateChange(HttpRequest request, int readyState) {
         switch (readyState) {
             case HttpRequest.STATE_DONE:
-                if (!onResumeCalled) {
+                if (!onResumeCalled && progress != null && progress.isShowing()) {
                     progress.dismiss();
                 }
                 System.out.println("Ok kro :   " + request.getResponseText());
