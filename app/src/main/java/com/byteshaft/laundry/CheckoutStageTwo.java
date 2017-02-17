@@ -1,7 +1,6 @@
 package com.byteshaft.laundry;
 
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,14 +21,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
-import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.byteshaft.laundry.account.LoginActivity;
 import com.byteshaft.laundry.utils.AppGlobals;
+import com.byteshaft.laundry.utils.Helpers;
+import com.byteshaft.laundry.utils.TimeDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,23 +46,17 @@ import static com.byteshaft.laundry.CheckOutActivity.sAddressId;
  * Created by s9iper1 on 1/14/17.
  */
 
-public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, CompoundButton.OnCheckedChangeListener {
+public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener,
+        DatePickerDialog.OnDateSetListener,  CompoundButton.OnCheckedChangeListener {
 
     private Spinner selectLocation;
     private static final int PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private static final int DROP_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 1;
     private JSONArray jsonArray;
     private ArrayList<String> locationNames;
-    private String addNewLocation = "Add new address";
+    private String addNewLocation = "add new address";
     private DatePickerDialog datePickerDialog;
-    private TimePickerDialog timePickerDialog;
-    private static final String DATE_PICKER_TAG = "date_picker";
-    private static final String TIME_PICKER_TAG = "time_picker";
-    private ImageButton dropTime;
-    private String dropDateString;
-    private String dropTimeString;
-    private boolean dropDateSelected = false;
-    private TextView selectTime;
+    private TextView selectDropTime;
     private SwitchCompat switchCompat;
     private static final int LOCATION_OFF = 0;
     private ArrayAdapter<String> locationAdapter;
@@ -73,6 +67,18 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
     private Button sendRequest;
     private String laundryType = "normal";
     private static CheckoutStageTwo sInstance;
+    private LinearLayout pickUpLayout;
+    private LinearLayout deliveryTimeLayout;
+    public TextView pickUpTimeText;
+    public boolean pickUpTimeSelected = false;
+    public boolean dropTimeSelected = false;
+    private String dropDateString;
+    public String dropTimeString;
+    public String pickUpTimeString;
+    private TextView dropTime;
+    public static int sPickUpSelected = 0;
+    public static int sDropSelected = 0;
+
 
     public static CheckoutStageTwo getInstance() {
         return sInstance;
@@ -88,14 +94,21 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
         setTitle("Checkout");
         overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
         selectLocation = (Spinner) findViewById(R.id.spinner);
-        dropTime = (ImageButton) findViewById(R.id.button_drop_time);
-        selectTime = (TextView) findViewById(R.id.select_time);
+        deliveryTimeLayout = (LinearLayout) findViewById(R.id.layout_drop);
+        selectDropTime = (TextView) findViewById(R.id.drop_time_text);
         switchCompat = (SwitchCompat) findViewById(R.id.express_service);
         totalPrice = (TextView) findViewById(R.id.total_price);
         sendRequest = (Button) findViewById(R.id.send_request);
+        pickUpTimeText = (TextView) findViewById(R.id.pick_up_time_text);
+        pickUpLayout = (LinearLayout) findViewById(R.id.layout_pick_up);
+        dropTime = (TextView) findViewById(R.id.drop_time);
+        dropTime.setText(Helpers.getTimeAndDate(true));
+        pickUpTimeText.setText(Helpers.getTimeAndDate(false));
+
+        pickUpLayout.setOnClickListener(this);
         sendRequest.setOnClickListener(this);
         switchCompat.setOnCheckedChangeListener(this);
-        dropTime.setOnClickListener(this);
+        deliveryTimeLayout.setOnClickListener(this);
         switchCompat.setTypeface(AppGlobals.typefaceBold);
         refreshData();
         printMap(CheckOutActivity.sTotalPrice);
@@ -107,10 +120,6 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH));
-        timePickerDialog = new TimePickerDialog(CheckoutStageTwo.this,
-                R.style.MyDialogTheme, this,
-                calendar.get(Calendar.HOUR_OF_DAY)
-                , calendar.get(Calendar.MINUTE), true);
     }
 
     @Override
@@ -172,8 +181,7 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
         switch (view.getId()) {
             case R.id.spinner:
                 break;
-            case R.id.button_drop_time:
-                dropDateSelected = false;
+            case R.id.layout_drop:
                 datePickerDialog.setTitle("Select date");
                 long addOneDay;
                 if (switchCompat.isChecked()) {
@@ -186,12 +194,21 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
                 datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() + tenDays);
                 datePickerDialog.show();
                 break;
+            case R.id.layout_pick_up:
+                TimeDialog timeDialog = new TimeDialog(CheckoutStageTwo.this, R.style.MyDialogTheme,
+                        0);
+                timeDialog.show();
+                break;
             case R.id.send_request:
-                if (!dropDateSelected) {
-                    Toast.makeText(this, "please select drop time & date", Toast.LENGTH_SHORT).show();
+                if (!pickUpTimeSelected) {
+                    Toast.makeText(this, "please select pickup time", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (!dropTimeSelected) {
+                    Toast.makeText(this, "please select pickup time", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                CheckOutActivity.getInstance().sendData(dropDateString + " "+ dropTimeString, laundryType);
+                CheckOutActivity.getInstance().sendData(Helpers.getDate() + " "+ pickUpTimeString
+                        , dropDateString + " "+ dropTimeString, laundryType);
                 break;
         }
     }
@@ -387,52 +404,14 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
         Log.i("TAG", "year " + i + "month " + i1 + "date " + i2);
         dropDateString = i2 + "-" + (i1 + 1) + "-" + i;
-        timePickerDialog.setTitle("Select Time");
-        timePickerDialog.show();
-    }
-
-    @Override
-    public void onTimeSet(TimePicker timePicker, int i, int i1) {
-        Calendar c = Calendar.getInstance();
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        Log.i("TAG", "hour " + i + "minute " + i1);
-        if (i < 13 || i > 20 && !switchCompat.isChecked()) {
-            Toast.makeText(this, "Delivery time must be between 14:00 - 20:00", Toast.LENGTH_SHORT).show();
-            new android.os.Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    timePickerDialog.setTitle("Please select Drop Time");
-                    timePickerDialog.show();
-                }
-            }, 1000);
+        if (dropDateString.trim().isEmpty()) {
+            Toast.makeText(this, "please select date", Toast.LENGTH_SHORT).show();
             return;
-        } else if (i < hour+2 && switchCompat.isChecked()) {
-            Toast.makeText(this, "Delivery time must be after two hours of pickup", Toast.LENGTH_SHORT).show();
-            new android.os.Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    timePickerDialog.setTitle("Please select Drop Time");
-                    timePickerDialog.show();
-                }
-            }, 1000);
-            return;
+        } else {
+            TimeDialog timeDialog = new TimeDialog(CheckoutStageTwo.this, R.style.MyDialogTheme,
+                    1);
+            timeDialog.show();
         }
-        Log.i("TAG", "hour" + hour);
-        if (i < hour) {
-            Toast.makeText(this, "Drop Time must be one day after Pickup please select again", Toast.LENGTH_SHORT)
-                    .show();
-            new android.os.Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    timePickerDialog.setTitle("Please select Drop Time");
-                    timePickerDialog.show();
-                }
-            }, 1000);
-            return;
-        }
-        dropTimeString = i + ":" + i1;
-        dropDateSelected = true;
-        Toast.makeText(this, "Time set", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -442,19 +421,21 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setTitle("Express Laundry");
             alertDialogBuilder.setMessage("Express laundry service will allow you to get your laundry done rapidly." +
-                    "Minimum drop time you can select is 2 hours. Double cost applied.").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    "Minimum drop time you can select is 2 hours. \"Double cost applied!!\"").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     dialog.dismiss();
                 }
             });
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
-            selectTime.setText("Select Drop Time(Minimum 2 hours after pickup)");
+            selectDropTime.setText("Select Drop Time(Minimum 2 hours after pickup)");
             totalPrice.setText(expressPrice + " SAR");
+            dropTime.setText(Helpers.getTimeAndDate(false));
         } else {
             laundryType = "normal";
-            selectTime.setText("Select Drop Time(Must be between 14:00 - 20:00)");
+            selectDropTime.setText("Select Drop Time(Must be between 14:00 - 20:00)");
             totalPrice.setText((normalPrice) + " SAR");
+            dropTime.setText(Helpers.getTimeAndDate(true));
         }
     }
 }
