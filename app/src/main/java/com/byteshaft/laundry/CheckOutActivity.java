@@ -296,6 +296,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
             jsonObject.put("drop_time", dropTime);
             jsonObject.put("laundry_type", laundryType);
             jsonObject.put("service_items", itemsQuantity);
+            jsonObject.put("approved_for_processing", "False");
+            jsonObject.put("service_done", "False");
         } catch (JSONException e) {
             e.printStackTrace();
         }

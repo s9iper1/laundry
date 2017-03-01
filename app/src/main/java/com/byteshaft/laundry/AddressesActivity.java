@@ -1,6 +1,5 @@
 package com.byteshaft.laundry;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +11,6 @@ import android.widget.ExpandableListView;
 
 import com.byteshaft.laundry.utils.AppGlobals;
 import com.byteshaft.laundry.utils.CustomExpandableListAdapter;
-import com.byteshaft.laundry.utils.Helpers;
 import com.byteshaft.requests.HttpRequest;
 
 import org.json.JSONArray;
@@ -26,7 +24,6 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
     private Button addAddress;
     public static CustomExpandableListAdapter listAdapter;
     public static ExpandableListView expListView;
-    private static ProgressDialog progress;
     private static String mToken;
     public static HashMap<Integer, JSONObject> hashMap;
     public static int sSelectedPosition = -1;
@@ -105,16 +102,16 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
         super.onResume();
         foreground = true;
         System.out.println(mToken);
+        Log.i("LOG", "before hashmap condition");
         if (hashMap != null && hashMap.size() > 0) {
+            Log.i("LOG", "before foreground");
             if (foreground) {
                 listAdapter = new CustomExpandableListAdapter(this, hashMap);
-                listAdapter.notifyDataSetChanged();
+                expListView.setAdapter(listAdapter);
             }
-        } else
-        if (foreground) {
-            progress = Helpers.getProgressDialog(this);
-        }
+        } else {
             getLocationData();
+        }
     }
 
     @Override
@@ -124,9 +121,6 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
     }
 
     public static void getLocationData() {
-        if (foreground) {
-            progress.show();
-        }
         mToken = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN);
         HttpRequest mRequest = new HttpRequest(AppGlobals.getContext());
         mRequest.setOnReadyStateChangeListener(new HttpRequest.OnReadyStateChangeListener() {
@@ -134,9 +128,6 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
             public void onReadyStateChange(HttpRequest request, int readyState) {
                 switch (readyState) {
                     case HttpRequest.STATE_DONE:
-                        if (foreground && progress != null) {
-                            progress.dismiss();
-                        }
                         System.out.println(request.getResponseText());
                         hashMap = new HashMap<>();
                         try {
@@ -176,7 +167,6 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
         overridePendingTransition(R.anim.anim_right_in, R.anim.anim_right_out);
 
     }
