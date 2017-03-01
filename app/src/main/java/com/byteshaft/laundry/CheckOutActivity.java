@@ -287,7 +287,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         WebServiceHelpers.showProgressDialog(CheckOutActivity.this, "Sending your laundry request..");
     }
 
-    private String orderRequestData(JSONArray itemsQuantity,String pickUpTime,  String dropTime, String laundryType) {
+    private String orderRequestData(JSONArray itemsQuantity,String pickUpTime,  String dropTime,
+                                    String laundryType) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("address", sAddressId);

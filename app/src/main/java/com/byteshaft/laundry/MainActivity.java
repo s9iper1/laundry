@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity
                 JSONArray itemsArray = jsonObject.getJSONArray("service_items");
                 viewHolder.address.setText("Address: " + addressObject.getString("name"));
                 viewHolder.address.setTypeface(AppGlobals.typefaceBold);
-                boolean isDone = jsonObject.getBoolean("done");
+                boolean isDone = jsonObject.getBoolean("service_done");
                 viewHolder.status.setTypeface(AppGlobals.typefaceNormal);
                 if (isDone) {
                     viewHolder.status.setText("Status: Done");

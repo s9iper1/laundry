@@ -138,7 +138,6 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
             Map.Entry pair = (Map.Entry)it.next();
             System.out.println(pair.getKey() + " = " + pair.getValue());
             totalPriceOfItems  = totalPriceOfItems + Integer.valueOf(String.valueOf(pair.getValue()));
-
         }
         Log.i("TAG", "total " + totalPriceOfItems);
         totalPrice.setText(totalPriceOfItems +  " SAR");

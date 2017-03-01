@@ -12,6 +12,7 @@ import android.widget.ExpandableListView;
 
 import com.byteshaft.laundry.utils.AppGlobals;
 import com.byteshaft.laundry.utils.CustomExpandableListAdapter;
+import com.byteshaft.laundry.utils.Helpers;
 import com.byteshaft.requests.HttpRequest;
 
 import org.json.JSONArray;
@@ -109,7 +110,11 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
                 listAdapter = new CustomExpandableListAdapter(this, hashMap);
                 listAdapter.notifyDataSetChanged();
             }
+        } else
+        if (foreground) {
+            progress = Helpers.getProgressDialog(this);
         }
+            getLocationData();
     }
 
     @Override
@@ -119,18 +124,17 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
     }
 
     public static void getLocationData() {
-        mToken = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN);
         if (foreground) {
-            progress = ProgressDialog.show(AppGlobals.getContext(), "Please wait..",
-                    "Getting Locations", true);
+            progress.show();
         }
+        mToken = AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN);
         HttpRequest mRequest = new HttpRequest(AppGlobals.getContext());
         mRequest.setOnReadyStateChangeListener(new HttpRequest.OnReadyStateChangeListener() {
             @Override
             public void onReadyStateChange(HttpRequest request, int readyState) {
                 switch (readyState) {
                     case HttpRequest.STATE_DONE:
-                        if (foreground) {
+                        if (foreground && progress != null) {
                             progress.dismiss();
                         }
                         System.out.println(request.getResponseText());
@@ -142,6 +146,7 @@ public class AddressesActivity extends AppCompatActivity implements View.OnClick
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                                 hashMap.put(i, jsonObject);
                             }
+                            Log.i("TAG", "foreground " + foreground);
                             if (foreground) {
                                 listAdapter = new CustomExpandableListAdapter(AppGlobals.getContext(),
                                         hashMap);
