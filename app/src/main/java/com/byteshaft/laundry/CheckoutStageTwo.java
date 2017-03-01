@@ -47,7 +47,7 @@ import static com.byteshaft.laundry.CheckOutActivity.sAddressId;
  */
 
 public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener,
-        DatePickerDialog.OnDateSetListener,  CompoundButton.OnCheckedChangeListener {
+        DatePickerDialog.OnDateSetListener, CompoundButton.OnCheckedChangeListener {
 
     private Spinner selectLocation;
     private static final int PICK_LAUNDRY_MY_PERMISSIONS_REQUEST_LOCATION = 0;
@@ -72,12 +72,15 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
     public TextView pickUpTimeText;
     public boolean pickUpTimeSelected = false;
     public boolean dropTimeSelected = false;
-    private String dropDateString;
+    public String dropDateString;
     public String dropTimeString;
     public String pickUpTimeString;
-    private TextView dropTime;
+    public TextView dropTime;
     public static int sPickUpSelected = 0;
     public static int sDropSelected = 0;
+
+    public boolean isPickUpTime = false;
+    public String pickUpDateString = "";
 
 
     public static CheckoutStageTwo getInstance() {
@@ -96,10 +99,10 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
         selectLocation = (Spinner) findViewById(R.id.spinner);
         deliveryTimeLayout = (LinearLayout) findViewById(R.id.layout_drop);
         selectDropTime = (TextView) findViewById(R.id.drop_time_text);
+        pickUpTimeText = (TextView) findViewById(R.id.pick_up_time_text);
         switchCompat = (SwitchCompat) findViewById(R.id.express_service);
         totalPrice = (TextView) findViewById(R.id.total_price);
         sendRequest = (Button) findViewById(R.id.send_request);
-        pickUpTimeText = (TextView) findViewById(R.id.pick_up_time_text);
         pickUpLayout = (LinearLayout) findViewById(R.id.layout_pick_up);
         dropTime = (TextView) findViewById(R.id.drop_time);
         dropTime.setText(Helpers.getTimeAndDate(true));
@@ -135,12 +138,12 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
     public void printMap(Map mp) {
         Iterator it = mp.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
+            Map.Entry pair = (Map.Entry) it.next();
             System.out.println(pair.getKey() + " = " + pair.getValue());
-            totalPriceOfItems  = totalPriceOfItems + Integer.valueOf(String.valueOf(pair.getValue()));
+            totalPriceOfItems = totalPriceOfItems + Integer.valueOf(String.valueOf(pair.getValue()));
         }
         Log.i("TAG", "total " + totalPriceOfItems);
-        totalPrice.setText(totalPriceOfItems +  " SAR");
+        totalPrice.setText(totalPriceOfItems + " SAR");
         normalPrice = totalPriceOfItems;
         expressPrice = totalPriceOfItems + totalPriceOfItems;
     }
@@ -194,20 +197,19 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
                 datePickerDialog.show();
                 break;
             case R.id.layout_pick_up:
-                TimeDialog timeDialog = new TimeDialog(CheckoutStageTwo.this, R.style.MyDialogTheme,
-                        0);
-                timeDialog.show();
+                isPickUpTime = true;
+                datePickerDialog.show();
                 break;
             case R.id.send_request:
                 if (!pickUpTimeSelected) {
                     Toast.makeText(this, "please select pickup time", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (!dropTimeSelected) {
-                    Toast.makeText(this, "please select pickup time", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "please select drop time", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                CheckOutActivity.getInstance().sendData(Helpers.getDate() + " "+ pickUpTimeString
-                        , dropDateString + " "+ dropTimeString, laundryType);
+                CheckOutActivity.getInstance().sendData(pickUpTimeString + " " + pickUpTimeString
+                        , dropDateString + " " + dropTimeString, laundryType);
                 break;
         }
     }
@@ -215,7 +217,7 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
+        switch (requestCode) {
             case LOCATION_OFF:
                 if (locationEnabled()) {
                     startActivity(new Intent(getApplicationContext(), PickLDropLaundryActivity.class));
@@ -402,14 +404,28 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
         Log.i("TAG", "year " + i + "month " + i1 + "date " + i2);
-        dropDateString = i2 + "-" + (i1 + 1) + "-" + i;
-        if (dropDateString.trim().isEmpty()) {
-            Toast.makeText(this, "please select date", Toast.LENGTH_SHORT).show();
-            return;
+        if (isPickUpTime) {
+            isPickUpTime = false;
+            pickUpDateString = i2 + "-" + (i1 + 1) + "-" + i;
+            if (pickUpDateString.trim().isEmpty()) {
+                Toast.makeText(this, "please select date", Toast.LENGTH_SHORT).show();
+                return;
+            } else {
+                TimeDialog timeDialog = new TimeDialog(CheckoutStageTwo.this, R.style.MyDialogTheme,
+                        0);
+                timeDialog.show();
+            }
         } else {
-            TimeDialog timeDialog = new TimeDialog(CheckoutStageTwo.this, R.style.MyDialogTheme,
-                    1);
-            timeDialog.show();
+            dropDateString = i2 + "-" + (i1 + 1) + "-" + i;
+            if (dropDateString.trim().isEmpty()) {
+
+                Toast.makeText(this, "please select date", Toast.LENGTH_SHORT).show();
+                return;
+            } else {
+                TimeDialog timeDialog = new TimeDialog(CheckoutStageTwo.this, R.style.MyDialogTheme,
+                        1);
+                timeDialog.show();
+            }
         }
     }
 

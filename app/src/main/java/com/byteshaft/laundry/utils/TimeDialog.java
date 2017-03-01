@@ -124,6 +124,13 @@ public class TimeDialog extends Dialog implements View.OnClickListener {
                 break;
 
         }
+        if (dialogType == 0) {
+            CheckoutStageTwo.getInstance().pickUpTimeText.setText(CheckoutStageTwo.getInstance()
+                    .pickUpDateString +" "+ CheckoutStageTwo.getInstance().pickUpTimeString);
+        } else {
+            CheckoutStageTwo.getInstance().dropTime.setText(CheckoutStageTwo.getInstance()
+                    .dropDateString+" "+ CheckoutStageTwo.getInstance().dropTimeString);
+        }
         Toast.makeText(mContext, "time selected", Toast.LENGTH_SHORT).show();
         CheckoutStageTwo.getInstance().pickUpTimeText.setBackgroundColor(
                 mContext.getResources().getColor(R.color.card_selected_color));
