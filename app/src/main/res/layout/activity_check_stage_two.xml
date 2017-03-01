@@ -5,7 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@mipmap/cart_img">
 
-
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,34 +29,92 @@
         android:layout_below="@+id/spinner"
         android:id="@+id/express_service" />
 
+    <LinearLayout
+        android:id="@+id/layout_pick_up"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/express_service"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:background="@drawable/linear_layout_border"
+        android:weightSum="4">
+
+        <com.byteshaft.laundry.utils.HeadingTextView
+            android:id="@+id/select_pick_up_time"
+            android:textSize="16sp"
+            android:text="Select Pickup Time"
+            android:layout_width="0dp"
+            android:layout_weight="2.5"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            />
+
+        <com.byteshaft.laundry.utils.HeadingTextView
+            android:id="@+id/pick_up_time_text"
+            android:layout_width="0dp"
+            android:padding="5dp"
+            android:textColor="@android:color/white"
+            android:layout_weight="1.5"
+            android:layout_height="wrap_content"
+            android:text="Time / Date"
+            />
+
+    </LinearLayout>
+
+    <com.byteshaft.laundry.utils.HeadingTextView
+        android:id="@+id/drop_time_text"
+        android:textSize="18sp"
+        android:layout_marginTop="30dp"
+        android:text="Drop Time(Must be between 14:00 - 20:00)"
+        android:gravity="center_horizontal"
+        android:layout_below="@+id/layout_pick_up"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="2dp"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"/>
+
+    <LinearLayout
+        android:id="@+id/layout_drop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:layout_below="@+id/drop_time_text"
+        android:orientation="horizontal"
+        android:background="@drawable/linear_layout_border"
+        android:weightSum="4">
+
     <com.byteshaft.laundry.utils.HeadingTextView
         android:id="@+id/select_time"
-        android:layout_marginTop="20dp"
-        android:textSize="18sp"
-        android:text="Select Drop Time(Must be between 14:00 - 20:00)"
-        android:layout_width="wrap_content"
-        android:layout_below="@+id/express_service"
+        android:textSize="16sp"
+        android:text="Select Drop Time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2.5"
         android:padding="2dp"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
-        android:layout_centerHorizontal="true"
-        android:layout_height="wrap_content" />
+         />
 
-    <ImageButton
-        android:id="@+id/button_drop_time"
-        android:layout_width="wrap_content"
+    <com.byteshaft.laundry.utils.HeadingTextView
+        android:id="@+id/drop_time"
+        android:layout_weight="1.5"
+        android:layout_width="0dp"
+        android:padding="5dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/select_time"
-        android:src="@mipmap/calendar"
-        android:background="@drawable/apptheme_btn_default_holo_dark"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
+        android:textColor="@android:color/white"
+        android:text="Time / Date"
         />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button_drop_time"
+        android:layout_below="@+id/layout_drop"
         android:orientation="horizontal"
         android:weightSum="4"
         android:padding="5dp"
@@ -86,7 +143,6 @@
 
     </LinearLayout>
 
-
     <Button
         android:id="@+id/send_request"
         android:layout_width="match_parent"
@@ -101,6 +157,5 @@
         android:textAllCaps="false"
         android:text="Send Laundry Request"
         android:textColor="@android:color/white" />
-
 
 </RelativeLayout>

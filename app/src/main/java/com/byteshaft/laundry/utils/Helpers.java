@@ -2,12 +2,8 @@ package com.byteshaft.laundry.utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Environment;
-import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 
 import java.io.File;
@@ -43,6 +39,13 @@ public class Helpers {
         return simpleDateFormat.format(calendar.getTime());
     }
 
+    public static String getDate() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        simpleDateFormat.setTimeZone(TimeZone.getDefault());
+        return simpleDateFormat.format(calendar.getTime());
+    }
+
     public static void alertDialog(Activity activity, String title, String msg, final Runnable runnable) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
         alertDialogBuilder.setTitle(title);
@@ -59,5 +62,16 @@ public class Helpers {
         });
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+    public static String getTimeAndDate(boolean dropTime) {
+        Calendar c = Calendar.getInstance();
+        System.out.println("Current time => "+c.getTime());
+        if (dropTime) {
+            c.add(Calendar.DATE, 1);
+        }
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return df.format(c.getTime());
     }
 }

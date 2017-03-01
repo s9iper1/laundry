@@ -110,7 +110,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    public void sendData(String dropTime, String laundryType) {
+    public void sendData(String pickUpTime, String dropTime, String laundryType) {
         if (sAddressId == -1) {
             Toast.makeText(this, "please select your address", Toast.LENGTH_SHORT).show();
             return;
@@ -127,7 +127,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                 e.printStackTrace();
             }
         }
-        orderRequest(jsonArray, dropTime, laundryType);
+        orderRequest(jsonArray, pickUpTime,  dropTime, laundryType);
     }
 
 
@@ -275,7 +275,7 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void orderRequest(JSONArray itemsQuantity, String dropTime, String laundryType) {
+    private void orderRequest(JSONArray itemsQuantity,String pickupTime,  String dropTime, String laundryType) {
         HttpRequest request = new HttpRequest(AppGlobals.getContext());
         request.setOnReadyStateChangeListener(this);
         request.setOnErrorListener(this);
@@ -283,21 +283,23 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
         request.setRequestHeader("Authorization", "Token " +
                 AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
         Log.i("TAG", AppGlobals.getStringFromSharedPreferences(AppGlobals.KEY_TOKEN));
-        request.send(orderRequestData(itemsQuantity, dropTime, laundryType));
-        WebServiceHelpers.showProgressDialog(CheckOutActivity.this, "Sending your order..");
+        request.send(orderRequestData(itemsQuantity, pickupTime,  dropTime, laundryType));
+        WebServiceHelpers.showProgressDialog(CheckOutActivity.this, "Sending your laundry request..");
     }
 
-    private String orderRequestData(JSONArray itemsQuantity, String dropTime, String laundryType) {
+    private String orderRequestData(JSONArray itemsQuantity,String pickUpTime,  String dropTime,
+                                    String laundryType) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("address", sAddressId);
+            jsonObject.put("pickup_time", pickUpTime);
             jsonObject.put("drop_time", dropTime);
             jsonObject.put("laundry_type", laundryType);
             jsonObject.put("service_items", itemsQuantity);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonObject.toString());
+        Log.i("TAG", "DATA "+ jsonObject.toString());
         return jsonObject.toString();
     }
 

@@ -2,7 +2,6 @@ package com.byteshaft.laundry.laundry;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -10,14 +9,15 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -142,36 +142,121 @@ public class RecycleAbleFragment extends Fragment {
 
                         }
                     });
-            new android.os.Handler().postDelayed(new Runnable() {
+            if (order.containsKey(items.get(position).getId())) {
+                if (mRecyclerView.findViewHolderForAdapterPosition(position) != null) {
+                    RelativeLayout relativeLayout = (RelativeLayout) mRecyclerView
+                            .findViewHolderForAdapterPosition(holder.getPosition()).
+                                    itemView.findViewById(R.id.layout);
+                    relativeLayout.setBackgroundColor(getResources()
+                            .getColor(R.color.card_selected_color));
+                }
+            }  else {
+                if (mRecyclerView.findViewHolderForAdapterPosition(position) != null) {
+                    RelativeLayout relativeLayout = (RelativeLayout) mRecyclerView
+                            .findViewHolderForAdapterPosition(holder.getPosition()).
+                                    itemView.findViewById(R.id.layout);
+                    relativeLayout.setBackgroundColor(getResources()
+                            .getColor(android.R.color.white));
+                }
+            }
+            viewHolder.plus.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void run() {
-                    if (order.containsKey(laundryItem.getId())) {
-                        RelativeLayout relativeLayout = (RelativeLayout) mRecyclerView.findViewHolderForAdapterPosition(position).
+                public void onClick(View view) {
+                    TextView quantity = (TextView) mRecyclerView
+                            .findViewHolderForAdapterPosition(holder.getPosition())
+                            .itemView.findViewById(R.id.quantity_text_view);
+                    String qty = quantity.getText().toString();
+                    if (Integer.valueOf(qty) == 10) {
+                        Toast.makeText(getActivity(), "limit reached", Toast.LENGTH_SHORT).show();
+                        notifyDataSetChanged();
+                        return;
+                    }
+                    if (order.containsKey(items.get(position).getId())) {
+                        OrderItem orderItem = order.get(items.get(position).getId());
+//                        Log.i("TAG", "order item" + String.valueOf(orderItem.getQuantity()));
+                        orderItem.setQuantity(String.valueOf(Integer.valueOf(qty) + 1));
+                        order.put(orderItem.getId(), orderItem);
+                        Log.i("TAG", "added " + orderItem.getQuantity());
+//                        Log.i("TAG", "item" + String.valueOf(orderItem.getQuantity()));
+                        TextView textView = (TextView) mRecyclerView
+                                .findViewHolderForAdapterPosition(holder.getPosition())
+                                .itemView.findViewById(R.id.quantity_text_view);
+                        textView.setText(orderItem.getQuantity());
+                    } else {
+                        Log.i("TAG", "else part");
+                        OrderItem orderItem = new OrderItem();
+                        orderItem.setId(items.get(position).getId());
+                        orderItem.setName(items.get(position).getName());
+                        orderItem.setQuantity(String.valueOf(1));
+                        orderItem.setPrice(items.get(position).getPrice());
+                        orderItem.setImageUrl(items.get(position).getImageUri());
+                        order.put(items.get(position).getId(),
+                                orderItem);
+                        Log.i("TAG", "get quantity" + orderItem.getQuantity());
+                        RelativeLayout relativeLayout = (RelativeLayout) mRecyclerView
+                                .findViewHolderForAdapterPosition(holder.getPosition()).
                                 itemView.findViewById(R.id.layout);
                         relativeLayout.setBackgroundColor(getResources()
                                 .getColor(R.color.card_selected_color));
-                    } else {
-                        RelativeLayout relativeLayout = (RelativeLayout) mRecyclerView.findViewHolderForAdapterPosition(position).
-                                itemView.findViewById(R.id.layout);
-                        relativeLayout.setBackgroundColor(getResources()
-                                .getColor(android.R.color.white));
+                        TextView textView = (TextView) mRecyclerView.findViewHolderForAdapterPosition(
+                                holder.getPosition()
+                        ).itemView.findViewById(R.id.quantity_text_view);
+                        textView.setText(String.valueOf(orderItem.getQuantity()));
                     }
                 }
-            }, 100);
-//            viewHolder.quantityTextView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            });
+            viewHolder.minus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    TextView quantity = (TextView) mRecyclerView
+                            .findViewHolderForAdapterPosition(holder.getPosition())
+                            .itemView.findViewById(R.id.quantity_text_view);
+                    String qty = quantity.getText().toString();
+                    Log.i("TAG", "qty " + qty);
+                    Log.i("TAG", "position " + position);
+                    OrderItem orderItem = order.get(items.get(position).getId());
+                    if (Integer.valueOf(qty) == 1 || Integer.valueOf(qty) < 1) {
+                        order.remove(orderItem.getId());
+                        Toast.makeText(getActivity(), "Item removed", Toast.LENGTH_SHORT).show();
+                        RelativeLayout relativeLayout = (RelativeLayout) mRecyclerView
+                                .findViewHolderForAdapterPosition(holder.getPosition()).
+                                        itemView.findViewById(R.id.layout);
+                        relativeLayout.setBackgroundColor(getResources()
+                                .getColor(android.R.color.white));
+                        TextView textView = (TextView) mRecyclerView.findViewHolderForAdapterPosition(
+                                holder.getPosition()
+                        ).itemView.findViewById(R.id.quantity_text_view);
+                        textView.setText(String.valueOf(0));
+                        return;
+                    }
+                    if (Integer.valueOf(qty) == 0) {
+                        return;
+                    }
+                    orderItem.setQuantity(String.valueOf(Integer.valueOf(qty) - 1));
+                    order.put(orderItem.getId(), orderItem);
+                    TextView textView = (TextView) mRecyclerView.findViewHolderForAdapterPosition(
+                            holder.getPosition()
+                    ).itemView.findViewById(R.id.quantity_text_view);
+                    textView.setText(String.valueOf(orderItem.getQuantity()));
+                    Log.i("TAG", "minusButton click");
+                }
+            });
+//            new android.os.Handler().postDelayed(new Runnable() {
 //                @Override
-//                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                    if (order.containsKey(items.get(holder.getAdapterPosition()).getId())) {
-//                        Log.i("TAG", "OK");
+//                public void run() {
+//                    if (order.containsKey(laundryItem.getId())) {
+//                        RelativeLayout relativeLayout = (RelativeLayout) mRecyclerView.findViewHolderForAdapterPosition(position).
+//                                itemView.findViewById(R.id.layout);
+//                        relativeLayout.setBackgroundColor(getResources()
+//                                .getColor(R.color.card_selected_color));
+//                    } else {
+//                        RelativeLayout relativeLayout = (RelativeLayout) mRecyclerView.findViewHolderForAdapterPosition(position).
+//                                itemView.findViewById(R.id.layout);
+//                        relativeLayout.setBackgroundColor(getResources()
+//                                .getColor(android.R.color.white));
 //                    }
 //                }
-//
-//                @Override
-//                public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//                }
-//            });
-//        }
+//            }, 10);
         }
 
         @Override
@@ -182,63 +267,57 @@ public class RecycleAbleFragment extends Fragment {
         @Override
         public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
             View childView = rv.findChildViewUnder(e.getX(), e.getY());
-            if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e) &&
-                    (!Spinner.class.isInstance(childView))) {
-                mListener.onItem(items.get(rv.getChildPosition(childView)).getId());
-                setBackgroundColor(rv, childView);
-                return true;
-            }
+//            if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e) &&
+//                    (!Spinner.class.isInstance(childView)) && (!ImageButton.class.isInstance(childView))) {
+//                mListener.onItem(items.get(rv.getChildPosition(childView)).getId());
+//                setBackgroundColor(rv, childView);
+//                return true;
+//            }
             return false;
         }
-
-        private void setBackgroundColor(RecyclerView rv, View childView) {
-            if (order.containsKey(items.get(rv.getChildPosition(childView)).getId())) {
-                TextView quantityTextView = (TextView) mRecyclerView
-                        .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
-                                itemView.findViewById(R.id.quantity_text_view);
-                if (Integer.valueOf(quantityTextView.getText().toString()) == 10) {
-                    Toast.makeText(getActivity(), "limit reached", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                order.remove(items.get(rv.getChildPosition(childView)).getId());
-                OrderItem orderItem = new OrderItem();
-                orderItem.setId(items.get(rv.getChildPosition(childView)).getId());
-                orderItem.setName(items.get(rv.getChildPosition(childView)).getName());
-                orderItem.setQuantity(String.valueOf(
-                        Integer.valueOf(quantityTextView.getText().toString())+1));
-                orderItem.setPrice(items.get(rv.getChildPosition(childView)).getPrice());
-                orderItem.setImageUrl(items.get(rv.getChildPosition(childView)).getImageUri());
-                order.put(items.get(rv.getChildPosition(childView)).getId(),
-                        orderItem);
-                quantityTextView.setText(String.valueOf(orderItem.getQuantity()));
-                quantityTextView.setTextColor(Color.WHITE);
-            } else {
-                RelativeLayout cardView = (RelativeLayout) mRecyclerView
-                        .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
-                                itemView.findViewById(R.id.layout);
-                cardView.setBackgroundColor(getResources()
-                        .getColor(R.color.card_selected_color));
-                OrderItem orderItem = new OrderItem();
-                orderItem.setId(items.get(rv.getChildPosition(childView)).getId());
-                orderItem.setName(items.get(rv.getChildPosition(childView)).getName());
-                orderItem.setQuantity(String.valueOf(1));
-                orderItem.setPrice(items.get(rv.getChildPosition(childView)).getPrice());
-                orderItem.setImageUrl(items.get(rv.getChildPosition(childView)).getImageUri());
-                order.put(items.get(rv.getChildPosition(childView)).getId(),
-                        orderItem);
-                TextView quantityTextView = (TextView) mRecyclerView
-                        .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
-                                itemView.findViewById(R.id.quantity_text_view);
-                quantityTextView.setText(String.valueOf(orderItem.getQuantity()));
-                quantityTextView.setTextColor(Color.WHITE);
-            }
-//            if (order.containsKey(items.get(rv.getChildPosition(childView)).getId()) &&
-//                    background.getColor() != getResources().getColor(R.color.card_selected_color)) {
-//                setBackgroundColor(rv, childView);
+//
+//        private void setBackgroundColor(RecyclerView.ViewHolder rv, int position) {
+//            if (order.containsKey(items.get(position).getId())) {
+//                TextView quantityTextView = (TextView) mRecyclerView
+//                        .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
+//                                itemView.findViewById(R.id.quantity_text_view);
+//                if (Integer.valueOf(quantityTextView.getText().toString()) == 10) {
+//                    Toast.makeText(getActivity(), "limit reached", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//                order.remove(items.get(rv.getChildPosition(childView)).getId());
+//                OrderItem orderItem = new OrderItem();
+//                orderItem.setId(items.get(rv.getChildPosition(childView)).getId());
+//                orderItem.setName(items.get(rv.getChildPosition(childView)).getName());
+//                orderItem.setQuantity(String.valueOf(
+//                        Integer.valueOf(quantityTextView.getText().toString())+1));
+//                orderItem.setPrice(items.get(rv.getChildPosition(childView)).getPrice());
+//                orderItem.setImageUrl(items.get(rv.getChildPosition(childView)).getImageUri());
+//                order.put(items.get(rv.getChildPosition(childView)).getId(),
+//                        orderItem);
+//                quantityTextView.setText(String.valueOf(orderItem.getQuantity()));
+//                quantityTextView.setTextColor(Color.WHITE);
 //            } else {
-//                setBackgroundColor(rv, childView);
+//                RelativeLayout cardView = (RelativeLayout) mRecyclerView
+//                        .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
+//                                itemView.findViewById(R.id.layout);
+//                cardView.setBackgroundColor(getResources()
+//                        .getColor(R.color.card_selected_color));
+//                OrderItem orderItem = new OrderItem();
+//                orderItem.setId(items.get(rv.getChildPosition(childView)).getId());
+//                orderItem.setName(items.get(rv.getChildPosition(childView)).getName());
+//                orderItem.setQuantity(String.valueOf(1));
+//                orderItem.setPrice(items.get(rv.getChildPosition(childView)).getPrice());
+//                orderItem.setImageUrl(items.get(rv.getChildPosition(childView)).getImageUri());
+//                order.put(items.get(rv.getChildPosition(childView)).getId(),
+//                        orderItem);
+//                TextView quantityTextView = (TextView) mRecyclerView
+//                        .findViewHolderForAdapterPosition(rv.getChildPosition(childView)).
+//                                itemView.findViewById(R.id.quantity_text_view);
+//                quantityTextView.setText(String.valueOf(orderItem.getQuantity()));
+//                quantityTextView.setTextColor(Color.WHITE);
 //            }
-        }
+//        }
 
         @Override
         public void onTouchEvent(RecyclerView rv, MotionEvent e) {
@@ -262,6 +341,8 @@ public class RecycleAbleFragment extends Fragment {
         public RelativeLayout relativeLayout;
         public CardView cardView;
         public TextView quantityTextView;
+        public ImageButton plus;
+        public ImageButton minus;
 
         public CustomView(View itemView) {
             super(itemView);
@@ -271,6 +352,9 @@ public class RecycleAbleFragment extends Fragment {
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.layout);
             cardView = (CardView) itemView.findViewById(R.id.card_view);
             quantityTextView = (TextView) itemView.findViewById(R.id.quantity_text_view);
+            plus = (ImageButton) itemView.findViewById(R.id.plus);
+            minus = (ImageButton) itemView.findViewById(R.id.minus);
+            quantityTextView.setTypeface(AppGlobals.typefaceNormal);
             titleTextView.setTypeface(AppGlobals.typefaceNormal);
             price.setTypeface(AppGlobals.typefaceNormal);
             titleTextView.setTypeface(AppGlobals.typefaceNormal);
