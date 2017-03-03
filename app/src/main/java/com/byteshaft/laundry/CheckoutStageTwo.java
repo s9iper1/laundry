@@ -113,7 +113,25 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
         switchCompat.setOnCheckedChangeListener(this);
         deliveryTimeLayout.setOnClickListener(this);
         switchCompat.setTypeface(AppGlobals.typefaceBold);
-        refreshData();
+        jsonArray = AddressesActivity.jsonArray;
+        locationNames = new ArrayList<>();
+        locationAdapter = new ArrayAdapter<>(getApplicationContext(),
+                android.R.layout.simple_list_item_1, locationNames);
+        selectLocation.setAdapter(locationAdapter);
+        if (jsonArray != null && jsonArray.length() > 0) {
+            refreshData();
+        } else {
+            AddressesActivity.getLocationData();
+            new android.os.Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    jsonArray = AddressesActivity.jsonArray;
+                    if (jsonArray != null && jsonArray.length() > 0) {
+                        refreshData();
+                    }
+                }
+            }, 10000);
+        }
         printMap(CheckOutActivity.sTotalPrice);
         selectLocation.setOnItemSelectedListener(this);
 
@@ -149,26 +167,23 @@ public class CheckoutStageTwo extends AppCompatActivity implements View.OnClickL
     }
 
     private void refreshData() {
-        jsonArray = AddressesActivity.jsonArray;
-        locationNames = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 locationNames.add(AddressesActivity.hashMap.get(i).getString("name"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            locationAdapter.notifyDataSetChanged();
 
         }
         locationNames.add(addNewLocation);
-        locationAdapter = new ArrayAdapter<>(getApplicationContext(),
-                android.R.layout.simple_list_item_1, locationNames);
-        selectLocation.setAdapter(locationAdapter);
+        locationAdapter.notifyDataSetChanged();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        refreshData();
     }
 
     @Override

@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity
             mEmail.setText("abc@xyz.com");
         }
         CircularImageView circularImageView = (CircularImageView) header.findViewById(R.id.imageView);
-        if (AppGlobals.isUserLoggedIn()) {
+        if (AppGlobals.isUserLoggedIn() && AppGlobals.isUserActive()) {
             final Resources res = getResources();
             int[] array = getResources().getIntArray(R.array.letter_tile_colors);
             final BitmapWithCharacter tileProvider = new BitmapWithCharacter();

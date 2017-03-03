@@ -125,7 +125,7 @@ public class LaundryCategoriesActivity extends AppCompatActivity implements
         @Override
         public Fragment getItem(int position) {
             getPageTitle(position);
-            return new RecycleAbleFragment(categories.get(position).getCategoryName());
+            return RecycleAbleFragment.newInstance(categories.get(position).getCategoryName());
         }
 
         @Override

@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.support.v7.app.AlertDialog;
 
 import com.byteshaft.laundry.MainActivity;
+import com.google.firebase.FirebaseApp;
 
 public class AppGlobals extends Application {
 
@@ -36,6 +37,7 @@ public class AppGlobals extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        FirebaseApp.initializeApp(getApplicationContext());
         sContext = getApplicationContext();
         typefaceBold = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/bold.ttf");
         typefaceNormal = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/normal.ttf");

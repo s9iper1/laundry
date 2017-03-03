@@ -266,6 +266,8 @@ public class CheckOutActivity extends AppCompatActivity implements View.OnClickL
                         AppGlobals.alertDialog(CheckOutActivity.this, "Request Failed!", "please check your internet connection");
                         break;
                     case HttpURLConnection.HTTP_CREATED:
+                        CheckoutStageTwo.sPickUpSelected = 0;
+                        CheckoutStageTwo.sDropSelected = 0;
                         System.out.println(request.getResponseURL());
                         Toast.makeText(getApplicationContext(), "Your request has been received", Toast.LENGTH_SHORT).show();
                         LaundryCategoriesActivity.getInstance().finish();

@@ -19,6 +19,8 @@
         <item> 10</item>
     </string-array>
     <string name="title_activity_pick_laundry">Map</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyBvZ3MtZpcjmMMOCWsOqFiW-J1ovPez_W4</string>
     <string name="api_key">AIzaSyDq-HdIopJoLx8pw46o1CArjVHZqnXE24w</string>
     <string name="delivery_address_same_as_pick_address">Delivery Address : Same as pick address</string>
     <string name="delivery_address_change">Delivery Address : Enter delivery address</string>

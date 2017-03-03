@@ -1,6 +1,5 @@
 package com.byteshaft.laundry.laundry;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -35,21 +34,27 @@ import static com.byteshaft.laundry.laundry.LaundryCategoriesActivity.wholeData;
  * Created by s9iper1 on 12/14/16.
  */
 
-@SuppressLint("ValidFragment")
 public class RecycleAbleFragment extends Fragment {
 
     public RecyclerView mRecyclerView;
     private static RecycleAbleFragment sInstance;
+    private static final String ARG_SECTION_NUMBER = "section_number";
     private View mBaseView;
     private GridLayoutManager gridLayoutManager;
-    private String fragmentName;
 
     public static RecycleAbleFragment getInstance() {
         return sInstance;
     }
 
-    public RecycleAbleFragment(String fragment) {
-        fragmentName = fragment;
+    public RecycleAbleFragment() {
+    }
+
+    public static RecycleAbleFragment newInstance(String fragmentName) {
+        RecycleAbleFragment fragment = new RecycleAbleFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_SECTION_NUMBER, fragmentName);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -70,9 +75,10 @@ public class RecycleAbleFragment extends Fragment {
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.canScrollVertically(LinearLayoutManager.VERTICAL);
         mRecyclerView.setHasFixedSize(true);
-        CustomAdapter mAdapter = new CustomAdapter(wholeData.get(fragmentName));
+        CustomAdapter mAdapter = new CustomAdapter(wholeData.get(getArguments().getString(ARG_SECTION_NUMBER)));
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addOnItemTouchListener(new CustomAdapter(wholeData.get(fragmentName),
+        mRecyclerView.addOnItemTouchListener(new CustomAdapter(wholeData
+                .get(getArguments().getString(ARG_SECTION_NUMBER)),
                 getActivity().getApplicationContext(),
                 new OnItemClickListener() {
                     @Override
